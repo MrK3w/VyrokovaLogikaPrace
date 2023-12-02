@@ -11,10 +11,7 @@
     protected const int HIDDEN = Hidden;
 }
 
-/*
- * Parser Rules
- */
- UNSUPPORTED_OPERATOR: ~[a-zA-Z⇒∧∨≡¬] ;// Match any character not explicitly defined as another token
+
 
 
 prog: expr+ ;
@@ -47,3 +44,8 @@ DOUBLE_NEGATION: '¬¬';
 WS
     : (' ' | '\r' | '\n') -> channel(HIDDEN)
     ;
+
+/*
+ * Parser Rules
+ */
+ UNSUPPORTED_OPERATOR: ~[a-zA-Z⇒∧∨≡¬] ;// Match any character not explicitly defined as another token

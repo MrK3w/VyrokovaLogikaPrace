@@ -8,15 +8,22 @@ using Antlr4.Runtime;
 using Antlr4.Runtime.Misc;
 using Antlr4.Runtime.Tree;
 
+
 namespace VyrokovaLogikaPrace
 {
-    class Program
+    public class Engine
     {
-        static void Main(string[] args)
+        string mInput;
+        public Node pSyntaxTree { get; set; }
+        public Engine(string input)
         {
-            string input = "-(-A&B|C|(C=A))";
-            Converter.ConvertSentence(ref input);
-            ICharStream stream = new AntlrInputStream(input);
+            mInput = input;
+        }
+
+        public void CreateTree()
+        {
+            Converter.ConvertSentence(ref mInput);
+            ICharStream stream = new AntlrInputStream(mInput);
             VyrokovaLogikaLexer lexer = new VyrokovaLogikaLexer(stream);
             CommonTokenStream tokens = new CommonTokenStream(lexer);
 
@@ -39,15 +46,13 @@ namespace VyrokovaLogikaPrace
 
                 VyrokovaLogikaVisitor visitor = new VyrokovaLogikaVisitor();
                 Node syntaxTree = visitor.Visit(tree);
-                if(syntaxTree is NegationOperatorNode)
-                {
-                    Console.WriteLine("Takto");
-                }
+                pSyntaxTree = syntaxTree;
             }
             else
             {
                 Console.WriteLine("Repair your solution");
             }
+
         }
     }
 }

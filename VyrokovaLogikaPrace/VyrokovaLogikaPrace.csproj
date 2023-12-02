@@ -49,6 +49,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Engine.cs" />
     <Compile Include="Converter.cs" />
     <Compile Include="Node.cs" />
     <Compile Include="Program.cs" />

@@ -1,0 +1,78 @@
+﻿@page
+@model IndexModel
+@{
+    ViewData["Title"] = "Vyrokova logika";
+}
+
+<head>
+    <title>My Page</title>
+    <link rel="stylesheet" href="https://unpkg.com/treeflex/dist/css/treeflex.css">
+</head>
+
+<body>
+
+    <div class="container mx-auto">
+        <div class="row">
+            <div class="col-md-2">
+                <div class="square-div">
+                    <p>
+                        Pro zápis logických spojek použij <br />
+                        <ul>
+                            <li>Konjunkce: (&amp;, &and;)</li>
+                            <li>Disjunkce: (|, &or;)</li>
+                            <li>Negace: (-, &not;)</li>
+                            <li>Implikace: (&gt;, &rarr;)</li>
+                            <li>Ekvivalence: (= , &equiv;)</li>
+                        </ul>
+                    </p>
+                </div>
+                <div class="square-div">
+                    <p>
+                        Pokud chceme dokázat tautologii nebo kontradikci, tak hledáme formule, které obsahují semantický spor.
+                        Semantický spor je, pokud narazíme na část, která by při pravdivé evaluaci zároveň nabývala hodnoty 0 i 1.
+                    </p>
+                </div>
+                <div class="square-div">
+                    <p>
+                        Prosím použij jen jednopísmenkové literály. Například abc není validní litáral.
+                    </p>
+                </div>
+            </div>
+            <div class="col-md-10">
+                <div class="text-center">
+                    <h3 class="display-7">Výroková  logika</h3>
+                    <style>
+                        .btn-group > input {
+                            margin-right: 10px; /* Adjust this value to control the spacing between buttons */
+                            margin-left: 10px; /* Adjust this value to control the spacing between buttons */
+                            width: 200px; /* Set the width of the buttons */
+                            height: 40px; /* Set the height of the buttons */
+                        }
+                    </style>
+                    <form method="post" asp-action="Index" asp-controller="Home" id="TheForm" class="d-flex flex-column">
+                        <div class="d-flex">
+                            @Html.DropDownList("formula", Model.ListItems, new { @class = "form-control custom-font", @style = "height: 66.67%;" })
+                            @Html.TextBox("UserInput", Model.YourFormula, new { @maxlength = "64", @class = "form-control ml-2 custom-font", @style = "height: 66.67%;" })
+
+
+                            <div class="btn-toolbar ml-2 flex-fill" role="toolbar" aria-label="Toolbar with button groups">
+                                <div class="btn-group flex-fill" role="group" aria-label="First group">
+                                    <input type='submit' class="btn btn-primary flex-fill mb-2 mr-1" value='Vytvoř syntaktický strom' name='submit' asp-page-handler="CreateTree" />
+                                    <input type='submit' class="btn btn-primary flex-fill mb-2 " value='Vytvoř DAG' name='submit' asp-page-handler="CreateDAG" />
+                                </div>
+                                
+                            </div>
+                        </div>
+                    </form>
+                    @if (Model.Valid)
+                    {
+                         @if (Model.Button == IndexModel.ButtonType.SyntaxTree)
+                        {
+                            @if (Model.ConvertedTree != null)
+                            {
+                                <p>@Html.Raw(Model.ConvertedTree)</p>
+                            }
+                        }
+                    }
+</body>
+</html>
