@@ -20,12 +20,60 @@ namespace VyrokovaLogikaPrace
 
         public override Node VisitNegation(VyrokovaLogikaParser.NegationContext context)
         {
-            return new NegationOperatorNode(Visit(context.expr()));
+            Node innerExpression;
+
+            if (context.VAR() != null)
+            {
+                // Handle the case where the double negation is applied to a variable
+                innerExpression = new ValueNode(context.VAR().GetText());
+            }
+            else if (context.expr() != null)
+            {
+                // Handle the case where the double negation is applied to an expression in parentheses
+                innerExpression = Visit(context.expr());
+            }
+            else
+            {
+                // Handle unexpected cases, or throw an exception
+                innerExpression = null;
+            }
+
+            if (innerExpression != null)
+            {
+                return new NegationOperatorNode(innerExpression);
+            }
+
+            // Handle the case where the inner expression is null (optional)
+            return null;
         }
 
         public override Node VisitDoubleNegationRule(VyrokovaLogikaParser.DoubleNegationRuleContext context)
         {
-            return new DoubleNegationOperatorNode(Visit(context.expr()));
+            Node innerExpression;
+
+            if (context.VAR() != null)
+            {
+                // Handle the case where the double negation is applied to a variable
+                innerExpression = new ValueNode(context.VAR().GetText());
+            }
+            else if (context.expr() != null)
+            {
+                // Handle the case where the double negation is applied to an expression in parentheses
+                innerExpression = Visit(context.expr());
+            }
+            else
+            {
+                // Handle unexpected cases, or throw an exception
+                innerExpression = null;
+            }
+
+            if (innerExpression != null)
+            {
+                return new DoubleNegationOperatorNode(innerExpression);
+            }
+
+            // Handle the case where the inner expression is null (optional)
+            return null;
         }
 
         public override Node VisitImplication(VyrokovaLogikaParser.ImplicationContext context)

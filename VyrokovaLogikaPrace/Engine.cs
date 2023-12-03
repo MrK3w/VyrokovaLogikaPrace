@@ -33,6 +33,7 @@ namespace VyrokovaLogikaPrace
             var customErrorListener = new VerboseErrorListener();
 
             parser.RemoveErrorListeners();
+            lexer.AddErrorListener(customErrorListener);
             parser.AddErrorListener(customErrorListener);
 
             IParseTree tree = parser.prog(); // Start with the top-level rule for your grammar
@@ -42,8 +43,8 @@ namespace VyrokovaLogikaPrace
 
             if (errorCount == 0)
             {
-                Console.WriteLine(tree.ToStringTree(parser));
-
+                //Console.WriteLine(tree.ToStringTree(parser));
+                Traverse(tree, parser.RuleNames, parser.Vocabulary);
                 VyrokovaLogikaVisitor visitor = new VyrokovaLogikaVisitor();
                 Node syntaxTree = visitor.Visit(tree);
                 pSyntaxTree = syntaxTree;
@@ -54,5 +55,27 @@ namespace VyrokovaLogikaPrace
             }
 
         }
+
+        private void Traverse(IParseTree tree, string[] ruleNames, IVocabulary vocabulary, int indent = 0)
+        {
+            if (tree.GetText() == "<EOF>")
+            {
+                return;
+            }
+            else if (tree is TerminalNodeImpl terminalNode)
+            {
+                string tokenName = vocabulary.GetSymbolicName(terminalNode.Symbol.Type) ?? terminalNode.GetText();
+                Console.WriteLine("{0}{1}='{2}'", new string(' ', indent * 2), tokenName, terminalNode.GetText());
+            }
+            else if (tree is ParserRuleContext parserRuleContext)
+            {
+                Console.WriteLine("{0}{1}", new string(' ', indent * 2), ruleNames[parserRuleContext.RuleIndex]);
+                foreach (var child in parserRuleContext.children)
+                {
+                    Traverse(child, ruleNames, vocabulary, indent + 1);
+                }
+            }
+        }
     }
 }
+

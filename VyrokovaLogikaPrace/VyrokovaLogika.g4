@@ -12,18 +12,16 @@
 }
 
 
-
-
 prog: expr+ ;
 
 expr
-    : '¬' expr               # Negation
-    | '¬¬' (VAR | '(' expr ')')    # DoubleNegationRule
+    : '¬' (VAR | '(' expr ')')   # Negation
+    | '¬¬' (VAR | '(' expr ')')  # DoubleNegationRule
     | expr '∧' expr          # Conjunction
     | expr '∨' expr          # Disjunction
     | expr '≡' expr          # Equivalence 
     | expr '⇒' expr          # Implication
-    | VAR                    # Variable
+    | VAR                     # Variable
     | '(' expr ')'           # parens
     ;
 
@@ -32,20 +30,11 @@ expr
  */
 
 VAR: [a-zA-Z]+;
-
-
 IMPLICATION: '⇒';
 CONJUNCTION: '∧';
 DISJUNCTION: '∨';
 EQUIVALENCE: '≡';
 NEGATION: '¬';
 DOUBLE_NEGATION: '¬¬';
+WS: (' ' | '\r' | '\n') -> channel(HIDDEN);
 
-WS
-    : (' ' | '\r' | '\n') -> channel(HIDDEN)
-    ;
-
-/*
- * Parser Rules
- */
- UNSUPPORTED_OPERATOR: ~[a-zA-Z⇒∧∨≡¬] ;// Match any character not explicitly defined as another token
