@@ -10,11 +10,8 @@ namespace VyrokovaLogikaPrace
 {
     public class VerboseErrorListener : BaseErrorListener, IAntlrErrorListener<int>
     {
-        private int errorCount = 0;
-        public int GetErrorCount()
-        {
-            return errorCount;
-        }
+        public int ErrorCount { get; private set; } = 0;
+        public List<string> Errors { get; private set; } = new List<string>();
 
         public override void SyntaxError(IRecognizer recognizer, IToken offendingSymbol, int line, int charPositionInLine, string msg, RecognitionException e)
         {
@@ -22,7 +19,7 @@ namespace VyrokovaLogikaPrace
             if (offendingSymbol != null)
             {
                 Console.WriteLine($"Unsupported operator found at line {line}, position {charPositionInLine}: {offendingSymbol.Text}");
-                errorCount++;
+                ErrorCount++;
             }
             else
             {
@@ -36,14 +33,21 @@ namespace VyrokovaLogikaPrace
             // Check if the error is related to an unsupported operator
             if (offendingSymbol != null)
             {
-                Console.WriteLine($"Nerozpoznan symbol {msg[msg.Length-2]} na pozici {charPositionInLine}");
-                errorCount++;
+                var myMessage = $"Nerozpoznan symbol {msg[msg.Length - 2]} na pozici {charPositionInLine}";
+                Console.WriteLine(myMessage);
+                Errors.Add(myMessage);
+                ErrorCount++;
             }
             else
             {
                 // Handle other types of errors if needed
-                Console.WriteLine($"Syntax error at line {line}, position {charPositionInLine}: {msg}");
+                var myMessage = $"Syntax error at line {line}, position {charPositionInLine}: {msg}";
+                Console.WriteLine(myMessage);
+                Errors.Add(myMessage);
+                ErrorCount++;
             }
         }
+
+        
     }
 }

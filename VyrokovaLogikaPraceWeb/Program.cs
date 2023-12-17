@@ -1,3 +1,7 @@
+using Microsoft.AspNetCore.Mvc.RazorPages;
+using VyrokovaLogikaPraceWeb.Pages;
+using VyrokovaLogikaPraceWeb.Pages.Shared;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
@@ -21,5 +25,4 @@ app.UseRouting();
 app.UseAuthorization();
 
 app.MapRazorPages();
-
 app.Run();

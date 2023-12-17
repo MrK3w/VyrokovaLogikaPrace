@@ -1,16 +1,13 @@
 ﻿@page
-@model IndexModel
+@model VyrokovaLogikaPraceWeb.Pages.SyntacticTreeModel
 @{
-    ViewData["Title"] = "Vyrokova logika";
 }
 
 <head>
     <title>My Page</title>
     <link rel="stylesheet" href="https://unpkg.com/treeflex/dist/css/treeflex.css">
 </head>
-
 <body>
-
     <div class="container mx-auto">
         <div class="row">
             <div class="col-md-2">
@@ -49,21 +46,41 @@
                             height: 40px; /* Set the height of the buttons */
                         }
                     </style>
-
+                    <form method="post" asp-action="Index" asp-controller="Home" id="TheForm" class="d-flex flex-column">
                         <div class="d-flex">
+                            @Html.DropDownList("formula", Model.ListItems, new { @class = "form-control custom-font", @style = "height: 66.67%;" })
+                            @Html.TextBox("UserInput", Model.YourFormula, new { @maxlength = "64", @class = "form-control ml-2 custom-font", @style = "height: 66.67%;" })
+
+
                             <div class="btn-toolbar ml-2 flex-fill" role="toolbar" aria-label="Toolbar with button groups">
                                 <div class="btn-group flex-fill" role="group" aria-label="First group">
-
-                                <a asp-page="/SyntacticTree">
-                                        <input type="button" class="btn btn-primary flex-fill mb-2 mr-1" value="Syntaktický strom" />
-                                    </a>
-                                  <a asp-page="/DAG">
-                                    <input type="button" class="btn btn-primary flex-fill mb-2 mr-1" value="DAG" />
-                                    </a>
+                                    <input type='submit' class="btn btn-primary flex-fill mb-2 mr-1" value='Vykresli syntektický strom' name='submit' asp-page-handler="CreateTree" />
+                                    <input type='submit' class="btn btn-primary flex-fill mb-2 " value='Vytvoř DAG' name='submit' asp-page-handler="CreateDAG" />
                                 </div>
 
                             </div>
                         </div>
-</script>
+                    </form>
+                    @if (Model.Valid)
+                    {
+                        @if (Model.Button == SyntacticTreeModel.ButtonType.SyntaxTree)
+                        {
+                            @if (Model.ConvertedTree != null)
+                            {
+                                <p>@Html.Raw(Model.ConvertedTree)</p>
+                            }
+                        }
+                    }
+                    else
+                    {
+                        <div class="alert alert-danger">
+                            <h4 class="alert-heading">Nesprávná formule:</h4>
+                            <ul>
+                                @foreach (var error in Model.Errors)
+                                {
+                                    <li>@error</li>
+                                }
+                            </ul>
+                        </div>
+                    }
 </body>
-</html>

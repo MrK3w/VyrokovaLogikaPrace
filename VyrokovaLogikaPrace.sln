@@ -5,7 +5,7 @@ VisualStudioVersion = 17.3.32901.215
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VyrokovaLogikaPrace", "VyrokovaLogikaPrace\VyrokovaLogikaPrace.csproj", "{6624F949-AF06-4C2D-AC51-AAAC31680D7D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VyrokovaLogikaPraceWeb", "VyrokovaLogikaPraceWeb\VyrokovaLogikaPraceWeb.csproj", "{9D703CD0-64A0-4181-AABF-FA1974DF8EBA}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VyrokovaLogikaPraceWeb", "VyrokovaLogikaPraceWeb\VyrokovaLogikaPraceWeb.csproj", "{9D703CD0-64A0-4181-AABF-FA1974DF8EBA}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

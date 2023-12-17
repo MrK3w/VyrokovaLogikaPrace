@@ -30,7 +30,7 @@ namespace VyrokovaLogikaPrace
 
             IParseTree tree = parser.prog(); // Start with the top-level rule for your grammar
 
-            int errorCount = customErrorListener.GetErrorCount();
+            int errorCount = customErrorListener.ErrorCount;
             Console.WriteLine($"Total errors found: {errorCount}");
 
             if (errorCount == 0)

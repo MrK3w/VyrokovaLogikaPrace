@@ -15,12 +15,14 @@ namespace VyrokovaLogikaPrace
     {
         string mInput;
         public Node pSyntaxTree { get; set; }
+
+        public List<string> Errors { get; private set; } = new List<string>();
         public Engine(string input)
         {
             mInput = input;
         }
 
-        public void CreateTree()
+        public bool CreateTree()
         {
             Converter.ConvertSentence(ref mInput);
             ICharStream stream = new AntlrInputStream(mInput);
@@ -38,7 +40,7 @@ namespace VyrokovaLogikaPrace
 
             IParseTree tree = parser.prog(); // Start with the top-level rule for your grammar
 
-            int errorCount = customErrorListener.GetErrorCount();
+            int errorCount = customErrorListener.ErrorCount;
             Console.WriteLine($"Total errors found: {errorCount}");
 
             if (errorCount == 0)
@@ -48,10 +50,13 @@ namespace VyrokovaLogikaPrace
                 VyrokovaLogikaVisitor visitor = new VyrokovaLogikaVisitor();
                 Node syntaxTree = visitor.Visit(tree);
                 pSyntaxTree = syntaxTree;
+                return true;
             }
             else
             {
+                Errors = customErrorListener.Errors;
                 Console.WriteLine("Repair your solution");
+                return false;
             }
 
         }

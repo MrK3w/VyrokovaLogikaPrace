@@ -12,7 +12,7 @@
 }
 
 
-prog: expr+ ;
+prog: expr+;
 
 expr
     : '¬' (VAR | '(' expr ')')   # Negation
