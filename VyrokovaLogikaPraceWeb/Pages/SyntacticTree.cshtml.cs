@@ -20,8 +20,8 @@ namespace VyrokovaLogikaPraceWeb.Pages
         public enum ButtonType
         {
             None,
-            DAG,
-            SyntaxTree,
+            DrawSyntaxTree,
+            CreateSyntaxTree,
         }
 
         public ButtonType Button { get; set; }
@@ -30,7 +30,8 @@ namespace VyrokovaLogikaPraceWeb.Pages
 
 
         public string YourFormula { get; set; } = "";
-
+        public string Input { get; set; } = "";
+ 
         public SyntacticTreeModel()
         {
             PrepareList();
@@ -41,9 +42,9 @@ namespace VyrokovaLogikaPraceWeb.Pages
             ListItems = ListItemsHelper.ListItems;
         }
 
-        public IActionResult OnPostCreateTree()
+        public IActionResult OnPostDrawTree()
         {
-            Button = ButtonType.SyntaxTree;
+            Button = ButtonType.DrawSyntaxTree;
             //get formula from inputs
             string mSentence = GetFormula();
             //if it not valid save user input to YourFormula and return page
@@ -72,7 +73,15 @@ namespace VyrokovaLogikaPraceWeb.Pages
             return Page();
         }
 
-        private void PrintTree(Node tree)
+        public IActionResult OnPostCreateTree()
+        {
+           
+            OnPostDrawTree();
+            Button = ButtonType.CreateSyntaxTree;
+            return Page();
+        }
+
+            private void PrintTree(Node tree)
         {
             htmlTree.Add("<li>");
             string op = string.Empty;

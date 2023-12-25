@@ -6,6 +6,9 @@
 <head>
     <title>My Page</title>
     <link rel="stylesheet" href="https://unpkg.com/treeflex/dist/css/treeflex.css">
+    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+     <script src="~/js/CreateTree.js"></script>
+
 </head>
 <body>
     <div class="container mx-auto">
@@ -54,8 +57,8 @@
 
                             <div class="btn-toolbar ml-2 flex-fill" role="toolbar" aria-label="Toolbar with button groups">
                                 <div class="btn-group flex-fill" role="group" aria-label="First group">
-                                    <input type='submit' class="btn btn-primary flex-fill mb-2 mr-1" value='Vykresli syntektický strom' name='submit' asp-page-handler="CreateTree" />
-                                    <input type='submit' class="btn btn-primary flex-fill mb-2 " value='Vytvoř DAG' name='submit' asp-page-handler="CreateDAG" />
+                                    <input type='submit' class="btn btn-primary flex-fill mb-2 mr-1" value='Vykresli syntektický strom' name='submit' asp-page-handler="DrawTree" />
+                                    <input type='submit' class="btn btn-primary flex-fill mb-2 " value='Vytvoř vlastní strom' name='submit' asp-page-handler="CreateTree" />
                                 </div>
 
                             </div>
@@ -63,12 +66,35 @@
                     </form>
                     @if (Model.Valid)
                     {
-                        @if (Model.Button == SyntacticTreeModel.ButtonType.SyntaxTree)
+                        @if (Model.Button == SyntacticTreeModel.ButtonType.DrawSyntaxTree)
                         {
                             @if (Model.ConvertedTree != null)
                             {
                                 <p>@Html.Raw(Model.ConvertedTree)</p>
                             }
+                        }
+                        @if (Model.Button == SyntacticTreeModel.ButtonType.CreateSyntaxTree)
+                        {
+                            <div style="display: flex; gap: 5px;">
+                                <div style="display: flex; gap: 5px;">
+                            @Html.TextBox("TreeInput", Model.Input, new { @maxlength = "64", @class = "form-control ml-2 custom-font"})
+                                </div>
+
+                                <div style="display: flex; gap: 5px; flex-grow: 1;">
+                                    <button type="button" class="insert-button" style="background-color:  #FF5733; color: white;" data-text="∧">∧</button>
+                                    <button type="button" class="insert-button" style="background-color: #FF8C42; color: white;" data-text="∨">∨</button>
+                                    <button type="button" class="insert-button" style="background-color: #FFAB60; color: white;" data-text="≡">≡</button>
+                                    <button type="button" class="insert-button" style="background-color: #FFCA7D; color: white;" data-text="¬">¬</button>
+                                    <button type="button" class="insert-button" style="background-color: #FFD699; color: black;" data-text="⇒">⇒</button>
+                                    <button type="button" class="insert-button" style="background-color: #FFEBB7; color: black;" data-text="¬¬">¬¬</button>
+                                </div>
+                                <input type='submit' class="btn btn-primary flex-fill mb-2 " value='Změna textu' name='submit' id='submitButton' />
+                            </div>
+                            @if (Model.ConvertedTree != null)
+                            {
+                               @Html.Raw(Model.ConvertedTree)
+                            }
+                          
                         }
                     }
                     else
@@ -83,4 +109,6 @@
                             </ul>
                         </div>
                     }
+                </div>
+        </div>
 </body>
