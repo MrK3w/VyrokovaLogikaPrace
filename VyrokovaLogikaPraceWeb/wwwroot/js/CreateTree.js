@@ -22,6 +22,8 @@ function handleButtonOdstranNoduClick() {
     }
 }
 
+//TODO adding new secondary node and cannot add new node if there are already two nodes
+
 function handleButtonPridejNoduClick() {
 
     // Find the span element
