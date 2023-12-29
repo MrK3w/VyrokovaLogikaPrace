@@ -28,42 +28,72 @@ function handleButtonPridejNoduClick() {
 
     // Find the span element
     var spanElement = document.querySelector('.tf-nc[style="border-color: blue;"]');
-    console.log(spanElement);
     if (spanElement) {
-;
-        // Find the nearest ul element
-        var nearestUl = spanElement.closest('ul');
-        console.log(nearestUl);
-        if (nearestUl) {
-            // Create a new ul element and append it after the nearest ul
-            var newUl = document.createElement('ul');
-            var newLi = document.createElement('li');
-            var newSpan = document.createElement('span');
-            newSpan.className = 'tf-nc';
-            newSpan.textContent = ' ▭ ';
-            newLi.appendChild(newSpan);
-            newUl.appendChild(newLi);
-
-            //added new node 
-            spanElement.insertAdjacentElement('afterend',newUl)
-
-            // Check if the nearestUl has a next sibling before inserting
-            $(".tf-nc").on("click", function () {
-                // Set it to an empty string to reset to default
-                $(".tf-nc").css("border-color", "");
-                //saving current node into global property
-                globalInput = $(this);
-                //setting current node into blue border
-                $(this).css("border-color", "blue");
-            });
-            
-          
-        } else {
-            console.error('No parent ul found for the span element.');
+        //get to parent
+        var parent = spanElement.parentNode;
+        var foundUl;
+        for (var i = 0; i < parent.childNodes.length; i++) {
+            var childNode = parent.childNodes[i];
+            // Check if the child node is an element node and has the tag name 'ul'
+            if (childNode.nodeType === 1 && childNode.tagName.toLowerCase() === 'ul') {
+                console.log('Found nested ul element:', childNode);
+                foundUl = childNode;
+                break;  // Stop iterating after finding the first ul element
+            }
         }
-    } else {
-        console.error('Span element not found.');
-    }
+
+        //count direct childs
+        directChildLiElements = 0;
+        if (foundUl != undefined) {
+            directChildLiElements = Array.from(foundUl.children).filter(function (child) {
+                return child.tagName.toLowerCase() === 'li';
+            });
+        }
+      
+        //creating new node
+        var newUl = document.createElement('ul');
+        var newLi = document.createElement('li');
+        var newSpan = document.createElement('span');
+        newSpan.className = 'tf-nc';
+        newSpan.textContent = ' ▭ ';
+        //new li node for case when we already have one node
+        newLi.appendChild(newSpan);
+        //new ul for case if we don't have any child ndoe
+        newUl.appendChild(newLi);
+
+        if (directChildLiElements == 0) {
+            if (/^[a-zA-Z]+$/.test(spanElement.textContent)) {
+                alert("Literal nemuze mit potomka!");
+                return;
+            }
+            spanElement.insertAdjacentElement('afterend', newUl)
+        }
+
+        if (directChildLiElements.length == 1) {
+            if (spanElement.textContent == '¬' || spanElement.textContent == "¬¬") {
+                alert("Negace muze mit jen jednoho potomka!");
+                return;
+            }
+           foundUl.appendChild(newLi);
+        }
+
+        else if (directChildLiElements.length == 2) {
+            alert("Maximalni pocet potomku!");
+        }
+        
+
+        // Check if the nearestUl has a next sibling before inserting
+        $(".tf-nc").on("click", function () {
+            // Set it to an empty string to reset to default
+            $(".tf-nc").css("border-color", "");
+            //saving current node into global property
+            globalInput = $(this);
+            //setting current node into blue border
+            $(this).css("border-color", "blue");
+        });
+} else {
+    console.error('Span element not found.');
+}
 }
 
 var globalInput; // Declare globalInput
