@@ -14,17 +14,19 @@
             IsValueNode = true;
         }
 
-        public Node(Node left, Node right)
+        public Node(Node left, Node right, string value)
         {
             Left = left;
             Right = right;
             IsValueNode = false;
+            Value = value;
         }
 
-        public Node(Node left)
+        public Node(Node left, string value)
         {
             Left = left;
             IsValueNode = false;
+            Value = value;
         }
     }
 
@@ -42,26 +44,26 @@
 
     public class BinaryOperatorNode : Node
     {
-        public BinaryOperatorNode(Node left, Node right) : base(left, right)
+        public BinaryOperatorNode(Node left, Node right, string value) : base(left, right, value)
         {
         }
     }
 
     public abstract class UnaryOperatorNode : Node
     {
-        public UnaryOperatorNode(Node operand) : base(operand) { }
+        public UnaryOperatorNode(Node operand, string value) : base(operand, value) { }
     }
 
     public class DoubleNegationOperatorNode : UnaryOperatorNode
     {
-        public DoubleNegationOperatorNode(Node operand) : base(operand)
+        public DoubleNegationOperatorNode(Node operand, string value) : base(operand,value)
         {
         }
     }
 
     public class NegationOperatorNode : UnaryOperatorNode
     {
-        public NegationOperatorNode(Node operand) : base(operand)
+        public NegationOperatorNode(Node operand, string value) : base(operand, value)
         {
         }
     }
@@ -69,28 +71,28 @@
 
     public class DisjunctionOperatorNode : BinaryOperatorNode
     {
-        public DisjunctionOperatorNode(Node left, Node right) : base(left, right)
+        public DisjunctionOperatorNode(Node left, Node right, string value) : base(left, right, value)
         {
         }
     }
 
     public class ConjunctionOperatorNode : BinaryOperatorNode
     {
-        public ConjunctionOperatorNode(Node left, Node right) : base(left, right)
+        public ConjunctionOperatorNode(Node left, Node right, string value) : base(left, right, value)
         {
         }
     }
 
     public class EqualityOperatorNode : BinaryOperatorNode
     {
-        public EqualityOperatorNode(Node left, Node right) : base(left, right)
+        public EqualityOperatorNode(Node left, Node right, string value) : base(left, right, value)
         {
         }
     }
 
     public class ImplicationOperatorNode : BinaryOperatorNode
     {
-        public ImplicationOperatorNode(Node left, Node right) : base(left, right)
+        public ImplicationOperatorNode(Node left, Node right, string value) : base(left, right, value)
         {
         }
     }

@@ -91,11 +91,8 @@
                                 <input type='submit' class="btn btn-primary flex-fill mb-2 " value='Odstraň nodu' id='odstranNoduButton' />
                                 <input type='submit' class="btn btn-primary flex-fill mb-2 " value='Přidej nodu' id='pridejNoduButton' />
                             </div>
-                            @if (Model.ConvertedTree != null)
-                            {
-                               @Html.Raw(Model.ConvertedTree)
-                            }
-                          
+                            <div id="createdTree">
+                            </div>
                         }
                     }
                     else

@@ -75,8 +75,6 @@ namespace VyrokovaLogikaPraceWeb.Pages
 
         public IActionResult OnPostCreateTree()
         {
-           
-            OnPostDrawTree();
             Button = ButtonType.CreateSyntaxTree;
             return Page();
         }

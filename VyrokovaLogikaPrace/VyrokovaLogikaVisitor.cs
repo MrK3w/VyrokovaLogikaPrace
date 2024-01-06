@@ -40,7 +40,7 @@ namespace VyrokovaLogikaPrace
 
             if (innerExpression != null)
             {
-                return new NegationOperatorNode(innerExpression);
+                return new NegationOperatorNode(innerExpression, context.GetText());
             }
 
             // Handle the case where the inner expression is null (optional)
@@ -69,7 +69,7 @@ namespace VyrokovaLogikaPrace
 
             if (innerExpression != null)
             {
-                return new DoubleNegationOperatorNode(innerExpression);
+                return new DoubleNegationOperatorNode(innerExpression, context.GetText());
             }
 
             // Handle the case where the inner expression is null (optional)
@@ -78,22 +78,22 @@ namespace VyrokovaLogikaPrace
 
         public override Node VisitImplication(VyrokovaLogikaParser.ImplicationContext context)
         {
-            return new ImplicationOperatorNode(Visit(context.expr(0)), Visit(context.expr(1)));
+            return new ImplicationOperatorNode(Visit(context.expr(0)), Visit(context.expr(1)), context.GetText());
         }
 
         public override Node VisitConjunction(VyrokovaLogikaParser.ConjunctionContext context)
         {
-            return new ConjunctionOperatorNode(Visit(context.expr(0)), Visit(context.expr(1)));
+            return new ConjunctionOperatorNode(Visit(context.expr(0)), Visit(context.expr(1)), context.GetText());
         }
 
         public override Node VisitDisjunction(VyrokovaLogikaParser.DisjunctionContext context)
         {
-            return new DisjunctionOperatorNode(Visit(context.expr(0)), Visit(context.expr(1)));
+            return new DisjunctionOperatorNode(Visit(context.expr(0)), Visit(context.expr(1)), context.GetText());
         }
 
         public override Node VisitEquivalence(VyrokovaLogikaParser.EquivalenceContext context)
         {
-            return new EqualityOperatorNode(Visit(context.expr(0)), Visit(context.expr(1)));
+            return new EqualityOperatorNode(Visit(context.expr(0)), Visit(context.expr(1)), context.GetText());
         }
     }
 }

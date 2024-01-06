@@ -61,6 +61,7 @@ function handleButtonPridejNoduClick() {
         //new ul for case if we don't have any child ndoe
         newUl.appendChild(newLi);
 
+        //If we don't have any child node we can create left one in case that content of node is not literal
         if (directChildLiElements == 0) {
             if (/^[a-zA-Z]+$/.test(spanElement.textContent)) {
                 alert("Literal nemuze mit potomka!");
@@ -68,7 +69,7 @@ function handleButtonPridejNoduClick() {
             }
             spanElement.insertAdjacentElement('afterend', newUl)
         }
-
+        //if we have left child we can create right child in case that content of node is not negation
         if (directChildLiElements.length == 1) {
             if (spanElement.textContent == '¬' || spanElement.textContent == "¬¬") {
                 alert("Negace muze mit jen jednoho potomka!");
@@ -76,24 +77,38 @@ function handleButtonPridejNoduClick() {
             }
            foundUl.appendChild(newLi);
         }
-
+        //if we have two childs we can't create another one
         else if (directChildLiElements.length == 2) {
             alert("Maximalni pocet potomku!");
         }
-        
-
-        // Check if the nearestUl has a next sibling before inserting
-        $(".tf-nc").on("click", function () {
-            // Set it to an empty string to reset to default
-            $(".tf-nc").css("border-color", "");
-            //saving current node into global property
-            globalInput = $(this);
-            //setting current node into blue border
-            $(this).css("border-color", "blue");
-        });
 } else {
-    console.error('Span element not found.');
-}
+        var divTree = document.createElement('div');
+        divTree.className = 'tf-tree tf-gap-sm';
+
+        var listItem = document.createElement('li');
+
+        var spanElement = document.createElement('span');
+        spanElement.className = 'tf-nc';
+        spanElement.style.borderColor = 'blue';
+        spanElement.textContent = ' ▭ ';
+
+        // Append elements to create the hierarchy
+        listItem.appendChild(spanElement);
+        divTree.appendChild(listItem);
+
+        // Append the main tree div to the container with id "createdTree"
+        document.getElementById('createdTree').appendChild(divTree);
+    }
+
+    // set functions to node
+    $(".tf-nc").on("click", function () {
+        // Set it to an empty string to reset to default
+        $(".tf-nc").css("border-color", "");
+        //saving current node into global property
+        globalInput = $(this);
+        //setting current node into blue border
+        $(this).css("border-color", "blue");
+    });
 }
 
 var globalInput; // Declare globalInput

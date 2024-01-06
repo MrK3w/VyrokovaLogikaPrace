@@ -14,7 +14,7 @@ namespace VyrokovaLogikaPrace
     {
         static void Main(string[] args)
         {
-            string input = "A+B";
+            string input = "-A>B&B|--(A&B)";
             Converter.ConvertSentence(ref input);
             ICharStream stream = new AntlrInputStream(input);
             VyrokovaLogikaLexer lexer = new VyrokovaLogikaLexer(stream);
