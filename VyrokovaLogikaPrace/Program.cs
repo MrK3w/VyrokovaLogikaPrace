@@ -39,10 +39,6 @@ namespace VyrokovaLogikaPrace
 
                 VyrokovaLogikaVisitor visitor = new VyrokovaLogikaVisitor();
                 Node syntaxTree = visitor.Visit(tree);
-                if(syntaxTree is NegationOperatorNode)
-                {
-                    Console.WriteLine("Takto");
-                }
             }
             else
             {
