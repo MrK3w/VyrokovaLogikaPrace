@@ -23,10 +23,13 @@ function handleButtonOdstranNoduClick() {
 }
 
 function handleButtonVytvorFormuliClick() {
-    console.log("This is");
     $.ajax({
-        url: '?handler=CreateFormula',
-        type: 'GET',
+        url: '/CreateTree?handler=CreateFormula',
+        beforeSend: function (xhr) {
+            xhr.setRequestHeader("XSRF-TOKEN",
+                $('input:hidden[name="__RequestVerificationToken"]').val());
+        },
+        type: 'POST',
         data: "asdsad",
         dataType: "text",
         success: function (data) {

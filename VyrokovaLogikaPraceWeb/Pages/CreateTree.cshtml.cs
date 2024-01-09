@@ -38,11 +38,15 @@ namespace VyrokovaLogikaPraceWeb.Pages
         }
 
         
-        public IActionResult OnGetCreateFormula(string text)
+        public IActionResult OnPostCreateFormula(string text)
         {
-            Console.Write("DOstl jsem se zde");
-            // Handle the logic for creating the formula
-            return Page();
+            List<string> lstString = new List<string>
+            {
+                "Val 1",
+                "Val 2",
+                "Val 3"
+            };
+            return new JsonResult(lstString);
         }
 
         public IActionResult OnPostCreateTree()
