@@ -22,7 +22,23 @@ function handleButtonOdstranNoduClick() {
     }
 }
 
-//TODO adding new secondary node and cannot add new node if there are already two nodes
+function handleButtonVytvorFormuliClick() {
+    console.log("This is");
+    $.ajax({
+        url: '?handler=CreateFormula',
+        type: 'GET',
+        data: "asdsad",
+        dataType: "text",
+        success: function (data) {
+            console.log('Success:', data);
+            // Handle the response from the server
+        },
+        error: function (error) {
+            console.error('Error:', error);
+            // Handle the error
+        }
+    });
+}
 
 function handleButtonPridejNoduClick() {
 
@@ -135,6 +151,8 @@ $(document).ready(function () {
     document.getElementById('odstranNoduButton').addEventListener('click', handleButtonOdstranNoduClick);
 
     document.getElementById('pridejNoduButton').addEventListener('click', handleButtonPridejNoduClick);
+
+    document.getElementById('vytvorFormuliButton').addEventListener('click', handleButtonVytvorFormuliClick);
 
     //function to add into nodes click function
     $(".tf-nc").on("click", function () {

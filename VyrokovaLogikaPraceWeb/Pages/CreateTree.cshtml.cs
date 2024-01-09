@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using VyrokovaLogikaPrace;
 
 namespace VyrokovaLogikaPraceWeb.Pages
 {
@@ -34,6 +35,14 @@ namespace VyrokovaLogikaPraceWeb.Pages
 
         public CreateTreeModel()
         {
+        }
+
+        
+        public IActionResult OnGetCreateFormula(string text)
+        {
+            Console.Write("DOstl jsem se zde");
+            // Handle the logic for creating the formula
+            return Page();
         }
 
         public IActionResult OnPostCreateTree()
