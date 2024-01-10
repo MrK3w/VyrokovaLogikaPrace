@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using System;
 using VyrokovaLogikaPrace;
 
 namespace VyrokovaLogikaPraceWeb.Pages
@@ -38,15 +39,11 @@ namespace VyrokovaLogikaPraceWeb.Pages
         }
 
         
-        public IActionResult OnPostCreateFormula(string text)
+        public IActionResult OnPostCreateFormula([FromBody] string text)
         {
-            List<string> lstString = new List<string>
-            {
-                "Val 1",
-                "Val 2",
-                "Val 3"
-            };
-            return new JsonResult(lstString);
+            TreeConstructer constructer = new TreeConstructer(text);
+            constructer.ProcessTree();
+            return Page();
         }
 
         public IActionResult OnPostCreateTree()

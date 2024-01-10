@@ -5,6 +5,8 @@
         public string Value { get; set; } // Value for leaf nodes (e.g., integer values)
         public Node Left { get; set; } // Left child node
         public Node Right { get; set; } // Right child node
+        public Node Parent { get; set; } //parent of node
+        public bool IsRoot => Parent == null;
 
         public bool IsValueNode { get; set; } // Indicates whether this node is a leaf (value) node
 
@@ -18,6 +20,8 @@
         {
             Left = left;
             Right = right;
+            Left.Parent = this;
+            Right.Parent = this;
             IsValueNode = false;
             Value = value;
         }
@@ -25,6 +29,7 @@
         public Node(Node left, string value)
         {
             Left = left;
+            Left.Parent = this;
             IsValueNode = false;
             Value = value;
         }

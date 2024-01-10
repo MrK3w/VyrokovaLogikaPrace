@@ -23,6 +23,8 @@ function handleButtonOdstranNoduClick() {
 }
 
 function handleButtonVytvorFormuliClick() {
+    var elements = document.querySelectorAll(".tf-tree.tf-gap-sm")[0].innerHTML;
+    console.log("Strom je: " + elements);
     $.ajax({
         url: '/CreateTree?handler=CreateFormula',
         beforeSend: function (xhr) {
@@ -30,8 +32,9 @@ function handleButtonVytvorFormuliClick() {
                 $('input:hidden[name="__RequestVerificationToken"]').val());
         },
         type: 'POST',
-        data: "asdsad",
-        dataType: "text",
+        contentType: 'application/json', // Specify content type as JSON
+        dataType: "json",
+        data: JSON.stringify(elements),
         success: function (data) {
             console.log('Success:', data);
             // Handle the response from the server
