@@ -17,15 +17,6 @@ namespace VyrokovaLogikaPraceWeb.Pages
         public List<string> Errors { get; private set; } = new();
         public string ConvertedTree { get; set; }
 
-        public enum ButtonType
-        {
-            None,
-            DrawSyntaxTree,
-            CreateSyntaxTree,
-        }
-
-        public ButtonType Button { get; set; }
-
         public List<SelectListItem> ListItems { get; set; } = new List<SelectListItem>();
 
 
@@ -44,7 +35,6 @@ namespace VyrokovaLogikaPraceWeb.Pages
 
         public IActionResult OnPostDrawTree()
         {
-            Button = ButtonType.DrawSyntaxTree;
             //get formula from inputs
             string mSentence = GetFormula();
             //if it not valid save user input to YourFormula and return page
@@ -75,7 +65,6 @@ namespace VyrokovaLogikaPraceWeb.Pages
 
         public IActionResult OnPostCreateTree()
         {
-            Button = ButtonType.CreateSyntaxTree;
             return Page();
         }
 

@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using System;
+using System.Diagnostics;
 using VyrokovaLogikaPrace;
 
 namespace VyrokovaLogikaPraceWeb.Pages
@@ -10,23 +11,8 @@ namespace VyrokovaLogikaPraceWeb.Pages
     {
         public bool Valid { get; private set; } = true;
 
-        private readonly List<string> htmlTree = new();
-
-        private string vl;
-        private string vl1;
         public string ErrorMessage;
         public List<string> Errors { get; private set; } = new();
-        public string ConvertedTree { get; set; }
-
-        public enum ButtonType
-        {
-            None,
-            DrawSyntaxTree,
-            CreateSyntaxTree,
-        }
-
-        public ButtonType Button { get; set; }
-
         public List<SelectListItem> ListItems { get; set; } = new List<SelectListItem>();
 
 
@@ -34,21 +20,23 @@ namespace VyrokovaLogikaPraceWeb.Pages
         public string Input { get; set; } = "";
 
 
-        public CreateTreeModel()
-        {
-        }
-
-        
         public IActionResult OnPostCreateFormula([FromBody] string text)
         {
             TreeConstructer constructer = new TreeConstructer(text);
             constructer.ProcessTree();
-            return Page();
+            string div = "<div class='tf-tree tf-gap-sm'>".Replace("'", "\"");
+            
+            var responseData = new
+            {
+                message = "Formula created successfully",
+                convertedTree = div + string.Join("", text.ToArray()) + "</div>",
+                formula = "xdddddd",
+            };
+            return new JsonResult(responseData);
         }
 
         public IActionResult OnPostCreateTree()
         {
-            Button = ButtonType.CreateSyntaxTree;
             return Page();
         }
     }

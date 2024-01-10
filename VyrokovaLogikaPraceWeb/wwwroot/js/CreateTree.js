@@ -25,25 +25,45 @@ function handleButtonOdstranNoduClick() {
 function handleButtonVytvorFormuliClick() {
     var elements = document.querySelectorAll(".tf-tree.tf-gap-sm")[0].innerHTML;
     console.log("Strom je: " + elements);
-    $.ajax({
-        url: '/CreateTree?handler=CreateFormula',
-        beforeSend: function (xhr) {
-            xhr.setRequestHeader("XSRF-TOKEN",
-                $('input:hidden[name="__RequestVerificationToken"]').val());
-        },
-        type: 'POST',
-        contentType: 'application/json', // Specify content type as JSON
-        dataType: "json",
-        data: JSON.stringify(elements),
-        success: function (data) {
-            console.log('Success:', data);
-            // Handle the response from the server
-        },
-        error: function (error) {
-            console.error('Error:', error);
-            // Handle the error
-        }
+
+    $(document).on("submit", "#formulaForm", function (e) {
+        e.preventDefault();
+        $.ajax({
+            url: '?handler=CreateFormula',
+            beforeSend: function (xhr) {
+                xhr.setRequestHeader("XSRF-TOKEN",
+                    $('input:hidden[name="__RequestVerificationToken"]').val());
+            },
+            type: 'POST',
+            contentType: 'application/json',
+            dataType: "json",
+            data: JSON.stringify(elements),
+            success: function (data) {
+                console.log('Success:', data);
+                // Assuming data is in JSON format as provided in your example
+                var convertedTree = data.convertedTree;
+                var formula = data.formula;
+                // Append the convertedTree to the element with id 'createdTree'
+                document.getElementById('createdTree').innerHTML = convertedTree; // Assuming you want to keep the existing convertedTree
+                document.getElementById('formula').innerHTML = formula;
+
+                // set functions to node
+                $(".tf-nc").on("click", function () {
+                    // Set it to an empty string to reset to default
+                    $(".tf-nc").css("border-color", "");
+                    //saving current node into global property
+                    globalInput = $(this);
+                    //setting current node into blue border
+                    $(this).css("border-color", "blue");
+                });
+            },
+            error: function (error) {
+                console.error('Error:', error);
+                // Handle the error
+            }
+        });
     });
+    
 }
 
 function handleButtonPridejNoduClick() {
@@ -143,7 +163,6 @@ function showDialog(title, message) {
 
 // Case of interactive tree
 $(document).ready(function () {
-
     // Buttons for adding symbols into texbox
     $(".insert-button").click(function () {
         var buttonText = $(this).data("text");
