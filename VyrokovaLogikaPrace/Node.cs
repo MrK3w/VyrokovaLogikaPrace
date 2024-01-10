@@ -1,4 +1,6 @@
-﻿namespace VyrokovaLogikaPrace
+﻿using System.Security.Policy;
+
+namespace VyrokovaLogikaPrace
 {
     public class Node
     {
@@ -16,7 +18,7 @@
             IsValueNode = true;
         }
 
-        public Node(Node left, Node right, string value)
+        public Node(Node left, Node right, string value = "")
         {
             Left = left;
             Right = right;
@@ -26,12 +28,17 @@
             Value = value;
         }
 
-        public Node(Node left, string value)
+        public Node(Node left, string value = "")
         {
             Left = left;
             Left.Parent = this;
             IsValueNode = false;
             Value = value;
+        }
+
+        public Node()
+        {
+           
         }
     }
 
@@ -47,57 +54,70 @@
         }
     }
 
-    public class BinaryOperatorNode : Node
-    {
-        public BinaryOperatorNode(Node left, Node right, string value) : base(left, right, value)
-        {
-        }
-    }
-
-    public abstract class UnaryOperatorNode : Node
-    {
-        public UnaryOperatorNode(Node operand, string value) : base(operand, value) { }
-    }
-
-    public class DoubleNegationOperatorNode : UnaryOperatorNode
+    public class DoubleNegationOperatorNode : Node
     {
         public DoubleNegationOperatorNode(Node operand, string value) : base(operand,value)
         {
         }
+
+        public DoubleNegationOperatorNode() : base()
+        {
+        }
     }
 
-    public class NegationOperatorNode : UnaryOperatorNode
+    public class NegationOperatorNode : Node
     {
         public NegationOperatorNode(Node operand, string value) : base(operand, value)
         {
         }
+
+        public NegationOperatorNode() : base()
+        {
+        }
     }
 
 
-    public class DisjunctionOperatorNode : BinaryOperatorNode
+    public class DisjunctionOperatorNode : Node
     {
         public DisjunctionOperatorNode(Node left, Node right, string value) : base(left, right, value)
         {
         }
+
+        public DisjunctionOperatorNode() : base ()
+        {
+
+        }
     }
 
-    public class ConjunctionOperatorNode : BinaryOperatorNode
+    public class ConjunctionOperatorNode : Node
     {
         public ConjunctionOperatorNode(Node left, Node right, string value) : base(left, right, value)
         {
         }
-    }
 
-    public class EqualityOperatorNode : BinaryOperatorNode
-    {
-        public EqualityOperatorNode(Node left, Node right, string value) : base(left, right, value)
+        public ConjunctionOperatorNode() : base()
         {
         }
     }
 
-    public class ImplicationOperatorNode : BinaryOperatorNode
+    public class EqualityOperatorNode : Node
+    {
+        public EqualityOperatorNode(Node left, Node right, string value) : base(left, right, value)
+        {
+        }
+
+        public EqualityOperatorNode() : base()
+        {
+        }
+    }
+
+    public class ImplicationOperatorNode : Node
     {
         public ImplicationOperatorNode(Node left, Node right, string value) : base(left, right, value)
+        {
+        }
+
+        public ImplicationOperatorNode() : base()
         {
         }
     }

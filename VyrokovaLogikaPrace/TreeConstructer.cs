@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.Eventing.Reader;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -11,6 +12,7 @@ namespace VyrokovaLogikaPrace
     {
         string mHtmlTree;
         Node tree;
+        string side = "left";
 
         public TreeConstructer(string htmlTree)
         {
@@ -29,7 +31,7 @@ namespace VyrokovaLogikaPrace
         {
             //bool value if next value is item
             bool itIsItem = false;
-            //if previous tag was already </li>
+            //if previous tag was already </ li >
             bool ThereWasLi = false;
             foreach (string tag in strippedTags)
             {
@@ -41,17 +43,22 @@ namespace VyrokovaLogikaPrace
                 //if it item we need to get this values
                 if (itIsItem)
                 {
-                    //if on first place is operator we will save him to tree
-                    if (Validator.ContainsOperator(tag[0].ToString()) || Validator.ContainsNegationOnFirstPlace(tag[0].ToString()))
+                    if (tree == null)
                     {
-                        tree.MOperator = Operator.GetOperator(tag[0].ToString());
+                        tree = TreeBuildHelper.GetNode(tag);
                     }
-                    //else is there literal
-                    else
+                    else if (side == "left")
                     {
-                        tree.literal = tag[0].ToString();
+                            tree.Left = TreeBuildHelper.GetNode(tag);
+                            tree.Left.Parent = tree;
+                            tree = tree.Left;
                     }
-
+                    else if (side == "right")
+                    {
+                        tree.Right = TreeBuildHelper.GetNode(tag);
+                        tree.Right.Parent = tree;
+                        tree = tree.Right;
+                    }
                     itIsItem = false;
                     continue;
                 }
@@ -61,8 +68,8 @@ namespace VyrokovaLogikaPrace
                 //if <li> and there was already <\li>
                 else if (tag == "<li>" && ThereWasLi)
                 {
-                    tree.AddChild("right");
-                    tree = tree.ChildNodeRight;
+                    tree = tree.Parent;
+                    side = "right";
                     ThereWasLi = false;
                 }
 
@@ -72,8 +79,7 @@ namespace VyrokovaLogikaPrace
                 }
                 else if (tag == "<ul>")
                 {
-                    tree.AddChild("left");
-                    tree = tree.Left;
+                    side = "left";
                 }
                 else if (tag == "<item>")
                 {

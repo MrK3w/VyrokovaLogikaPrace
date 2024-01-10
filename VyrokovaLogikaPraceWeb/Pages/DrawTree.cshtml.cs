@@ -83,7 +83,7 @@ namespace VyrokovaLogikaPraceWeb.Pages
         {
             htmlTree.Add("<li>");
             string op = string.Empty;
-            op = GetOP(tree);
+            op = TreeBuildHelper.GetOP(tree);
             htmlTree.Add("<span class=tf-nc>" + op + "</span>");
             //if tree has childNodeLeft we will use recursion 
             if (tree.Left != null)
@@ -99,27 +99,7 @@ namespace VyrokovaLogikaPraceWeb.Pages
             htmlTree.Add("</li>");
         }
 
-        private string GetOP(Node tree)
-        {
-            switch (tree)
-            {
-                case NegationOperatorNode:
-                    return "¬";
-                case DoubleNegationOperatorNode:
-                    return "¬¬";
-                case ConjunctionOperatorNode:
-                    return "∧";
-                case DisjunctionOperatorNode:
-                    return "∨";
-                case EqualityOperatorNode:
-                    return "≡";
-                case ImplicationOperatorNode:
-                    return "⇒";
-                case ValueNode:
-                    return tree.Value;
-            }
-            return String.Empty;
-        }
+        
 
         public string? GetFormula()
         {
