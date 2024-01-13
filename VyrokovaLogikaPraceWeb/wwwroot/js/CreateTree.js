@@ -4,8 +4,10 @@ function escapeRegExp(string) {
 }
 
 function handleButtonZmenaTextuClick() {
-    // Perform your action here
+    //Get value from input
     var inputValue = $('#TreeInput').val();
+
+    //check if input is valid
     var validSymbols = ['∧', '∨', '≡', '¬', '⇒', '¬¬'];
     var regex = new RegExp('^[a-zA-Z]+$|^(' + validSymbols.map(escapeRegExp).join('|') + ')$');
     if (regex.test(inputValue)) {
@@ -15,6 +17,7 @@ function handleButtonZmenaTextuClick() {
     }
 }
 
+//remove node/s after clickng on Odstran button
 function handleButtonOdstranNoduClick() {
 
     if (globalInput) {
@@ -22,15 +25,17 @@ function handleButtonOdstranNoduClick() {
     }
 }
 
+//Create formula from just create tree
 function handleButtonVytvorFormuliClick() {
-
+    //get html tree from page
     var elements = document.querySelectorAll(".tf-tree.tf-gap-sm")[0].innerHTML;
-    console.log("Strom je: " + elements);
 
+    //check if each node is filled with valid content
     if (isContentPresent()) {
         alert("Některá z nod je nevyplněná!");
         return;
     }
+    //ajax calling function
     $.ajax({
         url: '?handler=CreateFormula',
         beforeSend: function (xhr) {
@@ -43,8 +48,9 @@ function handleButtonVytvorFormuliClick() {
         data: JSON.stringify(elements),
         success: function (data) {
             console.log('Success:', data);
-            // Append the convertedTree to the element with id 'createdTree'
-            document.getElementById('createdTree').innerHTML = data.convertedTree; // Assuming you want to keep the existing convertedTree
+            // Put the convertedTree to the element with id 'createdTree'
+            document.getElementById('createdTree').innerHTML = data.convertedTree;
+            //Put formula to the element with id 'formula'
             document.getElementById('formula').innerHTML = data.formula;
 
             // set functions to node
@@ -77,9 +83,9 @@ function isContentPresent() {
     return false;
 }
 
+//Add new node 
 function handleButtonPridejNoduClick() {
-
-    // Find the span element
+    // Find the span element of just selected ndoe
     var spanElement = document.querySelector('.tf-nc[style="border-color: blue;"]');
     if (spanElement) {
         //get to parent
@@ -111,11 +117,12 @@ function handleButtonPridejNoduClick() {
         newSpan.textContent = ' ▭ ';
         //new li node for case when we already have one node
         newLi.appendChild(newSpan);
-        //new ul for case if we don't have any child ndoe
+        //new ul for case if we don't have any child node
         newUl.appendChild(newLi);
 
         //If we don't have any child node we can create left one in case that content of node is not literal
         if (directChildLiElements == 0) {
+            //if node is literal we don't create new node
             if (/^[a-zA-Z]+$/.test(spanElement.textContent)) {
                 alert("Literal nemuze mit potomka!");
                 return;
@@ -124,17 +131,20 @@ function handleButtonPridejNoduClick() {
         }
         //if we have left child we can create right child in case that content of node is not negation
         if (directChildLiElements.length == 1) {
+            //if it is negation we don't have right node, hence we don't create new node
             if (spanElement.textContent == '¬' || spanElement.textContent == "¬¬") {
                 alert("Negace muze mit jen jednoho potomka!");
                 return;
             }
            foundUl.appendChild(newLi);
         }
-        //if we have two childs we can't create another one
+        //if we have two nodes we can't create another one
         else if (directChildLiElements.length == 2) {
             alert("Maximalni pocet potomku!");
         }
-} else {
+    }
+    //in case we don't have tree we create new tree
+    else {
         var divTree = document.createElement('div');
         divTree.className = 'tf-tree tf-gap-sm';
 

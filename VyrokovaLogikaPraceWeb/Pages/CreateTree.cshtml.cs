@@ -10,8 +10,6 @@ namespace VyrokovaLogikaPraceWeb.Pages
     public class CreateTreeModel : PageModel
     {
         public bool Valid { get; private set; } = true;
-
-        public string ErrorMessage;
         public List<string> Errors { get; private set; } = new();
         public List<SelectListItem> ListItems { get; set; } = new List<SelectListItem>();
 
