@@ -24,7 +24,37 @@ namespace VyrokovaLogikaPrace
         {
             var strippedTags = StripTree();
             CreateTree(strippedTags);
+            FillFormula(tree);
             return tree;
+        }
+
+        public string Formula => tree.Value;
+        
+
+        private void FillFormula(Node tree)
+        {
+            if(tree.Left !=  null)
+                FillFormula(tree.Left);
+            if (tree.Right != null)
+                FillFormula(tree.Right);
+            if(tree.Left != null && tree.Right != null)
+            {
+                tree.Value = tree.Left.Value + TreeBuildHelper.GetOP(tree) + tree.Right.Value;
+            }
+            else if(tree.Left != null)
+            {
+                if(tree.Left is ValueNode)
+                tree.Value = TreeBuildHelper.GetOP(tree) + tree.Left.Value;
+                else
+                {
+                    tree.Value = TreeBuildHelper.GetOP(tree) + '(' + tree.Left.Value+')';
+                }
+            }
+            else
+            {
+                
+            }
+            return;
         }
 
         private void CreateTree(List<string> strippedTags)

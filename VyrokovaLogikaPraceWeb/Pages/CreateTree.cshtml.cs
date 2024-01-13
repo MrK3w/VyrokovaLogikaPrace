@@ -28,9 +28,9 @@ namespace VyrokovaLogikaPraceWeb.Pages
             
             var responseData = new
             {
-                message = "Formula created successfully",
+                message = "Formula is " + constructer.Formula,
                 convertedTree = div + string.Join("", text.ToArray()) + "</div>",
-                formula = "xdddddd",
+                formula = "Formula is " + constructer.Formula
             };
             return new JsonResult(responseData);
         }

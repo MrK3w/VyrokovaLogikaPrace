@@ -23,47 +23,58 @@ function handleButtonOdstranNoduClick() {
 }
 
 function handleButtonVytvorFormuliClick() {
+
     var elements = document.querySelectorAll(".tf-tree.tf-gap-sm")[0].innerHTML;
     console.log("Strom je: " + elements);
 
-    $(document).on("submit", "#formulaForm", function (e) {
-        e.preventDefault();
-        $.ajax({
-            url: '?handler=CreateFormula',
-            beforeSend: function (xhr) {
-                xhr.setRequestHeader("XSRF-TOKEN",
-                    $('input:hidden[name="__RequestVerificationToken"]').val());
-            },
-            type: 'POST',
-            contentType: 'application/json',
-            dataType: "json",
-            data: JSON.stringify(elements),
-            success: function (data) {
-                console.log('Success:', data);
-                // Assuming data is in JSON format as provided in your example
-                var convertedTree = data.convertedTree;
-                var formula = data.formula;
-                // Append the convertedTree to the element with id 'createdTree'
-                document.getElementById('createdTree').innerHTML = convertedTree; // Assuming you want to keep the existing convertedTree
-                document.getElementById('formula').innerHTML = formula;
+    if (isContentPresent()) {
+        alert("Některá z nod je nevyplněná!");
+        return;
+    }
+    $.ajax({
+        url: '?handler=CreateFormula',
+        beforeSend: function (xhr) {
+            xhr.setRequestHeader("XSRF-TOKEN",
+                $('input:hidden[name="__RequestVerificationToken"]').val());
+        },
+        type: 'POST',
+        contentType: 'application/json',
+        dataType: "json",
+        data: JSON.stringify(elements),
+        success: function (data) {
+            console.log('Success:', data);
+            // Append the convertedTree to the element with id 'createdTree'
+            document.getElementById('createdTree').innerHTML = data.convertedTree; // Assuming you want to keep the existing convertedTree
+            document.getElementById('formula').innerHTML = data.formula;
 
-                // set functions to node
-                $(".tf-nc").on("click", function () {
-                    // Set it to an empty string to reset to default
-                    $(".tf-nc").css("border-color", "");
-                    //saving current node into global property
-                    globalInput = $(this);
-                    //setting current node into blue border
-                    $(this).css("border-color", "blue");
-                });
-            },
-            error: function (error) {
-                console.error('Error:', error);
-                // Handle the error
-            }
-        });
+            // set functions to node
+            $(".tf-nc").on("click", function () {
+                // Set it to an empty string to reset to default
+                $(".tf-nc").css("border-color", "");
+                //saving current node into global property
+                globalInput = $(this);
+                //setting current node into blue border
+                $(this).css("border-color", "blue");
+            });
+        },
+        error: function (error) {
+            console.error('Error:', error);
+            // Handle the error
+        }
     });
-    
+}
+
+//check if we have some unfilled node
+function isContentPresent() {
+    var spans = document.querySelectorAll('.tf-nc');
+
+    for (var i = 0; i < spans.length; i++) {
+        if (spans[i].textContent.trim() === '▭') {
+            return true;
+        }
+    }
+
+    return false;
 }
 
 function handleButtonPridejNoduClick() {
@@ -178,6 +189,11 @@ $(document).ready(function () {
     document.getElementById('pridejNoduButton').addEventListener('click', handleButtonPridejNoduClick);
 
     document.getElementById('vytvorFormuliButton').addEventListener('click', handleButtonVytvorFormuliClick);
+
+    $('#formulaForm').submit(function (event) {
+        // Prevent the default form submission
+        event.preventDefault();
+    });
 
     //function to add into nodes click function
     $(".tf-nc").on("click", function () {
