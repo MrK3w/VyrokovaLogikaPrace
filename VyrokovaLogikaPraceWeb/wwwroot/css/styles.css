@@ -3,6 +3,10 @@
     height: auto;
 }
 
+.btn-primary {
+    min-width: auto; /* Set min-width to auto to allow the button to resize based on its content */
+}
+
 #mynetwork {
     width: 800px;
     height: 400px;
@@ -54,9 +58,3 @@ th {
     margin-bottom: 15px;
 }
 
-.btn-group > input {
-    margin-right: 10px; /* Adjust this value to control the spacing between buttons */
-    margin-left: 10px; /* Adjust this value to control the spacing between buttons */
-    width: 150px; /* Set the width of the buttons */
-    height: 40px; /* Set the height of the buttons */
-}

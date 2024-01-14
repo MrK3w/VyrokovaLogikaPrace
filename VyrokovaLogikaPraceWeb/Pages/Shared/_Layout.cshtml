@@ -23,23 +23,36 @@
                         <li class="nav-item">
                             <a class="nav-link text-dark" asp-area="" asp-page="/Index">Home</a>
                         </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-page="/SyntacticTree">Syntaktický strom</a>
+                        <li class="nav-item dropdown">
+                            <a class="nav-link text-dark dropdown-toggle" asp-page="/SyntacticTree id="syntacticTreeDropdown" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                Syntaktický strom
+                            </a>
+                            <div class="dropdown-menu" aria-labelledby="syntacticTreeDropdown">
+                                <a class="dropdown-item" asp-area="" asp-page="/DrawTree">Vykresli strom</a>
+                                <a class="dropdown-item" asp-area="" asp-page="/CreateTree">Vytvoř strom</a>
+                                <!-- Add more submenu items as needed -->
+                            </div>
                         </li>
                     </ul>
                 </div>
             </div>
         </nav>
     </header>
-    <div class="container">
+    <div class="container mx-auto">
+       
         <main role="main" class="pb-3">
+            <div class="row">
+                <div class="col-md-2">
+                    @await Html.PartialAsync("_CommonSidebar")
+                </div>
             @RenderBody()
         </main>
+    </div>
     </div>
 
     <footer class="border-top footer text-muted">
         <div class="container">
-            &copy; 2023 - VyrokovaLogikaPraceWeb - <a asp-area="" asp-page="/Privacy">Privacy</a>
+            &copy; 2023 - VyrokovaLogikaPraceWeb
         </div>
     </footer>
 

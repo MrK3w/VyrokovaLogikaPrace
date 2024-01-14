@@ -10,45 +10,9 @@
     <script src="~/js/CreateTree.js"></script>
 </head>
 <body>
-    <div class="container mx-auto">
-        <div class="row">
-            <div class="col-md-2">
-                <div class="square-div">
-                    <p>
-                        Pro zápis logických spojek použij <br />
-                        <ul>
-                            <li>Konjunkce: (&amp;, &and;)</li>
-                            <li>Disjunkce: (|, &or;)</li>
-                            <li>Negace: (-, &not;)</li>
-                            <li>Implikace: (&gt;, &rarr;)</li>
-                            <li>Ekvivalence: (= , &equiv;)</li>
-                        </ul>
-                    </p>
-                </div>
-                <div class="square-div">
-                    <p>
-                        Pokud chceme dokázat tautologii nebo kontradikci, tak hledáme formule, které obsahují semantický spor.
-                        Semantický spor je, pokud narazíme na část, která by při pravdivé evaluaci zároveň nabývala hodnoty 0 i 1.
-                    </p>
-                </div>
-                <div class="square-div">
-                    <p>
-                        Prosím použij jen jednopísmenkové literály. Například abc není validní litáral.
-                    </p>
-                </div>
-            </div>
             <div class="col-md-10">
                 <div class="text-center">
-                    <h3 class="display-7">Výroková  logika</h3>
-                    <style>
-                        .btn-group > input {
-                            margin-right: 10px; /* Adjust this value to control the spacing between buttons */
-                            margin-left: 10px; /* Adjust this value to control the spacing between buttons */
-                            width: 200px; /* Set the width of the buttons */
-                            height: 40px; /* Set the height of the buttons */
-                        }
-                    </style>
-                    
+                    <h3 class="display-7">Výroková  logika</h3>             
                     @if (Model.Valid)
                     {
                             <div style="display: flex; gap: 5px;">
@@ -94,5 +58,4 @@
                 </div>
             </div>
         </div>
-    </div>
 </body>
