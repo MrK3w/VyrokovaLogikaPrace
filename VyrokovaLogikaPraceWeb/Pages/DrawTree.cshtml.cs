@@ -14,6 +14,7 @@ namespace VyrokovaLogikaPraceWeb.Pages
         private string vl;
         private string vl1;
         public string ErrorMessage;
+        public string Formula;
         public List<string> Errors { get; private set; } = new();
         public string ConvertedTree { get; set; }
 
@@ -36,18 +37,19 @@ namespace VyrokovaLogikaPraceWeb.Pages
         public IActionResult OnPostDrawTree()
         {
             //get formula from inputs
-            string mSentence = GetFormula();
+            Formula = GetFormula();
+            Converter.ConvertSentence(ref Formula);
             //if it not valid save user input to YourFormula and return page
             if (!Valid)
             {
-                if (mSentence != null)
+                if (Formula != null)
                 {
-                    YourFormula = mSentence;
+                    YourFormula = Formula;
                 }
                 return Page();
             }
             //otherwise prepare engine with sentence we got
-            Engine engine = new Engine(mSentence);
+            Engine engine = new Engine(Formula);
             if (engine.CreateTree())
             {
                 PrintTree(engine.pSyntaxTree);
@@ -68,23 +70,27 @@ namespace VyrokovaLogikaPraceWeb.Pages
             return Page();
         }
 
-        private void PrintTree(Node tree)
+        private void PrintTree(Node tree, int nodeId = 1)
         {
-            htmlTree.Add("<li>");
+            htmlTree.Add("<li id='node_" + nodeId + "'>");
             string op = string.Empty;
             op = TreeBuildHelper.GetOP(tree);
-            htmlTree.Add("<span class=tf-nc>" + op + "</span>");
-            //if tree has childNodeLeft we will use recursion 
+            //we store tree value and tree op to be able to switch between full form and syntax form
+            htmlTree.Add("<span class='tf-nc' onclick='toggleNode(" + nodeId + ", \"" + tree.Value + "\", \"" + op + "\")'>" + op + "</span>");
+
             if (tree.Left != null)
             {
                 htmlTree.Add("<ul>");
-                PrintTree(tree.Left);
+                PrintTree(tree.Left, nodeId * 2);
+
                 if (tree.Right != null)
                 {
-                    PrintTree(tree.Right);
+                    PrintTree(tree.Right, nodeId * 2 + 1);
                 }
+
                 htmlTree.Add("</ul>");
             }
+
             htmlTree.Add("</li>");
         }
 
