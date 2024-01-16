@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using VyrokovaLogikaPrace;
+using VyrokovaLogikaPraceWeb.Helpers;
 
 namespace VyrokovaLogikaPraceWeb.Pages
 {
@@ -19,19 +20,20 @@ namespace VyrokovaLogikaPraceWeb.Pages
         public string ConvertedTree { get; set; }
 
         public List<SelectListItem> ListItems { get; set; } = new List<SelectListItem>();
-
+        readonly IWebHostEnvironment mEnv;
 
         public string YourFormula { get; set; } = "";
         public string Input { get; set; } = "";
 
-        public DrawTreeModel()
+        public DrawTreeModel(IWebHostEnvironment env)
         {
+            mEnv = env;
             PrepareList();
         }
 
         private void PrepareList()
         {
-            ListItems = ListItemsHelper.ListItems;
+            ListItems = ExerciseHelper.InitializeAllFormulas(mEnv);
         }
 
         public IActionResult OnPostDrawTree()

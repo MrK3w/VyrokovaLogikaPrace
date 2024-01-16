@@ -1,0 +1,45 @@
+﻿@page
+@model VyrokovaLogikaPraceWeb.AddFormulaModel
+@{
+}
+
+<head>
+    <title>My Page</title>
+</head>
+
+<body>
+    <div class="col-md-10">
+        <div class="text-center">
+            <h3 class="display-7">Výroková  logika</h3>
+            <p> Zde přidej novou formuli pro procvičování. </p>
+            <form method="post" asp-controller="AddFormula" id="TheForm" class="d-flex flex-column">
+                @Html.AntiForgeryToken()
+                <div class="form-group mt-4">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="input-group">
+                                @Html.TextBox("FormulaInput", "", new { @maxlength = "64", @class = "form-control custom-font"})
+                                <input type='submit' class="btn btn-primary" value='Přidej novou formuli' name='submit' asp-page-handler="AddNewFormula" />
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <p> Zde odeber formuli pro procvičování. </p>
+                        <div class="col-md-8">
+                            @Html.DropDownList(
+                            "MyFormulas",
+                            Model.AllFormulas.Where(x => x != null),
+                            new { @class = "form-control custom-font" }
+                            )
+                        </div>
+                        <div class="col-md-4">
+                            <div class="input-group-append">
+                                <input type='submit' class="btn btn-primary" value='Odstraň formuli' name='submit' asp-page-handler="removeFormula" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </form>
+            </div>
+            </div>
+</body>
