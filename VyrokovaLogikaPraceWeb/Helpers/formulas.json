@@ -1,5 +1,8 @@
 [
   {
-    "Formula": "x∧a"
+    "Formula": "x∧y"
+  },
+  {
+    "Formula": "(p>q)≡(-q>-p)"
   }
 ]

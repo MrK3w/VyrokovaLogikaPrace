@@ -5,6 +5,8 @@
 
 <head>
     <title>My Page</title>
+    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+    <script src="~/js/AddFormula.js"></script>
 </head>
 
 <body>
@@ -19,7 +21,15 @@
                         <div class="col-md-12">
                             <div class="input-group">
                                 @Html.TextBox("FormulaInput", "", new { @maxlength = "64", @class = "form-control custom-font"})
-                                <input type='submit' class="btn btn-primary" value='Přidej novou formuli' name='submit' asp-page-handler="AddNewFormula" />
+                                <input type='submit' id='pridejFormuliButton' class="btn btn-primary" value='Přidej novou formuli' name='submit' asp-page-handler="AddNewFormula" />
+                                <div style="display: flex; gap: 5px; flex-grow: 1;">
+                                    <button type="button" class="insert-button" style="background-color:  #FF5733; color: white;" data-text="∧">∧</button>
+                                    <button type="button" class="insert-button" style="background-color: #FF8C42; color: white;" data-text="∨">∨</button>
+                                    <button type="button" class="insert-button" style="background-color: #FFAB60; color: white;" data-text="≡">≡</button>
+                                    <button type="button" class="insert-button" style="background-color: #FFCA7D; color: white;" data-text="¬">¬</button>
+                                    <button type="button" class="insert-button" style="background-color: #FFD699; color: black;" data-text="⇒">⇒</button>
+                                    <button type="button" class="insert-button" style="background-color: #FFEBB7; color: black;" data-text="¬¬">¬¬</button>
+                                </div>
                             </div>
                         </div>
                     </div>
