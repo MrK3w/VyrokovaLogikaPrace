@@ -8,31 +8,40 @@
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/css/styles.css" />
     <link rel="stylesheet" href="~/VyrokovaLogikaPraceWeb.styles.css" asp-append-version="true" />
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/js/InteractiveMenu.js" asp-append-version="true"></script>
 </head>
 <body>
     <header>
         <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
             <div class="container">
-                <a class="navbar-brand" asp-area="" asp-page="/Index">VyrokovaLogikaPraceWeb</a>
+                <a class="navbar-brand" asp-area="" asp-page="/Index">Výroková logika</a>
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
                         aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
                 </button>
                 <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
                     <ul class="navbar-nav flex-grow-1">
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-page="/Index">Hlavní stránka</a>
-                        </li>
                         <li class="nav-item dropdown">
-                            <a class="nav-link text-dark dropdown-toggle" asp-page="/SyntacticTree id="syntacticTreeDropdown" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                Syntaktický strom
+                            <a class="nav-link text-dark dropdown-toggle" asp-page="/SyntacticTree" id="syntacticTreeDropdown" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                Strom výrokové logiky
                             </a>
-                            <div class="dropdown-menu" aria-labelledby="syntacticTreeDropdown">
+                            <div class="dropdown-menu" aria-labelledby="syntacticTreeDropdown" id="syntacticTreeSubMenu">
                                 <a class="dropdown-item" asp-area="" asp-page="/DrawTree">Vykresli strom</a>
                                 <a class="dropdown-item" asp-area="" asp-page="/CreateTree">Vytvoř strom</a>
                                 <!-- Add more submenu items as needed -->
                             </div>
                         </li>
+
+                        <li class="nav-item dropdown">
+                            <a class="nav-link text-dark dropdown-toggle" asp-page="/DAG" id="dagDropdown" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                DAG
+                            </a>
+                            <div class="dropdown-menu" aria-labelledby="dagDropdown" id="dagSubMenu">
+                                <a class="dropdown-item" asp-area="" asp-page="/DrawTree">Vykresli DAG</a>
+                            </div>
+                        </li>
+
                         <li class="nav-item">
                             <a class="nav-link text-dark" asp-area="" asp-page="/AddFormula">Úprava formulí</a>
                         </li>
@@ -55,15 +64,8 @@
 
     <footer class="border-top footer text-muted">
         <div class="container">
-            &copy; 2023 - VyrokovaLogikaPraceWeb
+            &copy; 2023 - Výroková logika - Jakub Pietrus
         </div>
     </footer>
-
-    <script src="~/lib/jquery/dist/jquery.min.js"></script>
-
-    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="~/js/site.js" asp-append-version="true"></script>
-
-    @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>
