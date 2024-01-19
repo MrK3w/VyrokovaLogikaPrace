@@ -1,8 +1,4 @@
 ﻿using Newtonsoft.Json;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace VyrokovaLogikaPraceWeb.Helpers
@@ -15,6 +11,8 @@ namespace VyrokovaLogikaPraceWeb.Helpers
     public static class ExerciseHelper
     {
         private static List<LogicalFormula> formulas;
+
+        public static List<string> Errors = new List<string>();
 
         public static List<string> FormulaList { get; set; } = new List<string>();
 
@@ -54,11 +52,19 @@ namespace VyrokovaLogikaPraceWeb.Helpers
             }
         }
 
-        // Save formula to JSON
         public static void SaveFormulaList(IWebHostEnvironment env, string formula)
         {
             // Get all values from JSON
             GetFormulaList(env);
+            //remove all whitespaces
+            formula = formula.Replace(" ", "");
+            // Check if the formula already exists in the list
+            if (formulas != null && formulas.Any(existingFormula => existingFormula.Formula == formula))
+            {
+                // Formula already exists, inform by errors
+                Errors.Add("Formule " + formula + " již existuje!");
+                return;
+            }
 
             // Add new formula
             var newFormula = new LogicalFormula { Formula = formula };

@@ -11,7 +11,7 @@
 <body>
     <div class="col-md-10">
         <div class="text-center">
-            <h3 class="display-7">Výroková  logika</h3>
+            <h3 class="display-7">Úprava formulí programu</h3>
             <p> Zde přidej novou formuli pro procvičování. </p>
             <form method="post" asp-controller="AddFormula" id="TheForm" class="d-flex flex-column">
                 @Html.AntiForgeryToken()
@@ -19,7 +19,7 @@
                     <div class="row">
                         <div class="col-md-12">
                             <div class="input-group">
-                                @Html.TextBox("FormulaInput", "", new { @maxlength = "64", @class = "form-control custom-font"})
+                                @Html.TextBox("FormulaInput", Model.Formula, new { @maxlength = "64", @class = "form-control custom-font"})
                                 <input type='submit' id='pridejFormuliButton' class="btn btn-primary" value='Přidej novou formuli' name='submit' asp-page-handler="AddNewFormula" />
                                 <div style="display: flex; gap: 5px; flex-grow: 1;">
                                     <button type="button" class="insert-button" style="background-color:  #FF5733; color: white;" data-text="∧">∧</button>
@@ -49,6 +49,17 @@
                     </div>
                 </div>
             </form>
+            @if (Model.Errors != null && Model.Errors.Any())
+            {
+                <div class="container mt-4">
+                    @foreach (var error in Model.Errors)
+                    {
+                        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                            <strong>Chyba:</strong> @error
+                        </div>
+                    }
+                </div>
+            }
             </div>
             </div>
 </body>

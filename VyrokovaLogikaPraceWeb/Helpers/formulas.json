@@ -1,8 +1,26 @@
 [
   {
-    "Formula": "x∧y"
+    "Formula": "(A⇒B)"
   },
   {
-    "Formula": "(p>q)≡(-q>-p)"
+    "Formula": "(A∨B)"
+  },
+  {
+    "Formula": "((-x|b)&(x|a))"
+  },
+  {
+    "Formula": "x∧a"
+  },
+  {
+    "Formula": "x∨b"
+  },
+  {
+    "Formula": "((¬xb)∧(x∨a))"
+  },
+  {
+    "Formula": "x⇒x"
+  },
+  {
+    "Formula": "x⇒B"
   }
 ]

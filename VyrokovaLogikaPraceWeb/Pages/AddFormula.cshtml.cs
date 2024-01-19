@@ -1,8 +1,8 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using VyrokovaLogikaPrace;
 using VyrokovaLogikaPraceWeb.Helpers;
-using VyrokovaLogikaPraceWeb.Pages;
 
 namespace VyrokovaLogikaPraceWeb
 {
@@ -10,6 +10,10 @@ namespace VyrokovaLogikaPraceWeb
     {
         readonly IWebHostEnvironment mEnv;
         public List<SelectListItem> AllFormulas { get; set; }
+
+        public List<string> Errors { get; set; } = new List<string>();
+
+        public string Formula = "";
 
         public AddFormulaModel(IWebHostEnvironment env)
         {
@@ -20,9 +24,23 @@ namespace VyrokovaLogikaPraceWeb
 
         public IActionResult OnPostAddNewFormula()
         {
+            //get value from FormulaInput
             string formula = Request.Form["FormulaInput"];
-            ExerciseHelper.SaveFormulaList(mEnv, formula);
-            AllFormulas = ExerciseHelper.InitializeAllFormulas(mEnv);
+            Engine engine = new Engine(formula);
+            //check if there are some errors in the formula
+            if (engine.CheckSentence())
+            {
+                //save formula to JSON
+                ExerciseHelper.SaveFormulaList(mEnv, formula);
+                //get updated list of formula
+                AllFormulas = ExerciseHelper.InitializeAllFormulas(mEnv);
+                Errors = ExerciseHelper.Errors;
+            }
+            else
+            {
+                Errors = engine.Errors;
+                Formula = formula;
+            }
             return Page();
         }
 

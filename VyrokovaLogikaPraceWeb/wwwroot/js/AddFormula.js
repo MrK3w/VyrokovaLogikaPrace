@@ -1,14 +1,16 @@
-﻿function handleButtonPridejFormuliClick() {
+﻿function handleButtonPridejFormuliClick(event) {
     //Get value from input
     var inputValue = $('#FormulaInput').val();
 
+    inputValue = inputValue
+        .replace(/&/g, '∧')
+        .replace(/\|/g, '∨')
+        .replace(/=/g, '≡')
+        .replace(/-/g, '¬')
+        .replace(/>/g, '⇒')
+        .replace(/--/g, '¬¬');
     //check if input is valid
-    var validSymbols = ['∧', '∨', '≡', '¬', '⇒', '¬¬'];
-    var regex = new RegExp('^[a-zA-Z]+$|^(' + validSymbols.map(escapeRegExp).join('|') + ')$');
-    if (regex.test(inputValue)) {
-    } else {
-        alert("Nespravný vstup. Zadej pouze literál nebo logickou spojku!");
-    }
+    $('#FormulaInput').val(inputValue);
 }
 
 // Case of interactive tree
@@ -27,5 +29,7 @@ $(document).ready(function () {
     });
 
     //button for 'Pridej formuli'
-    document.getElementById('pridejFormuliButton').addEventListener('click', handleButtonPridejFormuliClick);
+    document.getElementById('pridejFormuliButton').addEventListener('click', function (event) {
+        handleButtonPridejFormuliClick(event);
+    });
 })
