@@ -22,16 +22,13 @@ function isValid(text) {
     var unarySymbols = ['¬', '¬¬'];
     type = "";
 
-    if (/^[a-zA-Z]+$/.test(text))
-    {
+    if (/^[a-zA-Z]+$/.test(text)) {
         type = "literal";
     }
-    else if (binarySymbols.includes(text))
-    {
+    else if (binarySymbols.includes(text)) {
         type = "binary symbol";
     }
-    else if (unarySymbols.includes(text))
-    {
+    else if (unarySymbols.includes(text)) {
         type = "unary symbol";
     }
     else {
@@ -42,24 +39,8 @@ function isValid(text) {
     if (spanElement) {
         //get to parent
         var parent = spanElement.parentNode;
-        var foundUl;
-        for (var i = 0; i < parent.childNodes.length; i++) {
-            var childNode = parent.childNodes[i];
-            // Check if the child node is an element node and has the tag name 'ul'
-            if (childNode.nodeType === 1 && childNode.tagName.toLowerCase() === 'ul') {
-                console.log('Found nested ul element:', childNode);
-                foundUl = childNode;
-                break;  // Stop iterating after finding the first ul element
-            }
-        }
-
-        //count direct childs
-        directChildLiElements = 0;
-        if (foundUl != undefined) {
-            directChildLiElements = Array.from(foundUl.children).filter(function (child) {
-                return child.tagName.toLowerCase() === 'li';
-            });
-        }
+        var foundUl = findNestedUl(parent);
+        var directChildLiElements = countDirectChildLiElements(foundUl);
 
         if (type == "literal") {
             if (directChildLiElements != 0) {
@@ -70,10 +51,10 @@ function isValid(text) {
         }
 
         if (type == "unary symbol") {
-           if (directChildLiElements.length != 1) {
+            if (directChildLiElements.length != 1) {
                 alert("Negace musí mít jen jednoho potomka!");
                 return false;
-           }
+            }
             return true;
         }
 
@@ -94,7 +75,7 @@ function handleButtonZmenaTextuClick() {
     var inputValue = $('#TreeInput').val();
 
     //check if input is valid
-    var validSymbols = ['∧', '∨', '≡', '¬', '⇒', '¬¬','▭'];
+    var validSymbols = ['∧', '∨', '≡', '¬', '⇒', '¬¬', '▭'];
     var regex = new RegExp('^[a-zA-Z]+$|^(' + validSymbols.map(escapeRegExp).join('|') + ')$');
     if (regex.test(inputValue)) {
         if (globalInput) {
@@ -102,8 +83,8 @@ function handleButtonZmenaTextuClick() {
                 globalInput.text(inputValue);
                 return;
             }
-            if(isValid(inputValue)) globalInput.text(inputValue);
-        } 
+            if (isValid(inputValue)) globalInput.text(inputValue);
+        }
     } else {
         alert("Nespravný vstup. Zadej pouze literál nebo logickou spojku!");
     }
@@ -193,7 +174,7 @@ function handleButtonVytvorFormuliClick() {
                 newButton = $('<input type="submit" class="btn btn-primary flex-fill mb-2" value="Ulož formuli" id="saveFormula"/>');
                 $('#vytvorFormuliButton').after(newButton);
             }
-           
+
             // Add any additional logic or event handlers for the new button if needed
             $('#saveFormula').on('click', handleButtonUlozFormuli);
             // set functions to node
@@ -219,67 +200,69 @@ function isContentPresent() {
     return false;
 }
 
-//Add new node 
+// Helper function to find the nested ul element
+function findNestedUl(parent) {
+    for (var i = 0; i < parent.childNodes.length; i++) {
+        var childNode = parent.childNodes[i];
+        if (childNode.nodeType === 1 && childNode.tagName.toLowerCase() === 'ul') {
+            return childNode;
+        }
+    }
+    return undefined;
+}
+
+// Helper function to count direct child li elements
+function countDirectChildLiElements(foundUl) {
+    return foundUl ? Array.from(foundUl.children).filter(child => child.tagName.toLowerCase() === 'li') : 0;
+}
+
+// Helper function to create a new span element
+function createNewSpan() {
+    var newSpan = document.createElement('span');
+    newSpan.className = 'tf-nc';
+    newSpan.textContent = ' ▭ ';
+    return newSpan;
+}
+
+// Helper function to create a new li element with a given span
+function createNewLiWithSpan(newSpan) {
+    var newLi = document.createElement('li');
+    newLi.appendChild(newSpan);
+    return newLi;
+}
+
+function createNewUlWithLi(newSpan) {
+    var newUl = document.createElement('ul');
+    newUl.appendChild(createNewLiWithSpan(newSpan));
+    return newUl;
+}
+
+
+// Helper function to handle button click for adding a new node
 function handleButtonPridejNoduClick() {
-    // Find the span element of just selected ndoe
     var spanElement = document.querySelector('.tf-nc[style="border-color: blue;"]');
+
     if (spanElement) {
-        //get to parent
         var parent = spanElement.parentNode;
-        var foundUl;
-        for (var i = 0; i < parent.childNodes.length; i++) {
-            var childNode = parent.childNodes[i];
-            // Check if the child node is an element node and has the tag name 'ul'
-            if (childNode.nodeType === 1 && childNode.tagName.toLowerCase() === 'ul') {
-                console.log('Found nested ul element:', childNode);
-                foundUl = childNode;
-                break;  // Stop iterating after finding the first ul element
-            }
-        }
+        var foundUl = findNestedUl(parent);
+        var directChildLiElements = countDirectChildLiElements(foundUl);
 
-        //count direct childs
-        directChildLiElements = 0;
-        if (foundUl != undefined) {
-            directChildLiElements = Array.from(foundUl.children).filter(function (child) {
-                return child.tagName.toLowerCase() === 'li';
-            });
-        }
-      
-        //creating new node
-        var newUl = document.createElement('ul');
-        var newLi = document.createElement('li');
-        var newSpan = document.createElement('span');
-        newSpan.className = 'tf-nc';
-        newSpan.textContent = ' ▭ ';
-        //new li node for case when we already have one node
-        newLi.appendChild(newSpan);
-        //new ul for case if we don't have any child node
-        newUl.appendChild(newLi);
-
-        //If we don't have any child node we can create left one in case that content of node is not literal
         if (directChildLiElements == 0) {
-            //if node is literal we don't create new node
             if (/^[a-zA-Z]+$/.test(spanElement.textContent)) {
                 alert("Literal nemuze mit potomka!");
                 return;
             }
-            spanElement.insertAdjacentElement('afterend', newUl)
-        }
-        //if we have left child we can create right child in case that content of node is not negation
-        if (directChildLiElements.length == 1) {
-            //if it is negation we don't have right node, hence we don't create new node
+            spanElement.insertAdjacentElement('afterend', createNewUlWithLi(createNewSpan()));
+        } else if (directChildLiElements.length == 1) {
             if (spanElement.textContent == '¬' || spanElement.textContent == "¬¬") {
                 alert("Negace muze mit jen jednoho potomka!");
                 return;
             }
-           foundUl.appendChild(newLi);
-        }
-        //if we have two nodes we can't create another one
-        else if (directChildLiElements.length == 2) {
+            foundUl.appendChild(createNewLiWithSpan(createNewSpan()));
+        } else if (directChildLiElements.length == 2) {
             alert("Maximalni pocet potomku!");
         }
     }
-    //in case we don't have tree we create new tree
     else {
         var divTree = document.createElement('div');
         divTree.className = 'tf-tree tf-gap-sm';
@@ -289,7 +272,7 @@ function handleButtonPridejNoduClick() {
         var spanElement = document.createElement('span');
         spanElement.className = 'tf-nc';
         spanElement.style.borderColor = 'blue';
-        spanElement.textContent = ' ▭ ';
+        spanElement.textContent = '▭';
 
         // Append elements to create the hierarchy
         listItem.appendChild(spanElement);
@@ -300,14 +283,7 @@ function handleButtonPridejNoduClick() {
     }
 
     // set functions to node
-    $(".tf-nc").on("click", function () {
-        // Set it to an empty string to reset to default
-        $(".tf-nc").css("border-color", "");
-        //saving current node into global property
-        globalInput = $(this);
-        //setting current node into blue border
-        $(this).css("border-color", "blue");
-    });
+    $(".tf-nc").on("click", handleNodeClick);
 }
 
 
