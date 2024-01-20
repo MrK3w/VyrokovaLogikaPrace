@@ -9,51 +9,50 @@
     <script src="~/js/CreateTree.js"></script>
 </head>
 <body>
-            <div class="col-md-10">
-                <div class="text-center">
-                    <h3 class="display-7">Výroková  logika</h3>             
-                    @if (Model.Valid)
-                    {
-                            <div style="display: flex; gap: 5px;">
-                                <div style="display: flex; gap: 5px;">
-                                    @Html.TextBox("TreeInput", Model.Input, new { @maxlength = "64", @class = "form-control ml-2 custom-font"})
-                                </div>
-
-                                <div style="display: flex; gap: 5px; flex-grow: 1;">
-                                    <button type="button" class="insert-button" style="background-color:  #FF5733; color: white;" data-text="∧">∧</button>
-                                    <button type="button" class="insert-button" style="background-color: #FF8C42; color: white;" data-text="∨">∨</button>
-                                    <button type="button" class="insert-button" style="background-color: #FFAB60; color: white;" data-text="≡">≡</button>
-                                    <button type="button" class="insert-button" style="background-color: #FFCA7D; color: white;" data-text="¬">¬</button>
-                                    <button type="button" class="insert-button" style="background-color: #FFD699; color: black;" data-text="⇒">⇒</button>
-                                    <button type="button" class="insert-button" style="background-color: #FFEBB7; color: black;" data-text="¬¬">¬¬</button>
-                                    <button type="button" class="insert-button" style="background-color: #FFEBB7; color: black;" data-text="▭">▭</button>
-                                    <button type="button" class="insert-button" style="background-color: #FFEBB7; color: black;" data-text="x">x</button>
-                                    <button type="button" class="insert-button" style="background-color: #FFEBB7; color: black;" data-text="y">y</button>
-                                    <button type="button" class="insert-button" style="background-color: #FFEBB7; color: black;" data-text="y">y</button>
-                                </div>
-                                <input type='submit' class="btn btn-primary flex-fill mb-2 " value='Změna textu' id='zmenaTextuButton' />
-                                <input type='submit' class="btn btn-primary flex-fill mb-2 " value='Odstraň nodu' id='odstranNoduButton' />
-                                <input type='submit' class="btn btn-primary flex-fill mb-2 " value='Přidej nodu' id='pridejNoduButton' />
-                                <form method="post" id='formulaForm'>
-                                <input type='submit' class="btn btn-primary flex-fill mb-2" value='Vytvoř formuli' name='submit' id='vytvorFormuliButton'/>
-                                </form>
-                            </div>
-                       
-                            <div id="createdTree">
-
-                            </div>
-                            <div id="formula">
-                            </div>
-                            <div id="message">
-                            </div>                       
-                    }
-                    else
-                    {
-                        <div class="alert alert-danger">
-                        
+    <div class="col-md-10">
+        <div class="text-center">
+            <h3 class="display-7">Výroková  logika</h3>             
+            @if (Model.Valid)
+            {
+                    <div style="display: flex; gap: 5px;">
+                        <div style="display: flex; gap: 5px;">
+                            @Html.TextBox("TreeInput", Model.Input, new { @maxlength = "64", @class = "form-control ml-2 custom-font"})
                         </div>
-                    }
+
+                        <div style="display: flex; gap: 5px; flex-grow: 1;">
+                        <button type="button" class="insert-button" style="background-color: #FF8C42; color: white;" data-text="∧">∧</button>
+                        <button type="button" class="insert-button" style="background-color: #FFA860; color: white;" data-text="∨">∨</button>
+                        <button type="button" class="insert-button" style="background-color: #FFBE7E; color: white;" data-text="≡">≡</button>
+                        <button type="button" class="insert-button" style="background-color: #FFD399; color: white;" data-text="¬">¬</button>
+                        <button type="button" class="insert-button" style="background-color: #FFEBB7; color: black;" data-text="⇒">⇒</button>
+                        <button type="button" class="insert-button" style="background-color: #FFEED0; color: black;" data-text="¬¬">¬¬</button>
+                        <button type="button" class="insert-button" style="background-color: #E4E4E4; color: black;" data-text="x">x</button>
+                        <button type="button" class="insert-button" style="background-color: #CCCCCC; color: black;" data-text="y">y</button>
+                        <button type="button" class="insert-button" style="background-color: #AAAAAA; color: black;" data-text="z">z</button>
+                        <button type="button" class="insert-button" style="background-color: #888888; color: white;" data-text="▭">▭</button>
+                        </div>
+                        <input type='submit' class="btn btn-primary flex-fill mb-2 " value='Změna textu' id='zmenaTextuButton' />
+                        <input type='submit' class="btn btn-primary flex-fill mb-2 " value='Odstraň nodu' id='odstranNoduButton' />
+                        <input type='submit' class="btn btn-primary flex-fill mb-2 " value='Přidej nodu' id='pridejNoduButton' />
+                        <form method="post" id='formulaForm'>
+                        <input type='submit' class="btn btn-primary flex-fill mb-2" value='Vytvoř formuli' name='submit' id='vytvorFormuliButton'/>
+                        </form>
+                    </div>
+                       
+                    <div id="createdTree">
+
+                    </div>
+                    <div id="formula">
+                    </div>
+                    <div id="message">
+                    </div>                       
+            }
+            else
+            {
+                <div class="alert alert-danger">
+                        
                 </div>
-            </div>
+            }
         </div>
+    </div>
 </body>

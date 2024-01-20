@@ -10,7 +10,7 @@ namespace VyrokovaLogikaPraceWeb.Helpers
 
     public static class ExerciseHelper
     {
-        private static List<LogicalFormula> formulas;
+        private static List<LogicalFormula> formulas = new List<LogicalFormula>();
 
         public static List<string> Errors = new List<string>();
 
