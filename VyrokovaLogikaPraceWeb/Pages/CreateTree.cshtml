@@ -26,12 +26,16 @@
                                     <button type="button" class="insert-button" style="background-color: #FFCA7D; color: white;" data-text="¬">¬</button>
                                     <button type="button" class="insert-button" style="background-color: #FFD699; color: black;" data-text="⇒">⇒</button>
                                     <button type="button" class="insert-button" style="background-color: #FFEBB7; color: black;" data-text="¬¬">¬¬</button>
+                                    <button type="button" class="insert-button" style="background-color: #FFEBB7; color: black;" data-text="▭">▭</button>
+                                    <button type="button" class="insert-button" style="background-color: #FFEBB7; color: black;" data-text="x">x</button>
+                                    <button type="button" class="insert-button" style="background-color: #FFEBB7; color: black;" data-text="y">y</button>
+                                    <button type="button" class="insert-button" style="background-color: #FFEBB7; color: black;" data-text="y">y</button>
                                 </div>
                                 <input type='submit' class="btn btn-primary flex-fill mb-2 " value='Změna textu' id='zmenaTextuButton' />
                                 <input type='submit' class="btn btn-primary flex-fill mb-2 " value='Odstraň nodu' id='odstranNoduButton' />
                                 <input type='submit' class="btn btn-primary flex-fill mb-2 " value='Přidej nodu' id='pridejNoduButton' />
                                 <form method="post" id='formulaForm'>
-                                <input type='submit' class="btn btn-primary flex-fill mb-2 mr-1" value='Vytvoř formuli' name='submit' id='vytvorFormuliButton'/>
+                                <input type='submit' class="btn btn-primary flex-fill mb-2" value='Vytvoř formuli' name='submit' id='vytvorFormuliButton'/>
                                 </form>
                             </div>
                        
@@ -40,18 +44,13 @@
                             </div>
                             <div id="formula">
                             </div>
-                       
+                            <div id="message">
+                            </div>                       
                     }
                     else
                     {
                         <div class="alert alert-danger">
-                            <h4 class="alert-heading">Nesprávná formule:</h4>
-                            <ul>
-                                @foreach (var error in Model.Errors)
-                                {
-                                    <li>@error</li>
-                                }
-                            </ul>
+                        
                         </div>
                     }
                 </div>

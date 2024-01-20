@@ -28,7 +28,7 @@ namespace VyrokovaLogikaPraceWeb
             string formula = Request.Form["FormulaInput"];
             Engine engine = new Engine(formula);
             //check if there are some errors in the formula
-            if (engine.CheckSentence())
+            if (engine.ParseAndCheckErrors())
             {
                 //save formula to JSON
                 ExerciseHelper.SaveFormulaList(mEnv, formula);

@@ -9,18 +9,39 @@
     "Formula": "((-x|b)&(x|a))"
   },
   {
-    "Formula": "x∧a"
-  },
-  {
-    "Formula": "x∨b"
-  },
-  {
     "Formula": "((¬xb)∧(x∨a))"
   },
   {
-    "Formula": "x⇒x"
+    "Formula": "(p⇒q)≡(¬q⇒¬p)"
   },
   {
-    "Formula": "x⇒B"
+    "Formula": "(¬x∨b)∧(x∨a)"
+  },
+  {
+    "Formula": "(P∧¬P)"
+  },
+  {
+    "Formula": "(A∨B)∧(¬A∧¬B)"
+  },
+  {
+    "Formula": "a∧b"
+  },
+  {
+    "Formula": "x∧y"
+  },
+  {
+    "Formula": "xzz"
+  },
+  {
+    "Formula": "x¬¬z"
+  },
+  {
+    "Formula": "a∧b≡¬a∨b"
+  },
+  {
+    "Formula": "a∨b"
+  },
+  {
+    "Formula": "x∧y∧y"
   }
 ]

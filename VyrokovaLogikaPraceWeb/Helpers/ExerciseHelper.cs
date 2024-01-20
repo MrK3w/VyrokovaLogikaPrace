@@ -58,6 +58,7 @@ namespace VyrokovaLogikaPraceWeb.Helpers
             GetFormulaList(env);
             //remove all whitespaces
             formula = formula.Replace(" ", "");
+            Errors = new List<string>();
             // Check if the formula already exists in the list
             if (formulas != null && formulas.Any(existingFormula => existingFormula.Formula == formula))
             {

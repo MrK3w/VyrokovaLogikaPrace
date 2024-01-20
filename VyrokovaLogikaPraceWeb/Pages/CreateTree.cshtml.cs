@@ -1,9 +1,11 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Diagnostics;
 using VyrokovaLogikaPrace;
+using VyrokovaLogikaPraceWeb.Helpers;
 
 namespace VyrokovaLogikaPraceWeb.Pages
 {
@@ -13,10 +15,16 @@ namespace VyrokovaLogikaPraceWeb.Pages
         public List<string> Errors { get; private set; } = new();
         public List<SelectListItem> ListItems { get; set; } = new List<SelectListItem>();
 
-
+        IWebHostEnvironment mEnv;
         public string YourFormula { get; set; } = "";
         public string Input { get; set; } = "";
 
+        public string Message { get; set; } = "";
+
+        public CreateTreeModel(IWebHostEnvironment env)
+        {
+            mEnv = env;
+        }
 
         public IActionResult OnPostCreateFormula([FromBody] string text)
         {
@@ -28,14 +36,34 @@ namespace VyrokovaLogikaPraceWeb.Pages
             {
                 message = "Formula is " + constructer.Formula,
                 convertedTree = div + string.Join("", text.ToArray()) + "</div>",
-                formula = "Formula is " + constructer.Formula
+                formula = constructer.Formula
             };
             return new JsonResult(responseData);
         }
 
-        public IActionResult OnPostCreateTree()
+        public IActionResult OnPostSaveFormula([FromBody] string formula)
         {
-            return Page();
+            Errors = new List<string>();
+            Engine engine = new Engine(formula);
+            //check if there are some errors in the formula
+            if (engine.ParseAndCheckErrors())
+            {
+                //save formula to JSON
+                ExerciseHelper.SaveFormulaList(mEnv, formula);
+                //get updated list of formula;
+                Errors = ExerciseHelper.Errors;
+            }
+            else
+            {
+                Errors = engine.Errors;
+            }
+
+            var responseData = new
+            {
+                errors = Errors,
+            };
+            return new JsonResult(responseData);
         }
+    
     }
 }

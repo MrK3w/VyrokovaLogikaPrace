@@ -1,17 +1,109 @@
-﻿// Function to escape special characters in the validSymbols array
+﻿var globalInput; // Declare globalInput
+var formula;
+var newButton = null;
+
+// Function to escape special characters in the validSymbols array
 function escapeRegExp(string) {
     return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 }
+
+// Function to handle node click
+function handleNodeClick() {
+    // Set it to an empty string to reset to default
+    $(".tf-nc").css("border-color", "");
+    // Saving current node into global property
+    globalInput = $(this);
+    // Setting current node into blue border
+    $(this).css("border-color", "blue");
+}
+
+function isValid(text) {
+    var binarySymbols = ['∧', '∨', '≡', '⇒'];
+    var unarySymbols = ['¬', '¬¬'];
+    type = "";
+
+    if (/^[a-zA-Z]+$/.test(text))
+    {
+        type = "literal";
+    }
+    else if (binarySymbols.includes(text))
+    {
+        type = "binary symbol";
+    }
+    else if (unarySymbols.includes(text))
+    {
+        type = "unary symbol";
+    }
+    else {
+        console.log("Invalid symbol");
+    }
+
+    var spanElement = document.querySelector('.tf-nc[style="border-color: blue;"]');
+    if (spanElement) {
+        //get to parent
+        var parent = spanElement.parentNode;
+        var foundUl;
+        for (var i = 0; i < parent.childNodes.length; i++) {
+            var childNode = parent.childNodes[i];
+            // Check if the child node is an element node and has the tag name 'ul'
+            if (childNode.nodeType === 1 && childNode.tagName.toLowerCase() === 'ul') {
+                console.log('Found nested ul element:', childNode);
+                foundUl = childNode;
+                break;  // Stop iterating after finding the first ul element
+            }
+        }
+
+        //count direct childs
+        directChildLiElements = 0;
+        if (foundUl != undefined) {
+            directChildLiElements = Array.from(foundUl.children).filter(function (child) {
+                return child.tagName.toLowerCase() === 'li';
+            });
+        }
+
+        if (type == "literal") {
+            if (directChildLiElements != 0) {
+                alert("Literál nemůže mít žádného potomka!");
+                return false;
+            }
+            return true;
+        }
+
+        if (type == "unary symbol") {
+           if (directChildLiElements.length != 1) {
+                alert("Negace musí mít jen jednoho potomka!");
+                return false;
+           }
+            return true;
+        }
+
+        if (type == "binary symbol") {
+            if (directChildLiElements.length != 2) {
+                alert("Binární operátory musí mít dva potomky!");
+                return false;
+            }
+            return true;
+        }
+        return false;
+    }
+}
+
 
 function handleButtonZmenaTextuClick() {
     //Get value from input
     var inputValue = $('#TreeInput').val();
 
     //check if input is valid
-    var validSymbols = ['∧', '∨', '≡', '¬', '⇒', '¬¬'];
+    var validSymbols = ['∧', '∨', '≡', '¬', '⇒', '¬¬','▭'];
     var regex = new RegExp('^[a-zA-Z]+$|^(' + validSymbols.map(escapeRegExp).join('|') + ')$');
     if (regex.test(inputValue)) {
-        if (globalInput) globalInput.text(inputValue);
+        if (globalInput) {
+            if (inputValue == '▭') {
+                globalInput.text(inputValue);
+                return;
+            }
+            if(isValid(inputValue)) globalInput.text(inputValue);
+        } 
     } else {
         alert("Nespravný vstup. Zadej pouze literál nebo logickou spojku!");
     }
@@ -19,11 +111,54 @@ function handleButtonZmenaTextuClick() {
 
 //remove node/s after clickng on Odstran button
 function handleButtonOdstranNoduClick() {
-
     if (globalInput) {
         globalInput.closest('li').remove();
     }
 }
+
+//remove node/s after clickng on Odstran button
+function handleButtonUlozFormuli() {
+    $.ajax({
+        url: '?handler=SaveFormula',
+        beforeSend: function (xhr) {
+            xhr.setRequestHeader("XSRF-TOKEN",
+                $('input:hidden[name="__RequestVerificationToken"]').val());
+        },
+        type: 'POST',
+        contentType: 'application/json',
+        dataType: "json",
+        data: JSON.stringify(formula),
+        success: function (data) {
+            console.log('Success:', data);
+
+            // Clear any existing messages
+            $('#message').empty();
+            if (data.errors.length === 0) {
+                // If no errors, display "Formula saved" message
+                $('#message').html('<div class="alert alert-success">Formula saved</div>');
+            }
+            else {
+                // If there are errors, display the error messages
+                var errorHtml = '<div class="alert alert-danger">' +
+                    '<h4 class="alert-heading">Nesprávná formule:</h4>' +
+                    '<ul>';
+
+                $.each(data.errors, function (index, error) {
+                    errorHtml += '<li>' + error + '</li>';
+                });
+
+                errorHtml += '</ul></div>';
+
+                $('#message').html(errorHtml);
+            }
+        },
+        error: function (error) {
+            console.error('Error:', error);
+            // Handle the error
+        }
+    });
+}
+
 
 //Create formula from just create tree
 function handleButtonVytvorFormuliClick() {
@@ -51,17 +186,18 @@ function handleButtonVytvorFormuliClick() {
             // Put the convertedTree to the element with id 'createdTree'
             document.getElementById('createdTree').innerHTML = data.convertedTree;
             //Put formula to the element with id 'formula'
-            document.getElementById('formula').innerHTML = data.formula;
-
+            formula = data.formula;
+            document.getElementById('formula').innerHTML = "Vytvořená formule je " + data.formula;
+            //create new button for saving this new formula
+            if (newButton == null) {
+                newButton = $('<input type="submit" class="btn btn-primary flex-fill mb-2" value="Ulož formuli" id="saveFormula"/>');
+                $('#vytvorFormuliButton').after(newButton);
+            }
+           
+            // Add any additional logic or event handlers for the new button if needed
+            $('#saveFormula').on('click', handleButtonUlozFormuli);
             // set functions to node
-            $(".tf-nc").on("click", function () {
-                // Set it to an empty string to reset to default
-                $(".tf-nc").css("border-color", "");
-                //saving current node into global property
-                globalInput = $(this);
-                //setting current node into blue border
-                $(this).css("border-color", "blue");
-            });
+            $(".tf-nc").on("click", handleNodeClick);
         },
         error: function (error) {
             console.error('Error:', error);
@@ -174,15 +310,12 @@ function handleButtonPridejNoduClick() {
     });
 }
 
-var globalInput; // Declare globalInput
+
 
 function showDialog(title, message) {
-    // You can use a library like Bootstrap modal or a custom dialog implementation
-    // For simplicity, using the built-in alert function here
     alert(title + "\n\n" + message);
 }
 
-// Case of interactive tree
 $(document).ready(function () {
     // Buttons for adding symbols into texbox
     $(".insert-button").click(function () {
@@ -206,12 +339,5 @@ $(document).ready(function () {
     });
 
     //function to add into nodes click function
-    $(".tf-nc").on("click", function () {
-        // Set it to an empty string to reset to default
-        $(".tf-nc").css("border-color", "");
-        //saving current node into global property
-        globalInput = $(this);
-        //setting current node into blue border
-        $(this).css("border-color", "blue");
-    });
+    $(".tf-nc").on("click", handleNodeClick);
 })

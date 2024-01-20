@@ -12,8 +12,8 @@ namespace VyrokovaLogikaPraceWeb.Pages
 
         private readonly List<string> htmlTree = new();
 
-        private string vl;
-        private string vl1;
+        private string selectFromSelectList;
+        private string selectFromInput;
         public string ErrorMessage;
         public string Formula;
         public List<string> Errors { get; private set; } = new();
@@ -100,55 +100,45 @@ namespace VyrokovaLogikaPraceWeb.Pages
 
         public string? GetFormula()
         {
-            vl = Request.Form["formula"];
-            vl1 = Request.Form["UserInput"];
+            selectFromSelectList = Request.Form["formula"];
+            selectFromInput = Request.Form["UserInput"];
             //if user didn't use any of inputs invalidate request and throw errorMessage that user didn't choose formula
-            if (vl == "" && vl1 == "")
+            if (selectFromSelectList == "" && selectFromInput == "")
             {
                 Valid = false;
                 ErrorMessage = "Nevybral jsi žádnou formuli!";
                 return null;
             }
             //if user user userInput
-            if (vl1 != "")
+            if (selectFromInput != "")
             {
                 ////validate his formula otherwise throw error message and save that formula so user can change it later
-                //if (!Validator.ValidateSentence(ref vl1))
+                //if (!Validator.ValidateSentence(ref selectFromInput))
                 //{
                 //    ErrorMessage = Validator.ErrorMessage;
                 //    Valid = false;
-                //    YourFormula = vl1;
+                //    YourFormula = selectFromInput;
                 //    return null;
                 //}
                 //convert logical operators in case they are not in right format
-                Converter.ConvertSentence(ref vl1);
-                //add formula to listItem
-                ListItemsHelper.SetListItems(vl1);
-                //select that formula in itemList
-                var selected = ListItems.Where(x => x.Value == vl1).First();
+                Converter.ConvertSentence(ref selectFromInput);
+                ListItems.Add(new SelectListItem(selectFromInput,selectFromInput));
+                var selected = ListItems.Where(x => x.Value == selectFromInput).First();
                 selected.Selected = true;
-                return vl1;
+                return selectFromInput;
             }
             //if user used formula from listItem
-            else if (vl != "")
+            else if (selectFromSelectList != "")
             {
-                //validate this sentece
-                //if (!Validator.ValidateSentence(ref vl))
-                //{
-                //    Valid = false;
-                //    ErrorMessage = Validator.ErrorMessage;
-                //    return null;
-                //}
-                //select that formula in listItem
                 foreach (var item in ListItems)
                 {
                     item.Selected = false;
-                    if (vl == item.Value)
+                    if (selectFromSelectList == item.Value)
                     {
                         item.Selected = true;
                     }
                 }
-                return vl;
+                return selectFromSelectList;
             }
             return null;
         }
