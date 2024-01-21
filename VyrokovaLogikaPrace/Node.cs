@@ -1,50 +1,62 @@
-﻿using System.Security.Policy;
-
-namespace VyrokovaLogikaPrace
+﻿namespace VyrokovaLogikaPrace
 {
     public class Node
     {
-        public string Value { get; set; } // Value for leaf nodes (e.g., integer values)
+        public string Value { get; set; } // Value for leaf nodes
         public Node Left { get; set; } // Left child node
         public Node Right { get; set; } // Right child node
-        public Node Parent { get; set; } //parent of node
+        public Node Parent { get; set; } // Parent of node
+
+        public int ParentId { get; set; }
         public bool IsRoot => Parent == null;
 
+        public int id { get; set; }
         public bool IsValueNode { get; set; } // Indicates whether this node is a leaf (value) node
 
-        public Node(string value)
+        public Node(string value, int id)
         {
             Value = value;
+            this.id = id;
             IsValueNode = true;
         }
 
-        public Node(Node left, Node right, string value = "")
+        public Node(Node left, Node right, int id, string value = "")
         {
             Left = left;
+            this.id = id;
             Right = right;
+
+            // Set parent and parent ID for left child
             Left.Parent = this;
+            Left.ParentId = this.id;
+
+            // Set parent and parent ID for right child
             Right.Parent = this;
+            Right.ParentId = this.id;
+
             IsValueNode = false;
             Value = value;
         }
 
-        public Node(Node left, string value = "")
+        public Node(Node left, int id, string value = "")
         {
             Left = left;
+            this.id = id;
             Left.Parent = this;
+            Left.Parent.id = this.id;
             IsValueNode = false;
             Value = value;
         }
 
-        public Node()
+        public Node(int id)
         {
-           
+            this.id = id;
         }
     }
 
     public class ValueNode : Node
     {
-        public ValueNode(string value) : base(value)
+        public ValueNode(string value, int id) : base(value, id)
         {
         }
 
@@ -56,34 +68,33 @@ namespace VyrokovaLogikaPrace
 
     public class DoubleNegationOperatorNode : Node
     {
-        public DoubleNegationOperatorNode(Node operand, string value) : base(operand,value)
+        public DoubleNegationOperatorNode(Node operand, int id, string value) : base(operand, id, value)
         {
         }
 
-        public DoubleNegationOperatorNode() : base()
+        public DoubleNegationOperatorNode(int id) : base(id)
         {
         }
     }
 
     public class NegationOperatorNode : Node
     {
-        public NegationOperatorNode(Node operand, string value) : base(operand, value)
+        public NegationOperatorNode(Node operand, int id, string value) : base(operand, id, value)
         {
         }
 
-        public NegationOperatorNode() : base()
+        public NegationOperatorNode(int id) : base(id)
         {
         }
     }
 
-
     public class DisjunctionOperatorNode : Node
     {
-        public DisjunctionOperatorNode(Node left, Node right, string value) : base(left, right, value)
+        public DisjunctionOperatorNode(Node left, Node right, int id, string value) : base(left, right, id, value)
         {
         }
 
-        public DisjunctionOperatorNode() : base ()
+        public DisjunctionOperatorNode(int id) : base(id)
         {
 
         }
@@ -91,35 +102,34 @@ namespace VyrokovaLogikaPrace
 
     public class ConjunctionOperatorNode : Node
     {
-        public ConjunctionOperatorNode(Node left, Node right, string value) : base(left, right, value)
+        public ConjunctionOperatorNode(Node left, Node right, int id, string value) : base(left, right, id, value)
         {
         }
 
-        public ConjunctionOperatorNode() : base()
+        public ConjunctionOperatorNode(int id) : base(id)
         {
         }
     }
 
     public class EqualityOperatorNode : Node
     {
-        public EqualityOperatorNode(Node left, Node right, string value) : base(left, right, value)
+        public EqualityOperatorNode(Node left,Node right, int id, string value) : base(left, right, id, value)
         {
         }
 
-        public EqualityOperatorNode() : base()
+        public EqualityOperatorNode(int id) : base(id)
         {
         }
     }
 
     public class ImplicationOperatorNode : Node
     {
-        public ImplicationOperatorNode(Node left, Node right, string value) : base(left, right, value)
+        public ImplicationOperatorNode(Node left, Node right, int id, string value) : base(left, right, id, value)
         {
         }
 
-        public ImplicationOperatorNode() : base()
+        public ImplicationOperatorNode(int id) : base(id)
         {
         }
     }
-
 }

@@ -57,6 +57,8 @@
     <Compile Include="TreeBuildHelper.cs" />
     <Compile Include="TreeConstructer.cs" />
     <Compile Include="VerboseErrorListener.cs" />
+    <Compile Include="VisNode.cs" />
+    <Compile Include="VisNodesHelper.cs" />
     <Compile Include="VyrokovaLogikaVisitor.cs" />
   </ItemGroup>
   <ItemGroup>

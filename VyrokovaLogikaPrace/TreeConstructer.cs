@@ -14,6 +14,13 @@ namespace VyrokovaLogikaPrace
         Node tree;
         string side = "left";
 
+        private int globalIdCounter = 1;
+
+        private int GetNextId()
+        {
+            return globalIdCounter++;
+        }
+
         public TreeConstructer(string htmlTree)
         {
             mHtmlTree = htmlTree;
@@ -75,17 +82,17 @@ namespace VyrokovaLogikaPrace
                 {
                     if (tree == null)
                     {
-                        tree = TreeBuildHelper.GetNode(tag);
+                        tree = TreeBuildHelper.GetNode(tag, GetNextId());
                     }
                     else if (side == "left")
                     {
-                            tree.Left = TreeBuildHelper.GetNode(tag);
+                            tree.Left = TreeBuildHelper.GetNode(tag, GetNextId());
                             tree.Left.Parent = tree;
                             tree = tree.Left;
                     }
                     else if (side == "right")
                     {
-                        tree.Right = TreeBuildHelper.GetNode(tag);
+                        tree.Right = TreeBuildHelper.GetNode(tag, GetNextId());
                         tree.Right.Parent = tree;
                         tree = tree.Right;
                     }

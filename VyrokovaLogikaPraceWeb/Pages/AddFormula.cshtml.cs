@@ -19,7 +19,7 @@ namespace VyrokovaLogikaPraceWeb
         {
             mEnv = env;
             // Move the initialization of AllFormulas to a separate method
-            AllFormulas = ExerciseHelper.InitializeAllFormulas(mEnv);
+            AllFormulas = FormulaHelper.InitializeAllFormulas(mEnv);
         }
 
         public IActionResult OnPostAddNewFormula()
@@ -31,10 +31,10 @@ namespace VyrokovaLogikaPraceWeb
             if (engine.ParseAndCheckErrors())
             {
                 //save formula to JSON
-                ExerciseHelper.SaveFormulaList(mEnv, formula);
+                FormulaHelper.SaveFormulaList(mEnv, formula);
                 //get updated list of formula
-                AllFormulas = ExerciseHelper.InitializeAllFormulas(mEnv);
-                Errors = ExerciseHelper.Errors;
+                AllFormulas = FormulaHelper.InitializeAllFormulas(mEnv);
+                Errors = FormulaHelper.Errors;
             }
             else
             {
@@ -47,8 +47,8 @@ namespace VyrokovaLogikaPraceWeb
         public IActionResult OnPostRemoveFormula()
         {
             string selectedValue = Request.Form["MyFormulas"];
-            ExerciseHelper.RemoveFromFormulaList(mEnv, selectedValue);
-            AllFormulas = ExerciseHelper.InitializeAllFormulas(mEnv);
+            FormulaHelper.RemoveFromFormulaList(mEnv, selectedValue);
+            AllFormulas = FormulaHelper.InitializeAllFormulas(mEnv);
             return Page();
         }
     }

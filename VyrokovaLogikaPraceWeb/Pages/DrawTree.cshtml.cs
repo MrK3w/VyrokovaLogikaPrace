@@ -33,7 +33,7 @@ namespace VyrokovaLogikaPraceWeb.Pages
 
         private void PrepareList()
         {
-            ListItems = ExerciseHelper.InitializeAllFormulas(mEnv);
+            ListItems = FormulaHelper.InitializeAllFormulas(mEnv);
         }
 
         public IActionResult OnPostDrawTree()
@@ -72,22 +72,22 @@ namespace VyrokovaLogikaPraceWeb.Pages
             return Page();
         }
 
-        private void PrintTree(Node tree, int nodeId = 1)
+        private void PrintTree(Node tree)
         {
-            htmlTree.Add("<li id='node_" + nodeId + "'>");
+            htmlTree.Add("<li id='node_" + tree.id + "'>");
             string op = string.Empty;
             op = TreeBuildHelper.GetOP(tree);
             //we store tree value and tree op to be able to switch between full form and syntax form
-            htmlTree.Add("<span class='tf-nc' onclick='toggleNode(" + nodeId + ", \"" + tree.Value + "\", \"" + op + "\")'>" + op + "</span>");
+            htmlTree.Add("<span class='tf-nc' onclick='toggleNode(" + tree.id + ", \"" + tree.Value + "\", \"" + op + "\")'>" + op + "</span>");
 
             if (tree.Left != null)
             {
                 htmlTree.Add("<ul>");
-                PrintTree(tree.Left, nodeId * 2);
+                PrintTree(tree.Left);
 
                 if (tree.Right != null)
                 {
-                    PrintTree(tree.Right, nodeId * 2 + 1);
+                    PrintTree(tree.Right);
                 }
 
                 htmlTree.Add("</ul>");

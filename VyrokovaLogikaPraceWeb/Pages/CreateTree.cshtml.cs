@@ -49,9 +49,9 @@ namespace VyrokovaLogikaPraceWeb.Pages
             if (engine.ParseAndCheckErrors())
             {
                 //save formula to JSON
-                ExerciseHelper.SaveFormulaList(mEnv, formula);
+                FormulaHelper.SaveFormulaList(mEnv, formula);
                 //get updated list of formula;
-                Errors = ExerciseHelper.Errors;
+                Errors = FormulaHelper.Errors;
             }
             else
             {

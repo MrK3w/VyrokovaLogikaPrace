@@ -1,0 +1,38 @@
+﻿@page
+@model VyrokovaLogikaPraceWeb.Pages.DrawDAGModel
+@{
+}
+
+<head>
+    <title>My Page</title>
+    <script src="https://unpkg.com/vis-data/peer/umd/vis-data.min.js"></script>
+    <script src="https://unpkg.com/vis-network/peer/umd/vis-network.min.js"></script>
+    <link rel="stylesheet" href="~/css/Graph.css" />
+
+    <script type="module" src="~/js/DrawDAG.js"></script>
+    <link rel="stylesheet" href="https://unpkg.com/vis-network/standalone/umd/vis-network.min.css" />
+</head>
+<body>
+            <div class="col-md-10">
+                <div class="text-center">
+                    <h3 class="display-7">Výroková  logika</h3>
+                    <form method="post" asp-action="Index" asp-controller="Home" id="DAGForm" class="d-flex flex-column">
+                        <div class="d-flex">
+                            @Html.DropDownList("formula", Model.ListItems, new { @class = "form-control custom-font", @style = "height: 66.67%;" })
+                            @Html.TextBox("UserInput", Model.YourFormula, new { @maxlength = "64", @class = "form-control ml-2 custom-font", @style = "height: 66.67%;" })
+
+
+                            <div class="btn-toolbar ml-2 flex-fill" role="toolbar" aria-label="Toolbar with button groups">
+                                <div class="btn-group flex-fill" role="group" aria-label="First group">
+                            <input type='submit' class="btn btn-primary flex-fill mb-2 mr-1" value='Vykresli DAG' id="drawDAGButton" asp-page-handler="DrawDAG" />
+                                </div>
+
+                            </div>
+                        </div>
+                    </form>
+            <div id="treeVisualization">
+            </div>
+                 
+                </div>
+            </div>
+</body>

@@ -27,24 +27,24 @@ namespace VyrokovaLogikaPrace
             }
         }
 
-        public static Node GetNode(string item)
+        public static Node GetNode(string item, int id)
         {
             switch (item)
             {
                 case "¬":
-                    return new NegationOperatorNode();
+                    return new NegationOperatorNode(id);
                 case "¬¬":
-                    return new DoubleNegationOperatorNode();
+                    return new DoubleNegationOperatorNode(id);
                 case "∧":
-                    return new ConjunctionOperatorNode();
+                    return new ConjunctionOperatorNode(id);
                 case "∨":
-                    return new DisjunctionOperatorNode();
+                    return new DisjunctionOperatorNode(id);
                 case "≡":
-                    return new EqualityOperatorNode();
+                    return new EqualityOperatorNode(id);
                 case "⇒":
-                    return new ImplicationOperatorNode();
+                    return new ImplicationOperatorNode(id);
             }
-            return new ValueNode(item);
+            return new ValueNode(item,id);
         }
 
     }

@@ -8,7 +8,7 @@ namespace VyrokovaLogikaPraceWeb.Helpers
         public string Formula { get; set; }
     }
 
-    public static class ExerciseHelper
+    public static class FormulaHelper
     {
         private static List<LogicalFormula> formulas = new List<LogicalFormula>();
 
