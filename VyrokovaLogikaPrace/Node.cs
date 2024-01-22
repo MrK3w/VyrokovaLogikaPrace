@@ -7,10 +7,10 @@
         public Node Right { get; set; } // Right child node
         public Node Parent { get; set; } // Parent of node
 
-        public int ParentId { get; set; }
-        public bool IsRoot => Parent == null;
+        public int ParentId { get; set; } 
+        public bool IsRoot => Parent == null; //if it is root value is true, otherwise it is false
 
-        public int id { get; set; }
+        public int id { get; set; } //id of the node
         public bool IsValueNode { get; set; } // Indicates whether this node is a leaf (value) node
 
         public Node(string value, int id)
@@ -53,7 +53,7 @@
             this.id = id;
         }
     }
-
+    //for nodes which are literals
     public class ValueNode : Node
     {
         public ValueNode(string value, int id) : base(value, id)

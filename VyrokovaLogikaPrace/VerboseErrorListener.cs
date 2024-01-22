@@ -31,7 +31,7 @@ namespace VyrokovaLogikaPrace
         public void SyntaxError([NotNull] IRecognizer recognizer, [Nullable] int offendingSymbol, int line, int charPositionInLine, [NotNull] string msg, [Nullable] RecognitionException e)
         {
             // Check if the error is related to an unsupported operator
-            if (offendingSymbol != null)
+            if (offendingSymbol != -1)
             {
                 var myMessage = $"Nerozpoznan symbol {msg[msg.Length - 2]} na pozici {charPositionInLine}";
                 Console.WriteLine(myMessage);

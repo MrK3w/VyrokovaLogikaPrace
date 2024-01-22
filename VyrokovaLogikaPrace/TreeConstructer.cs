@@ -1,20 +1,23 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics.Eventing.Reader;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using static Antlr4.Runtime.Atn.SemanticContext;
+using VyrokovaLogikaPrace.Enums;
 
 namespace VyrokovaLogikaPrace
 {
+
+    
+    //class for building tree from page
     public class TreeConstructer
     {
+        //tree in html string
         string mHtmlTree;
+        //new istance of tree
         Node tree;
-        string side = "left";
-
+        //set default side to left
+        Side side = Side.left;
+        //counter for id of nodes
         private int globalIdCounter = 1;
+        public string Formula => tree.Value;
 
         private int GetNextId()
         {
@@ -29,15 +32,16 @@ namespace VyrokovaLogikaPrace
         //create tree from html code
         public Node ProcessTree()
         {
+            //get list of tags in tree
             var strippedTags = StripTree();
+            //create tree from this list of tags
             CreateTree(strippedTags);
+            //get full formula logic
             FillFormula(tree);
             return tree;
-        }
+        }        
 
-        public string Formula => tree.Value;
-        
-
+        //modifed version of traverse in tree to get full formula
         private void FillFormula(Node tree)
         {
             if(tree.Left !=  null)
@@ -66,10 +70,11 @@ namespace VyrokovaLogikaPrace
 
         private void CreateTree(List<string> strippedTags)
         {
-            //bool value if next value is item
+            //if next item in list is item(value of node) set to true
             bool itIsItem = false;
-            //if previous tag was already </ li >
+            //if we have inside <ul> already <li> set to true, to let it now that it will be right side
             bool ThereWasLi = false;
+            //iteration of each tag in list
             foreach (string tag in strippedTags)
             {
                 if (tag == "</li>")
@@ -80,17 +85,23 @@ namespace VyrokovaLogikaPrace
                 //if it item we need to get this values
                 if (itIsItem)
                 {
+                    //if we din't have tree, we will create new one
                     if (tree == null)
                     {
                         tree = TreeBuildHelper.GetNode(tag, GetNextId());
                     }
-                    else if (side == "left")
+                    //if it will be left side getNode from tag value
+                    else if (side == Side.left)
                     {
+                            //we will create tree left node 
                             tree.Left = TreeBuildHelper.GetNode(tag, GetNextId());
+                            //set his parent to current tree
                             tree.Left.Parent = tree;
+                            //and move to left node
                             tree = tree.Left;
                     }
-                    else if (side == "right")
+                    //if it will be right side similar as above
+                    else if (side == Side.right)
                     {
                         tree.Right = TreeBuildHelper.GetNode(tag, GetNextId());
                         tree.Right.Parent = tree;
@@ -100,24 +111,26 @@ namespace VyrokovaLogikaPrace
                     continue;
                 }
 
-                //if there is </item> we will just skip this
+                //if there is </item> we will just skip this(information that items ends here)
                 else if (tag == "</item>") continue;
-                //if <li> and there was already <\li>
+                //if <li> and it second time inside <ul>
                 else if (tag == "<li>" && ThereWasLi)
                 {
                     tree = tree.Parent;
-                    side = "right";
+                    side = Side.right;
                     ThereWasLi = false;
                 }
-
+                //finish on child nodes, we need to return to parent
                 else if (tag == "</ul>")
                 {
                     tree = tree.Parent;
                 }
+                //this let us know that there will be some child nodes, so we will add to left side of tree
                 else if (tag == "<ul>")
                 {
-                    side = "left";
+                    side = Side.left;
                 }
+                //let know that there will be a item
                 else if (tag == "<item>")
                 {
                     itIsItem = true;
@@ -128,9 +141,10 @@ namespace VyrokovaLogikaPrace
 
         private List<string> StripTree()
         {
-            //replace all occurences of span to item
+            //replace all occurences of spans with item (easier to iterate it in CreateTree method 
             mHtmlTree = mHtmlTree.Replace("<span class=\"tf-nc\">", "<item>").Replace("</span>", "</item>").Replace("<span class=\"tf-nc\" style=\"border-color: blue;\">", "<item>").Replace("<span class=\"tf-nc\" style=\"\">","<item>");
             //split by this delimeter
+            //we will strip tree with this delimetrs to create list
             string[] delimiters = { "<li>", "</li>", "<item>", "</item>", "<ul>", "</ul>" };
 
             // Split the input string by the delimiters
@@ -142,25 +156,15 @@ namespace VyrokovaLogikaPrace
             // Replace delimiters with a unique marker
             for (int i = 0; i < delimiters.Length; i++)
             {
-                input = input.Replace(delimiters[i], $"|DELIMITER{i}|");
+                //we will add to each tag | to be able to strip into separate tags
+                input = delimiters[i] != "</item>"
+                    ? input.Replace(delimiters[i], delimiters[i] + "|")
+                    : input.Replace(delimiters[i], "|"+delimiters[i] + "|");
             }
 
             // Split the input string by the unique marker
-            var tempList = input.Split('|').ToList();
-            List<string> result = new List<string>()
-            {
-                "<start>",
-            };
-            result.AddRange(tempList);
-            // Replace the unique marker with the original delimiters
-            for (int i = 0; i < result.Count; i++)
-            {
-                for (int j = 0; j < delimiters.Length; j++)
-                {
-                    result[i] = result[i].Replace($"DELIMITER{j}", delimiters[j]);
-                }
-            }
-            return result.Where(s => !string.IsNullOrEmpty(s)).ToList();
+            return input.Split('|').ToList();
+            
         }
     }
 }

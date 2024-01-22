@@ -5,7 +5,7 @@ namespace VyrokovaLogikaPraceWeb.Helpers
 {
     public class LogicalFormula
     {
-        public string Formula { get; set; }
+        public string Formula { get; set; } =  "";
     }
 
     public static class FormulaHelper
@@ -17,7 +17,7 @@ namespace VyrokovaLogikaPraceWeb.Helpers
         public static List<string> FormulaList { get; set; } = new List<string>();
 
         // Get formulas from JSON
-
+        public static string error = "";
         public static List<SelectListItem> InitializeAllFormulas(IWebHostEnvironment mEnv)
         {
             GetFormulaList(mEnv);
@@ -41,14 +41,33 @@ namespace VyrokovaLogikaPraceWeb.Helpers
                 var json = File.ReadAllText(filePath);
 
                 // Convert JSON to our formulas
-                formulas = JsonConvert.DeserializeObject<List<LogicalFormula>>(json);
+                formulas = JsonConvert.DeserializeObject<List<LogicalFormula>>(json)!;
 
-                FormulaList = formulas.ConvertAll(f => f.Formula);
+                if (formulas != null)
+                {
+                    FormulaList = formulas.ConvertAll(f => f.Formula);
+                }
+                else
+                {
+                    // Handle the case where deserialization failed and formulas is null
+                    error = "Chyba!.";
+                }
             }
             // If we didn't find that JSON 
+            catch (FileNotFoundException)
+            {
+                // Handle the case where the file is not found
+                error = "JSON soubor nenalezen, nelze načíst.";
+            }
+            catch (JsonException)
+            {
+                // Handle JSON parsing errors
+                error = "Problém při čtení, nelze načíst.";
+            }
             catch (Exception ex)
             {
-                return;
+                // Catch any other unexpected exceptions
+                error = "Neznámý problém, nelze načíst." + ex;
             }
         }
 

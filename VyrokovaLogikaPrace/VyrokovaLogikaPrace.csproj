@@ -51,6 +51,7 @@
   <ItemGroup>
     <Compile Include="Engine.cs" />
     <Compile Include="Converter.cs" />
+    <Compile Include="Enums\Side.cs" />
     <Compile Include="Node.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

@@ -4,6 +4,7 @@ namespace VyrokovaLogikaPrace
 {
     public static class TreeBuildHelper
     {
+        //get node and based of class it returns corresponding operator as string
         public static string GetOP(Node tree)
         {
             switch (tree)
@@ -26,7 +27,8 @@ namespace VyrokovaLogikaPrace
                     return string.Empty;
             }
         }
-
+        
+        //create from string with id, new nodes
         public static Node GetNode(string item, int id)
         {
             switch (item)

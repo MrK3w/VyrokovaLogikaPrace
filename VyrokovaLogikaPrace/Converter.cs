@@ -8,6 +8,7 @@ namespace VyrokovaLogikaPrace
 {
     public static class Converter
     {
+        //Convert formula input to usable characters
         public static void ConvertSentence(ref string input)
         {
             input = input.Replace("&", "∧")

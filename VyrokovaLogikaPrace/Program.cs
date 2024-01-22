@@ -12,6 +12,7 @@ namespace VyrokovaLogikaPrace
 {
     class Program
     {
+        //console main for testing reasons, use web app
         static void Main(string[] args)
         {
             string input = "-A>B&B|--(A&B)";

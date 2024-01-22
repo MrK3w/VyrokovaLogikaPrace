@@ -43,8 +43,10 @@ namespace VyrokovaLogikaPrace
             // Create a custom error listener for more detailed error handling
             customErrorListener = new VerboseErrorListener();
 
-            // Remove the default error listeners from the parser and add the custom one
+            // Remove the default error listeners from the parser and lexer
             parser.RemoveErrorListeners();
+            lexer.RemoveErrorListeners();
+            // Add custom error listeners
             lexer.AddErrorListener(customErrorListener);
             parser.AddErrorListener(customErrorListener);
 
@@ -72,7 +74,6 @@ namespace VyrokovaLogikaPrace
            
             if (ParseAndCheckErrors())
             {
-                //Console.WriteLine(tree.ToStringTree(parser));
                 Traverse(tree, parser.RuleNames, parser.Vocabulary);
                 VyrokovaLogikaVisitor visitor = new VyrokovaLogikaVisitor();
                 Node syntaxTree = visitor.Visit(tree);

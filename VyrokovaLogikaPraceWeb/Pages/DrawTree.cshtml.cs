@@ -39,7 +39,7 @@ namespace VyrokovaLogikaPraceWeb.Pages
         public IActionResult OnPostDrawTree()
         {
             //get formula from inputs
-            Formula = GetFormula();
+            Formula = GetFormula()!;
             Converter.ConvertSentence(ref Formula);
             //if it not valid save user input to YourFormula and return page
             if (!Valid)
