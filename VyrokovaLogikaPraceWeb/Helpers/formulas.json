@@ -43,5 +43,14 @@
   },
   {
     "Formula": "x∧y∧y"
+  },
+  {
+    "Formula": "(¬x∨(x⇒y))"
+  },
+  {
+    "Formula": "(A⇒B)∨(A⇒B)"
+  },
+  {
+    "Formula": "(A⇒B)∨¬(A⇒B)"
   }
 ]

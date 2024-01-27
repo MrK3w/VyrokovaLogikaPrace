@@ -116,7 +116,7 @@ function handleButtonUlozFormuli() {
             $('#message').empty();
             if (data.errors.length === 0) {
                 // If no errors, display "Formula saved" message
-                $('#message').html('<div class="alert alert-success">Formula saved</div>');
+                $('#message').html('<div class="alert alert-success">Formule uložena</div>');
             }
             else {
                 // If there are errors, display the error messages

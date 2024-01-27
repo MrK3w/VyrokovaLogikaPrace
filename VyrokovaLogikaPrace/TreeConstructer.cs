@@ -50,7 +50,7 @@ namespace VyrokovaLogikaPrace
                 FillFormula(tree.Right);
             if(tree.Left != null && tree.Right != null)
             {
-                tree.Value = tree.Left.Value + TreeBuildHelper.GetOP(tree) + tree.Right.Value;
+                tree.Value = '(' +  tree.Left.Value + TreeBuildHelper.GetOP(tree) + tree.Right.Value + ')';
             }
             else if(tree.Left != null)
             {
@@ -58,7 +58,7 @@ namespace VyrokovaLogikaPrace
                 tree.Value = TreeBuildHelper.GetOP(tree) + tree.Left.Value;
                 else
                 {
-                    tree.Value = TreeBuildHelper.GetOP(tree) + '(' + tree.Left.Value+')';
+                    tree.Value = TreeBuildHelper.GetOP(tree) + '(' + tree.Left.Value + ')';
                 }
             }
             else

@@ -39,6 +39,7 @@ namespace VyrokovaLogikaPraceWeb.Pages
         public IActionResult OnPostDrawDag([FromBody] string text)
         {
             Formula = text;
+            if (Formula == null) return Page();
             Converter.ConvertSentence(ref Formula);
             //if it not valid save user input to YourFormula and return page
             if (!Valid)
