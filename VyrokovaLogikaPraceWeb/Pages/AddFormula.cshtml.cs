@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using System.Text.RegularExpressions;
 using VyrokovaLogikaPrace;
 using VyrokovaLogikaPraceWeb.Helpers;
 
@@ -26,6 +27,13 @@ namespace VyrokovaLogikaPraceWeb
         {
             //get value from FormulaInput
             string formula = Request.Form["FormulaInput"];
+            Regex regex = new Regex(@"[a-zA-Z]+(¬|¬¬)");
+            if (regex.IsMatch(formula))
+            {
+                Errors.Add("Pøed negací nemùže být literál!");
+                Formula = formula;
+                return Page();
+            }
             Engine engine = new Engine(formula);
             //check if there are some errors in the formula
             if (engine.ParseAndCheckErrors())

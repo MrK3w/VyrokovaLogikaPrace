@@ -1,4 +1,4 @@
-﻿grammar VyrokovaLogika;
+﻿﻿grammar VyrokovaLogika;
 
 @parser::members
 {
@@ -12,17 +12,17 @@
 }
 
 
-prog: expr+;
+prog: expr;
 
 expr
-    : '¬' (VAR | '(' expr ')')   # Negation
-    | '¬¬' (VAR | '(' expr ')')  # DoubleNegationRule
-    | expr '∧' expr          # Conjunction
-    | expr '∨' expr          # Disjunction
-    | expr '≡' expr          # Equivalence 
-    | expr '⇒' expr          # Implication
-    | VAR  ('∧'| '∨' | '≡' | '⇒' | EOF)              # Variable
-    | '(' expr ')'           # parens
+    : NEGATION (VAR | LEFTPARENS expr RIGHTPARENS)   # Negation
+    | DOUBLE_NEGATION (VAR | LEFTPARENS expr RIGHTPARENS)  # DoubleNegationRule
+    | expr CONJUNCTION expr          # Conjunction
+    | expr DISJUNCTION expr          # Disjunction
+    | expr EQUIVALENCE expr          # Equivalence 
+    | expr IMPLICATION expr          # Implication
+    | VAR                # Variable
+    | LEFTPARENS expr RIGHTPARENS           # parens
     ;
 
 /*
@@ -31,10 +31,11 @@ expr
 
 VAR: [a-zA-Z]+;
 IMPLICATION: '⇒';
+LEFTPARENS: '(';
+RIGHTPARENS: ')';
 CONJUNCTION: '∧';
 DISJUNCTION: '∨';
 EQUIVALENCE: '≡';
 NEGATION: '¬';
 DOUBLE_NEGATION: '¬¬';
 WS: (' ' | '\r' | '\n') -> channel(HIDDEN);
-

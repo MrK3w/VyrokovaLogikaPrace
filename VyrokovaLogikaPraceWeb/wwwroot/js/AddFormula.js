@@ -9,7 +9,6 @@
         .replace(/-/g, '¬')
         .replace(/>/g, '⇒')
         .replace(/--/g, '¬¬');
-    //check if input is valid
     $('#FormulaInput').val(inputValue);
 }
 

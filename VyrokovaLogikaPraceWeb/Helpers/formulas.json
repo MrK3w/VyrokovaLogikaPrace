@@ -1,8 +1,5 @@
 [
   {
-    "Formula": "(A⇒B)"
-  },
-  {
     "Formula": "(A∨B)"
   },
   {
@@ -33,9 +30,6 @@
     "Formula": "xzz"
   },
   {
-    "Formula": "x¬¬z"
-  },
-  {
     "Formula": "a∧b≡¬a∨b"
   },
   {
@@ -58,5 +52,38 @@
   },
   {
     "Formula": "x∨y"
+  },
+  {
+    "Formula": "x⇒z"
+  },
+  {
+    "Formula": "a∧¬¬b"
+  },
+  {
+    "Formula": "x∧a"
+  },
+  {
+    "Formula": "((¬x∨b)∧(x∨a))"
+  },
+  {
+    "Formula": "x∨b"
+  },
+  {
+    "Formula": "(x⇒b)"
+  },
+  {
+    "Formula": "a⇒b"
+  },
+  {
+    "Formula": "x¬x"
+  },
+  {
+    "Formula": "x¬a"
+  },
+  {
+    "Formula": "x¬xx"
+  },
+  {
+    "Formula": "c∧¬¬c"
   }
 ]
