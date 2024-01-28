@@ -21,7 +21,7 @@ expr
     | expr '∨' expr          # Disjunction
     | expr '≡' expr          # Equivalence 
     | expr '⇒' expr          # Implication
-    | VAR                     # Variable
+    | VAR  ('∧'| '∨' | '≡' | '⇒' | EOF)              # Variable
     | '(' expr ')'           # parens
     ;
 

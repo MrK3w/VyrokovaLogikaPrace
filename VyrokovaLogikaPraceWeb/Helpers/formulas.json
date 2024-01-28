@@ -52,5 +52,11 @@
   },
   {
     "Formula": "(A⇒B)∨¬(A⇒B)"
+  },
+  {
+    "Formula": "x∧¬¬z"
+  },
+  {
+    "Formula": "x∨y"
   }
 ]
