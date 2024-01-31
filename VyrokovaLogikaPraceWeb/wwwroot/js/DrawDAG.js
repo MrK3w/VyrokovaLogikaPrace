@@ -59,16 +59,17 @@ function CallAjaxToGetPaths(isDag) {
     });
 }
 
-
-
-
 function Node(id, label, parentId = null) {
     this.id = id;
     this.label = label;
     this.parentId = parentId;
 }
 
-function createGraph(isDag,dagPaths) {
+function sleep(milliseconds) {
+    return new Promise(resolve => setTimeout(resolve, milliseconds));
+}
+
+async function createGraph(isDag, dagPaths) {
     // Parse the JSON string to get the array of node objects
     var nodesData = JSON.parse(dagPaths);
     if (isDag) {
@@ -78,40 +79,37 @@ function createGraph(isDag,dagPaths) {
     const existingNodes = {};
     const nodes = new vis.DataSet();
     const edges = new vis.DataSet();
-
+    nodesData.sort((a, b) => b.Id - a.Id);
 
     // Iterate through nodesData to create nodes and edges
     for (let i = 0; i < nodesData.length; i++) {
         const nodeData = nodesData[i];
         const nodeId = nodeData.Id;
         const parentId = nodeData.ParentId;
-
+        const operator = nodeData.Operator;
         if (parentId === 0) {
             // Create a new root node
-            nodes.add({ id: nodeId, label: nodeData.Label, color: { background: '#FFD700' } });
-            continue;
+            nodes.add({ id: nodeId, label: operator, color: { background: '#FFD700' } });
         }
-        if (!existingNodes[nodeId]) {
+        else if (!existingNodes[nodeId]) {
             // Create a new node if it doesn't exist
             existingNodes[nodeId] = true;
-            nodes.add({ id: nodeId, label: nodeData.Label, parentId });
+            nodes.add({ id: nodeId, label: operator, parentId });
             edges.add({ from: nodeId, to: parentId, arrows: 'to' });
-            continue;
         }
 
         // Create an edge if the parent node exists
         else if (existingNodes[nodeId]) {
-            edges.add({ from: nodeId, to: parentId, arrows: 'to', color: 'orange'});
-            continue;
+             edges.add({ from: nodeId, to: parentId, arrows: 'to', color: 'orange' });
         }
+        // Update the vis.js network
+        const container = document.getElementById('treeVisualization');
+
+        const data = { nodes, edges };
+        const options = {};
+        const network = new vis.Network(container, data, options);
+        /*await sleep(1500);*/
     }
-   
-    // Update the vis.js network
-    const container = document.getElementById('treeVisualization');
-  
-    const data = { nodes, edges };
-    const options = {};
-    const network = new vis.Network(container, data, options);
 }
 
 function modifyNodes(nodesData) {

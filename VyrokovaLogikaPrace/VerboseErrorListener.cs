@@ -18,8 +18,18 @@ namespace VyrokovaLogikaPrace
             // Check if the error is related to an unsupported operator
             if (offendingSymbol != null)
             {
-                Console.WriteLine($"Unsupported operator found at line {line}, position {charPositionInLine}: {offendingSymbol.Text}");
-                ErrorCount++;
+                if(offendingSymbol.Text == "<EOF>")
+                {
+                    var myMessage = $"Formule není správně ukončena na pozici {charPositionInLine + 1} zkontroluj prosím závorky!";
+                    Console.WriteLine(myMessage);
+                    Errors.Add(myMessage);
+                    ErrorCount++;
+                }
+                else
+                {
+                    Console.WriteLine($"Unsupported operator found at line {line}, position {charPositionInLine}: {offendingSymbol.Text}");
+                    ErrorCount++;
+                }
             }
             else
             {
@@ -33,7 +43,7 @@ namespace VyrokovaLogikaPrace
             // Check if the error is related to an unsupported operator
             if (offendingSymbol != -1)
             {
-                var myMessage = $"Nerozpoznan symbol {msg[msg.Length - 2]} na pozici {charPositionInLine+1}";
+                var myMessage = $"Nerozpoznán symbol {msg[msg.Length - 2]} na pozici {charPositionInLine+1}";
                 Console.WriteLine(myMessage);
                 Errors.Add(myMessage);
                 ErrorCount++;
