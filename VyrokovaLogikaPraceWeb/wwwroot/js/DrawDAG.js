@@ -16,6 +16,28 @@ function CallAjaxToGetPaths(isDag) {
     var userInput = $('#UserInput').val();
     var formula = $('#formula').val();
     var dataToSend = userInput ? userInput : formula;
+    dataToSend = dataToSend
+        .replace(/&/g, '∧')
+        .replace(/\|/g, '∨')
+        .replace(/=/g, '≡')
+        .replace(/-/g, '¬')
+        .replace(/>/g, '⇒')
+        .replace(/--/g, '¬¬');
+    $('#UserInput').val("");
+    if ($('#formula option[value="' + dataToSend + '"]').length === 0) {
+        // Create a new option element
+        var newOption = $('<option>', {
+            value: dataToSend,
+            text: dataToSend
+        });
+
+        // Append the new option to the dropdown list
+        $('#formula').append(newOption);
+
+        // Optionally, you can set the selected value to the newly added option
+        $('#formula').val(dataToSend);
+    }
+
     $.ajax({
         url: '?handler=DrawDAG',
         beforeSend: function (xhr) {
@@ -66,7 +88,7 @@ function createGraph(isDag,dagPaths) {
 
         if (parentId === 0) {
             // Create a new root node
-            nodes.add({ id: nodeId, label: nodeData.Label });
+            nodes.add({ id: nodeId, label: nodeData.Label, color: { background: '#FFD700' } });
             continue;
         }
         if (!existingNodes[nodeId]) {
