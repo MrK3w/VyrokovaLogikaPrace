@@ -91,5 +91,23 @@
   },
   {
     "Formula": "((p∧q)∨(¬p∧¬q))∨(¬p∧q)"
+  },
+  {
+    "Formula": "(y∧((y⇒¬x)∨(x∨y)))"
+  },
+  {
+    "Formula": "(x⇒y)"
+  },
+  {
+    "Formula": "(x∧y)"
+  },
+  {
+    "Formula": "(x∧z)"
+  },
+  {
+    "Formula": "(x∨y)"
+  },
+  {
+    "Formula": "((x∨y)∧y)"
   }
 ]

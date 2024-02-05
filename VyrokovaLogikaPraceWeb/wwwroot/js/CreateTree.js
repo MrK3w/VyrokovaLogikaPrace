@@ -93,7 +93,22 @@ function handleButtonZmenaTextuClick() {
 //remove node/s after clickng on Odstran button
 function handleButtonOdstranNoduClick() {
     if (globalInput) {
-        globalInput.closest('li').remove();
+        var closestLi = globalInput.closest('li');
+        var closestUl = closestLi.parent();
+        var numberOfLi = closestUl.find('li').length;
+        if (numberOfLi == 1) {
+            closestUl.remove();
+        }
+        else {
+            closestLi.remove();
+        }
+        // Check if the div with tree is empty
+        var divElement = document.querySelector('.tf-tree');
+
+
+        if (divElement.innerHTML.trim() === '') {
+            divElement.remove();
+        }
     }
 }
 
@@ -117,6 +132,7 @@ function handleButtonUlozFormuli() {
             if (data.errors.length === 0) {
                 // If no errors, display "Formula saved" message
                 $('#message').html('<div class="alert alert-success">Formule uložena</div>');
+
             }
             else {
                 // If there are errors, display the error messages
@@ -132,6 +148,8 @@ function handleButtonUlozFormuli() {
 
                 $('#message').html(errorHtml);
             }
+            $('#saveFormula').remove();
+            newButton = null;
         },
         error: function (error) {
             console.error('Error:', error);
@@ -144,7 +162,17 @@ function handleButtonUlozFormuli() {
 //Create formula from just create tree
 function handleButtonVytvorFormuliClick() {
     //get html tree from page
-    var elements = document.querySelectorAll(".tf-tree.tf-gap-sm")[0].innerHTML;
+    $('#message').html('');
+    var elements = document.querySelectorAll(".tf-tree.tf-gap-sm");
+    var innerHTMLContent;
+    if (elements.length > 0) {
+        // Element exists, you can proceed with accessing its innerHTML
+        innerHTMLContent  = elements[0].innerHTML;
+    } else {
+        // Element does not exist, throw an alert
+        alert("Strom nebyl vytvořen");
+        return;
+    }
 
     //check if each node is filled with valid content
     if (isContentPresent()) {
@@ -161,7 +189,7 @@ function handleButtonVytvorFormuliClick() {
         type: 'POST',
         contentType: 'application/json',
         dataType: "json",
-        data: JSON.stringify(elements),
+        data: JSON.stringify(innerHTMLContent),
         success: function (data) {
             console.log('Success:', data);
             // Put the convertedTree to the element with id 'createdTree'
@@ -172,7 +200,7 @@ function handleButtonVytvorFormuliClick() {
             //create new button for saving this new formula
             if (newButton == null) {
                 newButton = $('<input type="submit" class="btn btn-primary flex-fill mb-2" value="Ulož formuli" id="saveFormula"/>');
-                $('#vytvorFormuliButton').after(newButton);
+                $('#buttonContainer').append(newButton);
             }
 
             // Add any additional logic or event handlers for the new button if needed
@@ -241,7 +269,7 @@ function createNewUlWithLi(newSpan) {
 // Helper function to handle button click for adding a new node
 function handleButtonPridejNoduClick() {
     var spanElement = document.querySelector('.tf-nc[style="border-color: blue;"]');
-
+    globalInput = $(spanElement);
     if (spanElement) {
         var parent = spanElement.parentNode;
         var foundUl = findNestedUl(parent);
