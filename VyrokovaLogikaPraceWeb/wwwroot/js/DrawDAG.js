@@ -2,17 +2,16 @@
 const labelIdMap = new Map();
 
 function handleButtonDrawGraphButton() {
-    CallAjaxToGetPaths(false);
-    
-    
+    const isChecked = document.getElementById("labelCheckbox").checked;
+    CallAjaxToGetPaths(false, isChecked);
 }
 
 function handleButtonDrawDAGButton() {
-    CallAjaxToGetPaths(true);
-    createGraph();
+    const isChecked = document.getElementById("labelCheckbox").checked;
+    CallAjaxToGetPaths(true, isChecked);
 }
 
-function CallAjaxToGetPaths(isDag) {
+function CallAjaxToGetPaths(isDag, isChecked) {
     var userInput = $('#UserInput').val();
     var formula = $('#formula').val();
     var dataToSend = userInput ? userInput : formula;
@@ -49,8 +48,13 @@ function CallAjaxToGetPaths(isDag) {
         dataType: "json",
         data: JSON.stringify(dataToSend),
         success: function (output) {
-            console.log('Node Object:', output);
-            createGraph(isDag, output);
+            var parsedOutput = JSON.parse(output);
+            parsedOutput = modifyNodes(parsedOutput);
+            parsedOutput.sort((a, b) => b.Id - a.Id);
+            // Log the parsed object with Unicode characters properly displayed
+            console.log('Node Object:', parsedOutput);
+
+            createGraph(isDag, output, isChecked);
         },
         error: function (error) {
             console.error('Error:', error);
@@ -69,7 +73,8 @@ function sleep(milliseconds) {
     return new Promise(resolve => setTimeout(resolve, milliseconds));
 }
 
-async function createGraph(isDag, dagPaths) {
+//function to draw graph
+async function createGraph(isDag, dagPaths, isChecked) {
     // Parse the JSON string to get the array of node objects
     var nodesData = JSON.parse(dagPaths);
     if (isDag) {
@@ -87,29 +92,51 @@ async function createGraph(isDag, dagPaths) {
         const nodeId = nodeData.Id;
         const parentId = nodeData.ParentId;
         const operator = nodeData.Operator;
+        const label = nodeData.Label;
         if (parentId === 0) {
             // Create a new root node
-            nodes.add({ id: nodeId, label: operator, color: { background: '#FFD700' } });
-        }
-        else if (!existingNodes[nodeId]) {
+            if (isChecked) {
+                nodes.add({ id: nodeId, label: label, color: { background: '#FFD700' } });
+            }
+            else nodes.add({ id: nodeId, label: operator, color: { background: '#FFD700' } });
+        } else {
             // Create a new node if it doesn't exist
-            existingNodes[nodeId] = true;
-            nodes.add({ id: nodeId, label: operator, parentId });
-            edges.add({ from: nodeId, to: parentId, arrows: 'to' });
-        }
+            if (!existingNodes[nodeId]) {
+                existingNodes[nodeId] = true;
+                if (isChecked) {
+                    nodes.add({ id: nodeId, label: label, parentId });
+                }
+                else {
+                    nodes.add({ id: nodeId, label: operator, parentId });
+                }
+            }
 
-        // Create an edge if the parent node exists
-        else if (existingNodes[nodeId]) {
-             edges.add({ from: nodeId, to: parentId, arrows: 'to', color: 'orange' });
-        }
-        // Update the vis.js network
-        const container = document.getElementById('treeVisualization');
+            // Check if the parent node label starts with the same text up to the length of the current node's label
+            const parentNode = nodesData.find(node => node.Id === parentId);
+            var tempLabel = label;
+            //if parentNode label start with parenthess we need to add that parenthess to temp label to be able to properly check it
+            if (parentNode.Label[0] == '(') tempLabel = '(' + tempLabel;
+            const parentLabelStart = parentNode ? parentNode.Label.substring(0, tempLabel.length) : null;
+            let edgeColor = 'blue';
 
-        const data = { nodes, edges };
-        const options = {};
-        const network = new vis.Network(container, data, options);
-        /*await sleep(1500);*/
+            // Check if the parent operator is ¬ or ¬¬ (if it is then there will not be right side)
+            if (parentNode.Operator === '¬' || parentNode.Operator === '¬¬') {
+                edgeColor = 'blue';
+            } else if (parentLabelStart !== tempLabel) {
+                edgeColor = 'orange';
+            }
+
+            edges.add({ from: nodeId, to: parentId, arrows: 'to', color: edgeColor });
+        }
     }
+
+    // Update the vis.js network
+    const container = document.getElementById('treeVisualization');
+    const data = { nodes, edges };
+    const options = {};
+    const network = new vis.Network(container, data, options);
+        /*await sleep(1500);*/
+    
 }
 
 function modifyNodes(nodesData) {
