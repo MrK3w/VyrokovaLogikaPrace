@@ -55,8 +55,9 @@
     <Compile Include="Node.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="TreeBuildHelper.cs" />
+    <Compile Include="TreeHelper.cs" />
     <Compile Include="TreeConstructer.cs" />
+    <Compile Include="TreeProof.cs" />
     <Compile Include="VerboseErrorListener.cs" />
     <Compile Include="VisNode.cs" />
     <Compile Include="VisNodesHelper.cs" />

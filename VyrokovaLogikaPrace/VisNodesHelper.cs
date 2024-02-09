@@ -37,7 +37,7 @@ namespace VyrokovaLogikaPrace
                 Id = node.id,
                 Label = node.Value,
                 ParentId = node.Parent != null ? node.Parent.id : 0,
-                Operator = TreeBuildHelper.GetOP(node)
+                Operator = TreeHelper.GetOP(node)
             });
 
             // Recursively traverse the left and right children

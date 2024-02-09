@@ -1,4 +1,4 @@
-ï»¿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using VyrokovaLogikaPrace;
@@ -6,7 +6,7 @@ using VyrokovaLogikaPraceWeb.Helpers;
 
 namespace VyrokovaLogikaPraceWeb.Pages
 {
-    public class DrawTreeModel : PageModel
+    public class TruthTreeModel : PageModel
     {
         public bool Valid { get; private set; } = true;
 
@@ -25,7 +25,7 @@ namespace VyrokovaLogikaPraceWeb.Pages
         public string YourFormula { get; set; } = "";
         public string Input { get; set; } = "";
 
-        public DrawTreeModel(IWebHostEnvironment env)
+        public TruthTreeModel(IWebHostEnvironment env)
         {
             mEnv = env;
             PrepareList();
@@ -36,7 +36,7 @@ namespace VyrokovaLogikaPraceWeb.Pages
             ListItems = FormulaHelper.InitializeAllFormulas(mEnv);
         }
 
-        public IActionResult OnPostDrawTree()
+        public IActionResult OnPostDrawTruthTree()
         {
             //get formula from inputs
             Formula = GetFormula()!;
@@ -54,6 +54,9 @@ namespace VyrokovaLogikaPraceWeb.Pages
             Engine engine = new Engine(Formula);
             if (engine.CreateTree())
             {
+                TreeProof treeProof = new TreeProof();
+                var stromy = treeProof.ProcessTree(engine.pSyntaxTree);
+                treeProof.FindContradiction(stromy);
                 PrintTree(engine.pSyntaxTree);
                 string div = "<div class='tf-tree tf-gap-sm'>".Replace("'", "\"");
                 ConvertedTree = div + string.Join("", htmlTree.ToArray()) + "</div>";
@@ -96,7 +99,7 @@ namespace VyrokovaLogikaPraceWeb.Pages
             htmlTree.Add("</li>");
         }
 
-        
+
 
         public string? GetFormula()
         {
@@ -106,7 +109,7 @@ namespace VyrokovaLogikaPraceWeb.Pages
             if (selectFromSelectList == "" && selectFromInput == "")
             {
                 Valid = false;
-                ErrorMessage = "Nevybral jsi Å¾Ã¡dnou formuli!";
+                ErrorMessage = "Nevybral jsi žádnou formuli!";
                 return null;
             }
             //if user user userInput
@@ -122,7 +125,7 @@ namespace VyrokovaLogikaPraceWeb.Pages
                 //}
                 //convert logical operators in case they are not in right format
                 Converter.ConvertSentence(ref selectFromInput);
-                ListItems.Add(new SelectListItem(selectFromInput,selectFromInput));
+                ListItems.Add(new SelectListItem(selectFromInput, selectFromInput));
                 var selected = ListItems.Where(x => x.Value == selectFromInput).First();
                 selected.Selected = true;
                 return selectFromInput;

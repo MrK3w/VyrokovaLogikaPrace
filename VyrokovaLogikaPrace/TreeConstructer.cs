@@ -50,15 +50,15 @@ namespace VyrokovaLogikaPrace
                 FillFormula(tree.Right);
             if(tree.Left != null && tree.Right != null)
             {
-                tree.Value = '(' +  tree.Left.Value + TreeBuildHelper.GetOP(tree) + tree.Right.Value + ')';
+                tree.Value = '(' +  tree.Left.Value + TreeHelper.GetOP(tree) + tree.Right.Value + ')';
             }
             else if(tree.Left != null)
             {
                 if(tree.Left is ValueNode)
-                tree.Value = TreeBuildHelper.GetOP(tree) + tree.Left.Value;
+                tree.Value = TreeHelper.GetOP(tree) + tree.Left.Value;
                 else
                 {
-                    tree.Value = TreeBuildHelper.GetOP(tree) + '(' + tree.Left.Value + ')';
+                    tree.Value = TreeHelper.GetOP(tree) + '(' + tree.Left.Value + ')';
                 }
             }
             else
@@ -88,13 +88,13 @@ namespace VyrokovaLogikaPrace
                     //if we din't have tree, we will create new one
                     if (tree == null)
                     {
-                        tree = TreeBuildHelper.GetNode(tag, GetNextId());
+                        tree = TreeHelper.GetNode(tag, GetNextId());
                     }
                     //if it will be left side getNode from tag value
                     else if (side == Side.left)
                     {
                             //we will create tree left node 
-                            tree.Left = TreeBuildHelper.GetNode(tag, GetNextId());
+                            tree.Left = TreeHelper.GetNode(tag, GetNextId());
                             //set his parent to current tree
                             tree.Left.Parent = tree;
                             //and move to left node
@@ -103,7 +103,7 @@ namespace VyrokovaLogikaPrace
                     //if it will be right side similar as above
                     else if (side == Side.right)
                     {
-                        tree.Right = TreeBuildHelper.GetNode(tag, GetNextId());
+                        tree.Right = TreeHelper.GetNode(tag, GetNextId());
                         tree.Right.Parent = tree;
                         tree = tree.Right;
                     }

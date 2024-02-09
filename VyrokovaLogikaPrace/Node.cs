@@ -10,14 +10,23 @@
         public int ParentId { get; set; } 
         public bool IsRoot => Parent == null; //if it is root value is true, otherwise it is false
 
+        public int TruthValue { get; set; }
         public int id { get; set; } //id of the node
-        public bool IsValueNode { get; set; } // Indicates whether this node is a leaf (value) node
+        public bool IsLeaf { get; set; } // Indicates whether this node is a leaf (value) node
 
         public Node(string value, int id)
         {
             Value = value;
             this.id = id;
-            IsValueNode = true;
+            IsLeaf = true;
+        }
+
+        public Node(string value,int truthValue, int id = 0)
+        {
+            Value = value;
+            this.id = id;
+            IsLeaf = true;
+            TruthValue = truthValue;
         }
 
         public Node(Node left, Node right, int id, string value = "")
@@ -34,7 +43,7 @@
             Right.Parent = this;
             Right.ParentId = this.id;
 
-            IsValueNode = false;
+            IsLeaf = false;
             Value = value;
         }
 
@@ -44,7 +53,7 @@
             this.id = id;
             Left.Parent = this;
             Left.Parent.id = this.id;
-            IsValueNode = false;
+            IsLeaf = false;
             Value = value;
         }
 
@@ -57,6 +66,10 @@
     public class ValueNode : Node
     {
         public ValueNode(string value, int id) : base(value, id)
+        {
+        }
+
+        public ValueNode(string value,int truthValue, int id) : base(value, truthValue, id)
         {
         }
 
