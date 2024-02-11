@@ -46,14 +46,9 @@ namespace VyrokovaLogikaPrace
                     for (int j = 0; j < currentTreeListFromRightSide.Count; j++)
                     {
                         //create new tempTree where we store trees
-                        var tempTree = tree;
+                        var tempTree = TreeHelper.GetNode(TreeHelper.GetOP(tree), tree.id);
                         //if tree is root take value from parameter
-                        if (tree.IsRoot) tempTree.TruthValue = truthValue;
-                        //set parameter on tree
-
-                        //set values of trees based on truthValues, which we get from Rule
-                        currentTreeListFromLeftSide[i].TruthValue = truthValues.Item1;
-                        currentTreeListFromRightSide[j].TruthValue = truthValues.Item2;
+                        tempTree.TruthValue = truthValue;
                         //add to tempTree his tree childs
                         tempTree.Left = currentTreeListFromLeftSide[i];
                         tempTree.Right = currentTreeListFromRightSide[j];
@@ -66,25 +61,13 @@ namespace VyrokovaLogikaPrace
                 {
                     for (int i = 0; i < currentTreeListFromLeftSide.Count; i++)
                     {
-                        var tempTree = tree;
-                        if (tree.IsRoot) tempTree.TruthValue = truthValue;
-                        currentTreeListFromLeftSide[i].TruthValue = truthValues.Item1;
+                        var tempTree = TreeHelper.GetNode(TreeHelper.GetOP(tree), tree.id);
+                        tempTree.TruthValue = truthValue;
                         tempTree.Left = currentTreeListFromLeftSide[i];
                         combinedTrees.Add(tempTree);
                     }
                 }
                 //if tree don't have left side to the same 
-                if (currentTreeListFromLeftSide.Count == 0)
-                {
-                    for (int i = 0; i < currentTreeListFromRightSide.Count; i++)
-                    {
-                        var tempTree = tree;
-                        if (tree.IsRoot) tempTree.TruthValue = truthValue;
-                        currentTreeListFromLeftSide[i].TruthValue = truthValues.Item2;
-                        tempTree.Right = currentTreeListFromLeftSide[i];
-                        combinedTrees.Add(tempTree);
-                    }
-                }
             }
             return combinedTrees;
         }
@@ -92,7 +75,7 @@ namespace VyrokovaLogikaPrace
         //get leaf in tree
         private static List<Node> GetLeave(Node tree, int truthValue)
         {
-            Node leafTree = new ValueNode(tree.Value, truthValue);
+            Node leafTree = new ValueNode(tree.Value, truthValue, 1);
             List<Node> treeees = new List<Node>();
             return new List<Node> { leafTree };
         }
@@ -113,13 +96,13 @@ namespace VyrokovaLogikaPrace
                             contradiction = true;
                     }
                 }
-                if (contradiction == false)
+                    if (contradiction == false)
                 {
                     DistinctNodes = leafNodes
-       .GroupBy(node => new { node.Value, node.TruthValue })
-       .Select(group => group.First())
-       .Select(node => new Tuple<string, int>(node.Value, node.TruthValue))
-       .ToList();
+                       .GroupBy(node => new { node.Value, node.TruthValue })
+                       .Select(group => group.First())
+                       .Select(node => new Tuple<string, int>(node.Value, node.TruthValue))
+                       .ToList();
                     CounterModel = tree;
                     return false;
 
@@ -129,11 +112,11 @@ namespace VyrokovaLogikaPrace
             List<Node> leafNodes2 = new List<Node>();
             GetLeafNodes(CounterModel, ref leafNodes2);
             DistinctNodes = leafNodes2
-         .GroupBy(node => new { node.Value, node.TruthValue })
-         .Select(group => group.First())
-         .Select(node => new Tuple<string, int>(node.Value, node.TruthValue))
-         .ToList();
-            return true;
+                .GroupBy(node => new { node.Value, node.TruthValue })
+                .Select(group => group.First())
+                .Select(node => new Tuple<string, int>(node.Value, node.TruthValue))
+                .ToList();
+        return true;
         }
 
         void GetLeafNodes(Node tree, ref List<Node> leafNodes)

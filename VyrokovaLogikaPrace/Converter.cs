@@ -16,7 +16,8 @@ namespace VyrokovaLogikaPrace
                  .Replace("=", "≡")
                  .Replace("-", "¬")
                  .Replace(">", "⇒")
-                 .Replace("--", "¬¬");
+                 .Replace("--", "¬¬")
+                 .Replace("→", "⇒");
         }
     }
 }

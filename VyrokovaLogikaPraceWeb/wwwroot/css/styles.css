@@ -19,3 +19,19 @@
     margin-bottom: 15px;
 }
 
+.table-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 15%
+}
+
+th, td {
+    border: 1px solid black;
+    padding: 1px;
+    text-align: left;
+}
+
+th {
+    background-color: lightgray;
+}

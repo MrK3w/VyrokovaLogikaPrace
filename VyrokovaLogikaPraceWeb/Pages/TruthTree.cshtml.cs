@@ -18,7 +18,9 @@ namespace VyrokovaLogikaPraceWeb.Pages
         public string Formula;
         public List<string> Errors { get; private set; } = new();
         public string ConvertedTree { get; set; }
+        public  string Message { get; set; }
 
+        public List<Tuple<string,int>> DistinctNodes { get; set; }
         public List<SelectListItem> ListItems { get; set; } = new List<SelectListItem>();
         readonly IWebHostEnvironment mEnv;
 
@@ -36,7 +38,7 @@ namespace VyrokovaLogikaPraceWeb.Pages
             ListItems = FormulaHelper.InitializeAllFormulas(mEnv);
         }
 
-        public IActionResult OnPostDrawTruthTree()
+        public IActionResult OnPostDrawTruthTreeTautology()
         {
             //get formula from inputs
             Formula = GetFormula()!;
@@ -55,9 +57,17 @@ namespace VyrokovaLogikaPraceWeb.Pages
             if (engine.CreateTree())
             {
                 TreeProof treeProof = new TreeProof();
-                var stromy = treeProof.ProcessTree(engine.pSyntaxTree);
-                treeProof.FindContradiction(stromy);
-                PrintTree(engine.pSyntaxTree);
+                if(treeProof.FindContradiction(treeProof.ProcessTree(engine.pSyntaxTree)))
+                {
+                    Message = "Zvolená formule je tautologií";
+ 
+                }
+                else
+                {
+                    Message = "Zvolená formule není tautologií";
+                }
+                DistinctNodes = treeProof.DistinctNodes;
+                PrintTree(treeProof.CounterModel);
                 string div = "<div class='tf-tree tf-gap-sm'>".Replace("'", "\"");
                 ConvertedTree = div + string.Join("", htmlTree.ToArray()) + "</div>";
             }
@@ -70,8 +80,45 @@ namespace VyrokovaLogikaPraceWeb.Pages
             return Page();
         }
 
-        public IActionResult OnPostCreateTree()
+        public IActionResult OnPostDrawTruthTreeContradiction()
         {
+            //get formula from inputs
+            Formula = GetFormula()!;
+            Converter.ConvertSentence(ref Formula);
+            //if it not valid save user input to YourFormula and return page
+            if (!Valid)
+            {
+                if (Formula != null)
+                {
+                    YourFormula = Formula;
+                }
+                return Page();
+            }
+            //otherwise prepare engine with sentence we got
+            Engine engine = new Engine(Formula);
+            if (engine.CreateTree())
+            {
+                TreeProof treeProof = new TreeProof();
+                if (treeProof.FindContradiction(treeProof.ProcessTree(engine.pSyntaxTree,1)))
+                {
+                    Message = "Zvolená formule je kontradikcí";
+
+                }
+                else
+                {
+                    Message = "Zvolená formule není kontradikcí";
+                }
+                DistinctNodes = treeProof.DistinctNodes;
+                PrintTree(treeProof.CounterModel);
+                string div = "<div class='tf-tree tf-gap-sm'>".Replace("'", "\"");
+                ConvertedTree = div + string.Join("", htmlTree.ToArray()) + "</div>";
+            }
+            //prepare tree for css library treeflex
+            else
+            {
+                Errors = engine.Errors;
+                Valid = false;
+            }
             return Page();
         }
 
@@ -81,7 +128,7 @@ namespace VyrokovaLogikaPraceWeb.Pages
             string op = string.Empty;
             op = TreeHelper.GetOP(tree);
             //we store tree value and tree op to be able to switch between full form and syntax form
-            htmlTree.Add("<span class='tf-nc' onclick='toggleNode(" + tree.id + ", \"" + tree.Value + "\", \"" + op + "\")'>" + op + "</span>");
+            htmlTree.Add("<span class='tf-nc' onclick='toggleNode(" + tree.id + ", \"" + tree.Value + "\", \"" + op + "\",\"" + tree.TruthValue + "\",)'>" + op + "= " + tree.TruthValue + "</span>");
 
             if (tree.Left != null)
             {
@@ -99,8 +146,6 @@ namespace VyrokovaLogikaPraceWeb.Pages
             htmlTree.Add("</li>");
         }
 
-
-
         public string? GetFormula()
         {
             selectFromSelectList = Request.Form["formula"];
@@ -112,18 +157,9 @@ namespace VyrokovaLogikaPraceWeb.Pages
                 ErrorMessage = "Nevybral jsi žádnou formuli!";
                 return null;
             }
-            //if user user userInput
+            //if user used userInput
             if (selectFromInput != "")
             {
-                ////validate his formula otherwise throw error message and save that formula so user can change it later
-                //if (!Validator.ValidateSentence(ref selectFromInput))
-                //{
-                //    ErrorMessage = Validator.ErrorMessage;
-                //    Valid = false;
-                //    YourFormula = selectFromInput;
-                //    return null;
-                //}
-                //convert logical operators in case they are not in right format
                 Converter.ConvertSentence(ref selectFromInput);
                 ListItems.Add(new SelectListItem(selectFromInput, selectFromInput));
                 var selected = ListItems.Where(x => x.Value == selectFromInput).First();

@@ -6,6 +6,7 @@
 <head>
     <title>My Page</title>
     <link rel="stylesheet" href="https://unpkg.com/treeflex/dist/css/treeflex.css">
+        <script src="~/js/TruthTree.js"></script>
 </head>
 <body>
     <div class="col-md-10">
@@ -14,12 +15,13 @@
             <form method="post" asp-action="Index" asp-controller="Home" id="TheForm" class="d-flex flex-column">
                 <div class="d-flex">
                     @Html.DropDownList("formula", Model.ListItems, new { @class = "form-control custom-font", @style = "height: 66.67%;" })
-                    @Html.TextBox("UserInput", Model.YourFormula, new { @maxlength = "64", @class = "form-control ml-2 custom-font", @style = "height: 66.67%;" })
+                    @Html.TextBox("UserInput", Model.YourFormula, new { @maxlength = "100", @class = "form-control ml-2 custom-font", @style = "height: 66.67%;" })
 
 
                     <div class="btn-toolbar ml-2 flex-fill" role="toolbar" aria-label="Toolbar with button groups">
                         <div class="btn-group flex-fill" role="group" aria-label="First group">
-                            <input type='submit' class="btn btn-primary flex-fill mb-2 mr-1" value='Vykresli syntaktický strom' name='submit' asp-page-handler="DrawTruthTree" />
+                            <input type='submit' class="btn btn-primary flex-fill mb-2 mr-1" value='Ověř tautologii ve formuli' name='submit' asp-page-handler="DrawTruthTreeTautology" />
+                            <input type='submit' class="btn btn-primary flex-fill mb-2 mr-1" value='Ověř kontradikci ve formuli' name='submit' asp-page-handler="DrawTruthTreeContradiction" />
                         </div>
 
                     </div>
@@ -29,8 +31,26 @@
             {
                 @if (Model.ConvertedTree != null)
                 {
-                    <p>Synktaktický strom formule <span style="color: red;"> @Model.Formula</span>. Po kliknutí na nodu zobraz plnou formu.</p>
+                   <div> <p>Synktaktický strom formule <span style="color: red;"> @Model.Formula</span>. Po kliknutí na nodu zobraz plnou formu.</p>
                     @Html.Raw(Model.ConvertedTree)
+                    </div>
+                        <div class="table-container">
+
+                            <table>
+                                <tr>
+                                    <th>Hodnota</th>
+                                    <th>Literál</th>
+                                </tr>
+                                @foreach (var node in Model.DistinctNodes)
+                                {
+                                    <tr>
+                                        <td>@node.Item1</td>
+                                        <td>@node.Item2</td>
+                                    </tr>
+                                }
+                            </table>
+                    </div>
+                   <div> <p> @Model.Message</p> </div>
                 }
             }
             else

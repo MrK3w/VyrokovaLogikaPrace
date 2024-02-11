@@ -112,15 +112,6 @@ namespace VyrokovaLogikaPraceWeb.Pages
             //if user user userInput
             if (selectFromInput != "")
             {
-                ////validate his formula otherwise throw error message and save that formula so user can change it later
-                //if (!Validator.ValidateSentence(ref selectFromInput))
-                //{
-                //    ErrorMessage = Validator.ErrorMessage;
-                //    Valid = false;
-                //    YourFormula = selectFromInput;
-                //    return null;
-                //}
-                //convert logical operators in case they are not in right format
                 Converter.ConvertSentence(ref selectFromInput);
                 ListItems.Add(new SelectListItem(selectFromInput,selectFromInput));
                 var selected = ListItems.Where(x => x.Value == selectFromInput).First();

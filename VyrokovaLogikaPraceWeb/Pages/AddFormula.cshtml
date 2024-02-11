@@ -19,7 +19,7 @@
                     <div class="row">
                         <div class="col-md-12">
                             <div class="input-group">
-                                @Html.TextBox("FormulaInput", Model.Formula, new { @maxlength = "64", @class = "form-control custom-font"})
+                                @Html.TextBox("FormulaInput", Model.Formula, new { @maxlength = "128", @class = "form-control custom-font"})
                                 <input type='submit' id='pridejFormuliButton' class="btn btn-primary" value='Přidej novou formuli' name='submit' asp-page-handler="AddNewFormula" />
                                 <div style="display: flex; gap: 5px; flex-grow: 1;">
                                     <button type="button" class="insert-button" style="background-color: #FF8C42; color: white;" data-text="∧">∧</button>
