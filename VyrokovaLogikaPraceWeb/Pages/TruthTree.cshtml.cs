@@ -38,6 +38,58 @@ namespace VyrokovaLogikaPraceWeb.Pages
             ListItems = FormulaHelper.InitializeAllFormulas(mEnv);
         }
 
+        public IActionResult OnPostDrawTruthTreeTautologyAdvanced()
+        {
+            //get formula from inputs
+            Formula = GetFormula()!;
+            Converter.ConvertSentence(ref Formula);
+            //if it not valid save user input to YourFormula and return page
+            if (!Valid)
+            {
+                if (Formula != null)
+                {
+                    YourFormula = Formula;
+                }
+                return Page();
+            }
+            //otherwise prepare engine with sentence we got
+            Engine engine = new Engine(Formula);
+            if (engine.CreateTree())
+            {
+                TreeProofAdvanced adv = new TreeProofAdvanced();
+                var tree = adv.ProcessTree(engine.pSyntaxTree, 0);
+                ContradictionHelper contradictionHelper = new ContradictionHelper();
+                if(contradictionHelper.FindContradiction(tree))
+                {
+                    Message = "Zvolená formule je tautologií";
+                }
+                else
+                {
+                    Message = "Zvolená formule není tautologií";
+                }
+                //TreeProof treeProof = new TreeProof();
+                //if(treeProof.FindContradiction(treeProof.ProcessTree(engine.pSyntaxTree)))
+                //{
+                //    Message = "Zvolená formule je tautologií";
+                //}
+                //else
+                //{
+                //    Message = "Zvolená formule není tautologií";
+                //}
+                DistinctNodes = contradictionHelper.DistinctNodes;
+                PrintTree(contradictionHelper.CounterModel);
+                string div = "<div class='tf-tree tf-gap-sm'>".Replace("'", "\"");
+                ConvertedTree = div + string.Join("", htmlTree.ToArray()) + "</div>";
+            }
+            //prepare tree for css library treeflex
+            else
+            {
+                Errors = engine.Errors;
+                Valid = false;
+            }
+            return Page();
+        }
+
         public IActionResult OnPostDrawTruthTreeTautology()
         {
             //get formula from inputs
@@ -57,17 +109,19 @@ namespace VyrokovaLogikaPraceWeb.Pages
             if (engine.CreateTree())
             {
                 TreeProof treeProof = new TreeProof();
-                if(treeProof.FindContradiction(treeProof.ProcessTree(engine.pSyntaxTree)))
+                var trees = treeProof.ProcessTree(engine.pSyntaxTree, 0);
+                ContradictionHelper contradictionHelper = new ContradictionHelper();
+                if (contradictionHelper.FindContradiction(trees))
                 {
                     Message = "Zvolená formule je tautologií";
- 
+
                 }
                 else
                 {
                     Message = "Zvolená formule není tautologií";
                 }
-                DistinctNodes = treeProof.DistinctNodes;
-                PrintTree(treeProof.CounterModel);
+                DistinctNodes = contradictionHelper.DistinctNodes;
+                PrintTree(contradictionHelper.CounterModel);
                 string div = "<div class='tf-tree tf-gap-sm'>".Replace("'", "\"");
                 ConvertedTree = div + string.Join("", htmlTree.ToArray()) + "</div>";
             }
@@ -99,7 +153,9 @@ namespace VyrokovaLogikaPraceWeb.Pages
             if (engine.CreateTree())
             {
                 TreeProof treeProof = new TreeProof();
-                if (treeProof.FindContradiction(treeProof.ProcessTree(engine.pSyntaxTree,1)))
+                var trees = treeProof.ProcessTree(engine.pSyntaxTree, 1);
+                ContradictionHelper contradictionHelper = new ContradictionHelper();
+                if(contradictionHelper.FindContradiction(trees))
                 {
                     Message = "Zvolená formule je kontradikcí";
 
@@ -108,8 +164,8 @@ namespace VyrokovaLogikaPraceWeb.Pages
                 {
                     Message = "Zvolená formule není kontradikcí";
                 }
-                DistinctNodes = treeProof.DistinctNodes;
-                PrintTree(treeProof.CounterModel);
+                DistinctNodes = contradictionHelper.DistinctNodes;
+                PrintTree(contradictionHelper.CounterModel);
                 string div = "<div class='tf-tree tf-gap-sm'>".Replace("'", "\"");
                 ConvertedTree = div + string.Join("", htmlTree.ToArray()) + "</div>";
             }
@@ -125,8 +181,7 @@ namespace VyrokovaLogikaPraceWeb.Pages
         private void PrintTree(Node tree)
         {
             htmlTree.Add("<li id='node_" + tree.id + "'>");
-            string op = string.Empty;
-            op = TreeHelper.GetOP(tree);
+            string op = TreeHelper.GetOP(tree);
             //we store tree value and tree op to be able to switch between full form and syntax form
             htmlTree.Add("<span class='tf-nc' onclick='toggleNode(" + tree.id + ", \"" + tree.Value + "\", \"" + op + "\",\"" + tree.TruthValue + "\",)'>" + op + "= " + tree.TruthValue + "</span>");
 

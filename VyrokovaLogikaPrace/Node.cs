@@ -1,4 +1,7 @@
-﻿namespace VyrokovaLogikaPrace
+﻿using System;
+using System.Collections.Generic;
+
+namespace VyrokovaLogikaPrace
 {
     public class Node
     {
@@ -7,13 +10,15 @@
         public Node Right { get; set; } // Right child node
         public Node Parent { get; set; } // Parent of node
 
-        public int ParentId { get; set; } 
+        public int ParentId { get; set; }
         public bool IsRoot => Parent == null; //if it is root value is true, otherwise it is false
 
-        public int TruthValue { get; set; }
+        public int TruthValue { get; set; } = -1;
         public int id { get; set; } //id of the node
         public bool IsLeaf { get; set; } // Indicates whether this node is a leaf (value) node
 
+        public List<(int,int)> UsedCombinations { get; set; }
+        public bool isFinal {get;set;}
         public Node(string value, int id)
         {
             Value = value;
