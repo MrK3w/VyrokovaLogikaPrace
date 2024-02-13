@@ -29,10 +29,9 @@ namespace VyrokovaLogikaPrace
                 if (contradiction == false)
                 {
                     DistinctNodes = leafNodes
-                       .GroupBy(node => new { node.Value, node.TruthValue })
-                       .Select(group => group.First())
-                       .Select(node => new Tuple<string, int>(node.Value, node.TruthValue))
-                       .ToList();
+                        .Select(n => new Tuple<string, int>(n.Value, n.TruthValue))
+                        .Distinct()
+                        .ToList();
                     CounterModel = tree;
                     return false;
 
@@ -42,48 +41,13 @@ namespace VyrokovaLogikaPrace
             List<Node> leafNodes2 = new List<Node>();
             GetLeafNodes(CounterModel, ref leafNodes2);
             DistinctNodes = leafNodes2
-                .GroupBy(node => new { node.Value, node.TruthValue })
-                .Select(group => group.First())
-                .Select(node => new Tuple<string, int>(node.Value, node.TruthValue))
-                .ToList();
+                        .Select(n => new Tuple<string, int>(n.Value, n.TruthValue))
+                        .Distinct()
+                        .ToList();
             return true;
         }
 
-        public bool FindContradiction(Node tree)
-        {
-            bool contradiction = false;
-            List<Node> leafNodes = new List<Node>();
-            GetLeafNodes(tree, ref leafNodes);
-            foreach (var node in leafNodes)
-            {
-                if (contradiction) break;
-                foreach (var node1 in leafNodes)
-                {
-                    if (node1.Value == node.Value && node1.TruthValue != node.TruthValue)
-                        contradiction = true;
-                }
-            }
-            if (contradiction == false)
-            {
-                DistinctNodes = leafNodes
-                    .GroupBy(node => new { node.Value, node.TruthValue })
-                    .Select(group => group.First())
-                    .Select(node => new Tuple<string, int>(node.Value, node.TruthValue))
-                    .ToList();
-                CounterModel = tree;
-                return false;
-
-            }
-            CounterModel = tree;
-            List<Node> leafNodes2 = new List<Node>();
-            GetLeafNodes(CounterModel, ref leafNodes2);
-            DistinctNodes = leafNodes2
-                .GroupBy(node => new { node.Value, node.TruthValue })
-                .Select(group => group.First())
-                .Select(node => new Tuple<string, int>(node.Value, node.TruthValue))
-                .ToList();
-            return true;
-        }
+      
 
         public void GetLeafNodes(Node tree, ref List<Node> leafNodes)
         {

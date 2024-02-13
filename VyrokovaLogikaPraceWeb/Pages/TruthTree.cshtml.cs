@@ -8,13 +8,17 @@ namespace VyrokovaLogikaPraceWeb.Pages
 {
     public class TruthTreeModel : PageModel
     {
+        //If we have tree then it is valid
         public bool Valid { get; private set; } = true;
-
+        //tree in html string
         private readonly List<string> htmlTree = new();
-
+        //formula selected from select list
         private string selectFromSelectList;
+        //formula selected from user Input
         private string selectFromInput;
+        //string for showing error message, why tree did not compile
         public string ErrorMessage;
+        //Formula
         public string Formula;
         public List<string> Errors { get; private set; } = new();
         public string ConvertedTree { get; set; }
@@ -59,7 +63,7 @@ namespace VyrokovaLogikaPraceWeb.Pages
                 TreeProofAdvanced adv = new TreeProofAdvanced();
                 var tree = adv.ProcessTree(engine.pSyntaxTree, 0);
                 ContradictionHelper contradictionHelper = new ContradictionHelper();
-                if(contradictionHelper.FindContradiction(tree))
+                if(contradictionHelper.FindContradiction(new List<Node> { tree }))
                 {
                     Message = "Zvolená formule je tautologií";
                 }
