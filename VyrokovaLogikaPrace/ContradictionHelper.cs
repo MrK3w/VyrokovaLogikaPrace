@@ -10,7 +10,55 @@ namespace VyrokovaLogikaPrace
     {
         public List<Tuple<string, int>> DistinctNodes { get; set; } = new List<Tuple<string, int>>();
         public Node CounterModel { get; set; } = new Node(0);
-        public bool FindContradiction(List<Node> Trees)
+        bool contradictionInTree;
+
+        public bool FindContradiction(Node tree)
+        {
+            if (!FindContradictionInLeafs(new List<Node> { tree}))
+            {
+                FindContradictionInTree(tree);
+                if (!contradictionInTree) return false;
+            }
+            return true;
+        }
+
+        private void FindContradictionInTree(Node tree)
+        {
+            if (tree.IsLeaf) return;
+            var sideValues = TreeHelper.GetValuesOfBothSides(tree.TruthValue, tree);
+            contradictionInTree = false;
+            foreach (var sideValue in sideValues)
+            {
+                if (tree.Right != null)
+                {
+                    if (sideValue.Item1 != tree.Left.TruthValue && sideValue.Item2 != tree.Right.TruthValue)
+                        contradictionInTree = true;
+                        tree.Left.Red = true;
+                }
+                else
+                {
+                    if (sideValue.Item1 != tree.Left.TruthValue)
+                    {
+                        tree.Left.Red = true;
+                        contradictionInTree = true;
+                    }
+                }
+            }
+            if (contradictionInTree) return;
+            else
+            {
+                if (tree.Left != null)
+                {
+                    FindContradictionInTree(tree.Left);
+                }
+                if (tree.Right != null)
+                {
+                    FindContradiction(tree.Right);
+                }
+            }
+        }
+
+        public bool FindContradictionInLeafs(List<Node> Trees)
         {
             foreach (var tree in Trees)
             {

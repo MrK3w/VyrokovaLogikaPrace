@@ -69,9 +69,7 @@ namespace VyrokovaLogikaPrace
         //get leaf in tree
         private static List<Node> GetLeave(Node tree, int truthValue)
         {
-            Node leafTree = new ValueNode(tree.Value, truthValue, 1);
-            List<Node> treeees = new List<Node>();
-            return new List<Node> { leafTree };
+            return new List<Node> { new ValueNode(tree.Value, truthValue, 1) };
         }
 
     }

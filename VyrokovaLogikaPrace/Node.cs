@@ -12,7 +12,7 @@ namespace VyrokovaLogikaPrace
 
         public int ParentId { get; set; }
         public bool IsRoot => Parent == null; //if it is root value is true, otherwise it is false
-
+        public bool Red { get; set; } = false;
         public int TruthValue { get; set; } = -1;
         public int id { get; set; } //id of the node
         public bool IsLeaf { get; set; } // Indicates whether this node is a leaf (value) node
@@ -66,6 +66,63 @@ namespace VyrokovaLogikaPrace
         {
             this.id = id;
         }
+
+        // Method to perform a deep copy of a tree
+        public static Node DeepCopy(Node original, Dictionary<Node, Node> visitedNodes = null)
+        {
+            if (original == null)
+            {
+                return null;
+            }
+
+            // If the dictionary of visited nodes is not provided, create a new one
+            if (visitedNodes == null)
+            {
+                visitedNodes = new Dictionary<Node, Node>();
+            }
+
+            // If the original node has already been visited, return its copy
+            if (visitedNodes.ContainsKey(original))
+            {
+                return visitedNodes[original];
+            }
+
+            // Create a new node with the same value
+            Node newNode = original.GetType()
+                             .GetConstructor(new Type[] { typeof(int) })
+                             .Invoke(new object[] { original.id }) as Node;
+            newNode.Value = original.Value;
+            newNode.TruthValue = original.TruthValue;
+            newNode.isFinal = original.isFinal;
+            newNode.IsLeaf = original.IsLeaf;
+
+            // Add the original node and its copy to the dictionary of visited nodes
+            visitedNodes.Add(original, newNode);
+
+            // Parent should be set separately to avoid reference to the original tree
+            newNode.Parent = null;
+
+            if (original.Parent != null)
+            {
+                // If original has a parent, find the corresponding node in the copied tree
+                newNode.Parent = DeepCopy(original.Parent, visitedNodes);
+                newNode.Parent.id = original.Parent.id;
+            }
+
+            if (original.UsedCombinations != null)
+            {
+                newNode.UsedCombinations = new List<(int, int)>(original.UsedCombinations);
+            }
+
+            // Recursively copy the left subtree
+            newNode.Left = DeepCopy(original.Left, visitedNodes);
+
+            // Recursively copy the right subtree if it exists
+            newNode.Right = DeepCopy(original.Right, visitedNodes);
+
+            return newNode;
+        }
+
     }
     //for nodes which are literals
     public class ValueNode : Node
@@ -75,6 +132,10 @@ namespace VyrokovaLogikaPrace
         }
 
         public ValueNode(string value,int truthValue, int id) : base(value, truthValue, id)
+        {
+        }
+
+        public ValueNode(int id) : base(id)
         {
         }
 

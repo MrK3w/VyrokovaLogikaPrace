@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 
 namespace VyrokovaLogikaPrace
 {
     public static class TreeHelper
     {
+        public static bool Contradiction { get; set; }
         //get node and based of class it returns corresponding operator as string
         public static string GetOP(Node tree)
         {
@@ -131,5 +133,6 @@ namespace VyrokovaLogikaPrace
             return valuesList;
         }
 
+       
     }
 }
