@@ -52,7 +52,7 @@ function CallAjaxToGetPaths(isDag, isChecked) {
             parsedOutput = modifyNodes(parsedOutput);
             parsedOutput.sort((a, b) => b.Id - a.Id);
             // Log the parsed object with Unicode characters properly displayed
-            console.log('Node Object:', parsedOutput);
+            
 
             createGraph(isDag, output, isChecked);
         },
@@ -85,7 +85,7 @@ async function createGraph(isDag, dagPaths, isChecked) {
     const nodes = new vis.DataSet();
     const edges = new vis.DataSet();
     nodesData.sort((a, b) => b.Id - a.Id);
-
+    console.log('Node Object:', nodesData);
     // Iterate through nodesData to create nodes and edges
     for (let i = 0; i < nodesData.length; i++) {
         const nodeData = nodesData[i];

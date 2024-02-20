@@ -112,5 +112,14 @@
   },
   {
     "Formula": "((¬P∨Q)∧(¬Q∨R)∧(¬R∨S)∧(¬S∨T))"
+  },
+  {
+    "Formula": "((y⇒x)≡(z⇒x))"
+  },
+  {
+    "Formula": "(¬¬x∨(x⇒y))"
+  },
+  {
+    "Formula": "(p⇒(q∨r))∨(p⇒r)"
   }
 ]
