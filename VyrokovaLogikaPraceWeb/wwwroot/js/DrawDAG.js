@@ -143,15 +143,24 @@ function modifyNodes(nodesData) {
     const labelToIdMap = {};
 
     // Iterate through nodesData and update the IDs based on label
-    nodesData.forEach(nodeData => {
+    for (const nodeData of nodesData) {
         const label = nodeData.Label;
+        const oldId = nodeData.Id;
         if (labelToIdMap[label] !== undefined) {
             // If label already exists, override the ID of the next node
             nodeData.Id = labelToIdMap[label];
         } else {
+            // If label doesn't exist, store the current ID for future reference
             labelToIdMap[label] = nodeData.Id;
         }
-    });
+
+        // Update ParentId of nodes that have their ParentId matching the oldId
+        for (const node of nodesData) {
+            if (node.ParentId === oldId) {
+                node.ParentId = nodeData.Id;
+            }
+        }
+    }
 
     return nodesData;
 }

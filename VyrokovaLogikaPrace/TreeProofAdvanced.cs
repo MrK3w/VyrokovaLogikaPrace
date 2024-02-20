@@ -48,7 +48,7 @@ namespace VyrokovaLogikaPrace
             //if tree is not final we will save this true for later use
             if (!tree.isFinal)
             {
-                tempTree = Node.DeepCopy(GetToRoot(tree));
+                tempTree = Node.DeepCopy(tree);
             }
             //if tree has left or right side we will assign truth value for that
             if (tree.Left != null) tree.Left.TruthValue = truthValues.Item1;
@@ -61,7 +61,7 @@ namespace VyrokovaLogikaPrace
             {
                 ProcessTree(tree.Left, tree.Left.TruthValue);
             }
-          
+           
            if (tree.IsRoot)
            {
                 FillTruthTree(tree);
