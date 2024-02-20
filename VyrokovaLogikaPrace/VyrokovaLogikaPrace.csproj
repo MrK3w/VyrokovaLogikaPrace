@@ -49,7 +49,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ContradictionHelper.cs" />
+    <Compile Include="Helpers\ContradictionHelper.cs" />
     <Compile Include="Engine.cs" />
     <Compile Include="Converter.cs" />
     <Compile Include="Enums\Signs.cs" />
@@ -57,13 +57,13 @@
     <Compile Include="Node.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="TreeHelper.cs" />
+    <Compile Include="Helpers\TreeHelper.cs" />
     <Compile Include="TreeConstructer.cs" />
     <Compile Include="TreeProof.cs" />
     <Compile Include="TreeProofAdvanced.cs" />
     <Compile Include="VerboseErrorListener.cs" />
     <Compile Include="VisNode.cs" />
-    <Compile Include="VisNodesHelper.cs" />
+    <Compile Include="Helpers\VisNodesHelper.cs" />
     <Compile Include="VyrokovaLogikaVisitor.cs" />
   </ItemGroup>
   <ItemGroup>
