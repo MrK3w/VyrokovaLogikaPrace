@@ -1,6 +1,9 @@
 ﻿// Map to store unique labels and their corresponding IDs
 const labelIdMap = new Map();
-
+var finishedList = false;
+var lbl = "";
+var changedLabels = [];
+var firstRun;
 function handleButtonDrawGraphButton() {
     const isChecked = document.getElementById("labelCheckbox").checked;
     CallAjaxToGetPaths(false, isChecked);
@@ -77,15 +80,28 @@ function sleep(milliseconds) {
 async function createGraph(isDag, dagPaths, isChecked) {
     // Parse the JSON string to get the array of node objects
     var nodesData = JSON.parse(dagPaths);
+    changedLabels = [];
+    firstRun = true;
+    finishedList = false;
+    document.getElementById("zmeny").innerHTML = "";
+
+    Graphik(isDag, nodesData, isChecked)
+
+    
+}
+
+async function Graphik(isDag, nodesData, isChecked) {
+
     if (isDag) {
         nodesData = modifyNodes(nodesData);
     }
-
+    firstRun = false;
     const existingNodes = {};
     const nodes = new vis.DataSet();
     const edges = new vis.DataSet();
     nodesData.sort((a, b) => b.Id - a.Id);
     console.log('Node Object:', nodesData);
+    if (finishedList) return;
     // Iterate through nodesData to create nodes and edges
     for (let i = 0; i < nodesData.length; i++) {
         const nodeData = nodesData[i];
@@ -103,11 +119,21 @@ async function createGraph(isDag, dagPaths, isChecked) {
             // Create a new node if it doesn't exist
             if (!existingNodes[nodeId]) {
                 existingNodes[nodeId] = true;
-                if (isChecked) {
-                    nodes.add({ id: nodeId, label: label, parentId });
+                if (label != lbl) {
+                    if (isChecked) {
+                        nodes.add({ id: nodeId, label: label, parentId });
+                    }
+                    else {
+                        nodes.add({ id: nodeId, label: operator, parentId });
+                    }
                 }
                 else {
-                    nodes.add({ id: nodeId, label: operator, parentId });
+                    if (isChecked) {
+                        nodes.add({ id: nodeId, label: label, parentId, color: { background: '#AAD7FF' } });
+                    }
+                    else {
+                        nodes.add({ id: nodeId, label: operator, parentId, color: { background: '#AAD7FF' } });
+                    }
                 }
             }
 
@@ -135,20 +161,37 @@ async function createGraph(isDag, dagPaths, isChecked) {
     const data = { nodes, edges };
     const options = {};
     const network = new vis.Network(container, data, options);
-        /*await sleep(1500);*/
-    
+    await sleep(3000);
+    Graphik(isDag, nodesData, isChecked);
 }
 
 function modifyNodes(nodesData) {
     const labelToIdMap = {};
-
+    var changedLabel = "";
     // Iterate through nodesData and update the IDs based on label
     for (const nodeData of nodesData) {
         const label = nodeData.Label;
         const oldId = nodeData.Id;
         if (labelToIdMap[label] !== undefined) {
+            if (changedLabel == "")
+            {
+                lbl = nodeData.Label;
+                if (!changedLabels.includes(nodeData.Label)) {
+                    changedLabel = nodeData.Label;
+                    changedLabels.push(nodeData.Label);
+                    var newAlertDiv = document.createElement("div");
+                    newAlertDiv.className = "alert alert-primary";
+                    newAlertDiv.textContent = "Spojena noda " + nodeData.Label;
+
+                    // Append new alert div to the "zmeny" div
+                    document.getElementById("zmeny").appendChild(newAlertDiv);
+                }
+            }            
+            if(!firstRun)
+            if (changedLabel == nodeData.Label) {
+                nodeData.Id = labelToIdMap[label];
+            }
             // If label already exists, override the ID of the next node
-            nodeData.Id = labelToIdMap[label];
         } else {
             // If label doesn't exist, store the current ID for future reference
             labelToIdMap[label] = nodeData.Id;
@@ -161,7 +204,7 @@ function modifyNodes(nodesData) {
             }
         }
     }
-
+    if(changedLabel == "") finishedList = true;
     return nodesData;
 }
 
