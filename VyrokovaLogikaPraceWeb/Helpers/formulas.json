@@ -1,14 +1,5 @@
 [
   {
-    "Formula": "(A∨B)"
-  },
-  {
-    "Formula": "((-x|b)&(x|a))"
-  },
-  {
-    "Formula": "((¬xb)∧(x∨a))"
-  },
-  {
     "Formula": "(p⇒q)≡(¬q⇒¬p)"
   },
   {
@@ -21,19 +12,7 @@
     "Formula": "(A∨B)∧(¬A∧¬B)"
   },
   {
-    "Formula": "a∧b"
-  },
-  {
-    "Formula": "x∧y"
-  },
-  {
-    "Formula": "xzz"
-  },
-  {
     "Formula": "a∧b≡¬a∨b"
-  },
-  {
-    "Formula": "a∨b"
   },
   {
     "Formula": "x∧y∧y"
@@ -51,40 +30,7 @@
     "Formula": "x∧¬¬z"
   },
   {
-    "Formula": "x∨y"
-  },
-  {
-    "Formula": "x⇒z"
-  },
-  {
-    "Formula": "a∧¬¬b"
-  },
-  {
-    "Formula": "x∧a"
-  },
-  {
     "Formula": "((¬x∨b)∧(x∨a))"
-  },
-  {
-    "Formula": "x∨b"
-  },
-  {
-    "Formula": "(x⇒b)"
-  },
-  {
-    "Formula": "a⇒b"
-  },
-  {
-    "Formula": "x¬x"
-  },
-  {
-    "Formula": "x¬a"
-  },
-  {
-    "Formula": "x¬xx"
-  },
-  {
-    "Formula": "c∧¬¬c"
   },
   {
     "Formula": "((¬(¬x∨b)∧(x∨a))∨(x∧b))⇒((a∨b)∧(b∨c))"
@@ -94,18 +40,6 @@
   },
   {
     "Formula": "(y∧((y⇒¬x)∨(x∨y)))"
-  },
-  {
-    "Formula": "(x⇒y)"
-  },
-  {
-    "Formula": "(x∧y)"
-  },
-  {
-    "Formula": "(x∧z)"
-  },
-  {
-    "Formula": "(x∨y)"
   },
   {
     "Formula": "((x∨y)∧y)"

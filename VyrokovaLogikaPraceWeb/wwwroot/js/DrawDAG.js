@@ -4,6 +4,7 @@ var finishedList = false;
 var lbl = "";
 var changedLabels = [];
 var firstRun;
+var change;
 function handleButtonDrawGraphButton() {
     const isChecked = document.getElementById("labelCheckbox").checked;
     CallAjaxToGetPaths(false, isChecked);
@@ -84,16 +85,16 @@ async function createGraph(isDag, dagPaths, isChecked) {
     firstRun = true;
     finishedList = false;
     document.getElementById("zmeny").innerHTML = "";
-
+    lbl = "";
     Graphik(isDag, nodesData, isChecked)
-
     
 }
 
 async function Graphik(isDag, nodesData, isChecked) {
-
-    if (isDag) {
-        nodesData = modifyNodes(nodesData);
+    if (!firstRun) {
+        if (isDag) {
+            nodesData = modifyNodes(nodesData);
+        }
     }
     firstRun = false;
     const existingNodes = {};
@@ -129,10 +130,10 @@ async function Graphik(isDag, nodesData, isChecked) {
                 }
                 else {
                     if (isChecked) {
-                        nodes.add({ id: nodeId, label: label, parentId, color: { background: '#AAD7FF' } });
+                        nodes.add({ id: nodeId, label: label, parentId, color: { background: '#53db15' } });
                     }
                     else {
-                        nodes.add({ id: nodeId, label: operator, parentId, color: { background: '#AAD7FF' } });
+                        nodes.add({ id: nodeId, label: operator, parentId, color: { background: '#53db15' } });
                     }
                 }
             }
@@ -186,10 +187,9 @@ function modifyNodes(nodesData) {
                     // Append new alert div to the "zmeny" div
                     document.getElementById("zmeny").appendChild(newAlertDiv);
                 }
-            }            
-            if(!firstRun)
-            if (changedLabel == nodeData.Label) {
-                nodeData.Id = labelToIdMap[label];
+            }        
+                if (changedLabel == nodeData.Label) {
+                    nodeData.Id = labelToIdMap[label];
             }
             // If label already exists, override the ID of the next node
         } else {
@@ -204,6 +204,7 @@ function modifyNodes(nodesData) {
             }
         }
     }
+    change = !change;
     if(changedLabel == "") finishedList = true;
     return nodesData;
 }
