@@ -91,6 +91,7 @@ async function createGraph(isDag, dagPaths, isChecked) {
 }
 
 async function Graphik(isDag, nodesData, isChecked) {
+    //if it is not first run we will not change from tree
     if (!firstRun) {
         if (isDag) {
             nodesData = modifyNodes(nodesData);
@@ -110,30 +111,42 @@ async function Graphik(isDag, nodesData, isChecked) {
         const parentId = nodeData.ParentId;
         const operator = nodeData.Operator;
         const label = nodeData.Label;
-        if (parentId === 0) {
-            // Create a new root node
-            if (isChecked) {
-                nodes.add({ id: nodeId, label: label, color: { background: '#FFD700' } });
+        //if node does not have parentId then it is root
+        if (parentId === 0)
+        {
+            // isChecked is for checkbox it will show full form/operators
+            if (isChecked)
+            {
+                nodes.add({ id: nodeId, label: label, color: { background: '#FFD700' }, fixed: true });
             }
-            else nodes.add({ id: nodeId, label: operator, color: { background: '#FFD700' } });
-        } else {
+            else nodes.add({ id: nodeId, label: operator, color: { background: '#FFD700' }, fixed: true });
+        }
+        else {
             // Create a new node if it doesn't exist
             if (!existingNodes[nodeId]) {
+                //store id of already create node
                 existingNodes[nodeId] = true;
-                if (label != lbl) {
-                    if (isChecked) {
+                //label of node is same like just concated node we will change background color
+                if (label != lbl)
+                {
+                    if (isChecked)
+                    {
                         nodes.add({ id: nodeId, label: label, parentId });
                     }
-                    else {
+                    else
+                    {
                         nodes.add({ id: nodeId, label: operator, parentId });
                     }
                 }
-                else {
-                    if (isChecked) {
-                        nodes.add({ id: nodeId, label: label, parentId, color: { background: '#53db15' } });
+                else
+                {
+                    if (isChecked)
+                    {
+                        nodes.add({ id: nodeId, label: label, parentId, color: { background: '#53db15' }, fixed: true });
                     }
-                    else {
-                        nodes.add({ id: nodeId, label: operator, parentId, color: { background: '#53db15' } });
+                    else
+                    {
+                        nodes.add({ id: nodeId, label: operator, parentId, color: { background: '#53db15' }, fixed: true });
                     }
                 }
             }
@@ -162,6 +175,7 @@ async function Graphik(isDag, nodesData, isChecked) {
     const data = { nodes, edges };
     const options = {};
     const network = new vis.Network(container, data, options);
+    //to be able to animate graph
     await sleep(3000);
     Graphik(isDag, nodesData, isChecked);
 }
@@ -173,13 +187,19 @@ function modifyNodes(nodesData) {
     for (const nodeData of nodesData) {
         const label = nodeData.Label;
         const oldId = nodeData.Id;
+        //if we already have label stored in map we will do operation
         if (labelToIdMap[label] !== undefined) {
+            //if changedLabel is "" it means that we find first nodes to concat
             if (changedLabel == "")
             {
+                //store label into global property to be able in graph function change color
                 lbl = nodeData.Label;
+                //if our list of changedLabels don't include this then it means that we didnt concat this node yet
                 if (!changedLabels.includes(nodeData.Label)) {
+                    //we will add changedLabel to list
                     changedLabel = nodeData.Label;
                     changedLabels.push(nodeData.Label);
+                    //we will create div to show what we changed
                     var newAlertDiv = document.createElement("div");
                     newAlertDiv.className = "alert alert-primary";
                     newAlertDiv.textContent = "Spojena noda " + nodeData.Label;
@@ -188,10 +208,10 @@ function modifyNodes(nodesData) {
                     document.getElementById("zmeny").appendChild(newAlertDiv);
                 }
             }        
+                // If label already exists, override the ID of the next node
                 if (changedLabel == nodeData.Label) {
                     nodeData.Id = labelToIdMap[label];
             }
-            // If label already exists, override the ID of the next node
         } else {
             // If label doesn't exist, store the current ID for future reference
             labelToIdMap[label] = nodeData.Id;
