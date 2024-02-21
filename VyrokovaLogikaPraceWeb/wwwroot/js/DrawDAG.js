@@ -5,6 +5,7 @@ var lbl = "";
 var changedLabels = [];
 var firstRun;
 var change;
+
 function handleButtonDrawGraphButton() {
     const isChecked = document.getElementById("labelCheckbox").checked;
     CallAjaxToGetPaths(false, isChecked);
@@ -86,9 +87,11 @@ async function createGraph(isDag, dagPaths, isChecked) {
     finishedList = false;
     document.getElementById("zmeny").innerHTML = "";
     lbl = "";
-    Graphik(isDag, nodesData, isChecked)
-    
+    Graphik(isDag, nodesData, isChecked);
+    nodePositions = {};
 }
+
+var nodePositions = {};
 
 async function Graphik(isDag, nodesData, isChecked) {
     //if it is not first run we will not change from tree
@@ -101,25 +104,32 @@ async function Graphik(isDag, nodesData, isChecked) {
     const existingNodes = {};
     const nodes = new vis.DataSet();
     const edges = new vis.DataSet();
+
     nodesData.sort((a, b) => b.Id - a.Id);
     console.log('Node Object:', nodesData);
     if (finishedList) return;
+
+
     // Iterate through nodesData to create nodes and edges
     for (let i = 0; i < nodesData.length; i++) {
+
         const nodeData = nodesData[i];
+
         const nodeId = nodeData.Id;
         const parentId = nodeData.ParentId;
         const operator = nodeData.Operator;
         const label = nodeData.Label;
+
+
         //if node does not have parentId then it is root
         if (parentId === 0)
         {
             // isChecked is for checkbox it will show full form/operators
             if (isChecked)
             {
-                nodes.add({ id: nodeId, label: label, color: { background: '#FFD700' }, fixed: true });
+                nodes.add({ id: nodeId, label: label, color: { background: '#FFD700' }});
             }
-            else nodes.add({ id: nodeId, label: operator, color: { background: '#FFD700' }, fixed: true });
+            else nodes.add({ id: nodeId, label: operator, color: { background: '#FFD700' }});
         }
         else {
             // Create a new node if it doesn't exist
@@ -142,11 +152,11 @@ async function Graphik(isDag, nodesData, isChecked) {
                 {
                     if (isChecked)
                     {
-                        nodes.add({ id: nodeId, label: label, parentId, color: { background: '#53db15' }, fixed: true });
+                        nodes.add({ id: nodeId, label: label, parentId, color: { background: '#53db15' }});
                     }
                     else
                     {
-                        nodes.add({ id: nodeId, label: operator, parentId, color: { background: '#53db15' }, fixed: true });
+                        nodes.add({ id: nodeId, label: operator, parentId, color: { background: '#53db15' }});
                     }
                 }
             }
@@ -173,10 +183,19 @@ async function Graphik(isDag, nodesData, isChecked) {
     // Update the vis.js network
     const container = document.getElementById('treeVisualization');
     const data = { nodes, edges };
-    const options = {};
+    var options = {
+        physics: {
+            stabilization: true,
+        },
+        nodes: {
+            physics: false,
+        },
+        layout: { randomSeed: 0 }
+    };
     const network = new vis.Network(container, data, options);
     //to be able to animate graph
-    await sleep(3000);
+    await sleep(10000);
+    nodePositions = network.getPositions();
     Graphik(isDag, nodesData, isChecked);
 }
 
