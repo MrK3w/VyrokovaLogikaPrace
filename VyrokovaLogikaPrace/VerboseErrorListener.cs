@@ -27,7 +27,9 @@ namespace VyrokovaLogikaPrace
                 }
                 else
                 {
-                    Console.WriteLine($"Unsupported operator found at line {line}, position {charPositionInLine}: {offendingSymbol.Text}");
+                    var myMessage = $"Nerozpoznán symbol {msg[msg.Length - 2]} na pozici {charPositionInLine + 1}";
+                    Console.WriteLine(myMessage);
+                    Errors.Add(myMessage);
                     ErrorCount++;
                 }
             }
@@ -51,7 +53,7 @@ namespace VyrokovaLogikaPrace
             else
             {
                 // Handle other types of errors if needed
-                var myMessage = $"Syntax error at line {line}, position {charPositionInLine}: {msg}";
+                var myMessage = $"Syntaktický error na řádku {line}, pozice {charPositionInLine}: {msg}";
                 Console.WriteLine(myMessage);
                 Errors.Add(myMessage);
                 ErrorCount++;
