@@ -127,40 +127,43 @@ async function Graphik(isDag, nodesData, isChecked) {
             // isChecked is for checkbox it will show full form/operators
             if (isChecked)
             {
-                nodes.add({ id: nodeId, label: label, color: { background: '#FFD700' }});
+                nodes.add({ id: nodeId, label: label, title: operator, color: { background: '#FFD700' } });
             }
-            else nodes.add({ id: nodeId, label: operator, color: { background: '#FFD700' }});
+            else
+            {
+                nodes.add({ id: nodeId, label: operator, title: label, color: { background: '#FFD700' } });
+            }
         }
         else {
             // Create a new node if it doesn't exist
-            if (!existingNodes[nodeId]) {
+            if (!existingNodes[nodeId])
+            {
                 //store id of already create node
                 existingNodes[nodeId] = true;
                 //label of node is same like just concated node we will change background color
-                if (label != lbl)
+                if (isChecked)
                 {
-                    if (isChecked)
+                    if (label != lbl)
                     {
-                        nodes.add({ id: nodeId, label: label, parentId });
+                        nodes.add({ id: nodeId, label: label, title: operator, parentId });
                     }
                     else
                     {
-                        nodes.add({ id: nodeId, label: operator, parentId });
+                        nodes.add({ id: nodeId, label: label, title: operator, parentId, color: { background: '#53db15' } });
                     }
                 }
                 else
                 {
-                    if (isChecked)
+                    if (label != lbl)
                     {
-                        nodes.add({ id: nodeId, label: label, parentId, color: { background: '#53db15' }});
+                        nodes.add({ id: nodeId, label: operator, title: label, parentId });
                     }
                     else
                     {
-                        nodes.add({ id: nodeId, label: operator, parentId, color: { background: '#53db15' }});
+                        nodes.add({ id: nodeId, label: operator, title: label, parentId, color: { background: '#53db15' } });
                     }
                 }
             }
-
             // Check if the parent node label starts with the same text up to the length of the current node's label
             const parentNode = nodesData.find(node => node.Id === parentId);
             var tempLabel = label;
@@ -175,7 +178,6 @@ async function Graphik(isDag, nodesData, isChecked) {
             } else if (parentLabelStart !== tempLabel) {
                 edgeColor = 'orange';
             }
-
             edges.add({ from: nodeId, to: parentId, arrows: 'to', color: edgeColor });
         }
     }
@@ -187,18 +189,46 @@ async function Graphik(isDag, nodesData, isChecked) {
         physics: {
             stabilization: true,
         },
+   
         nodes: {
+            title: 'title',
             physics: false,
             size: 30,
+            font: {
+                size: 16, // Adjust the font size as needed
+            },
         },
     };
     
     const network = new vis.Network(container, data, options);
+
+
+    network.on("afterDrawing", function (ctx) {
+        drawOnCanvasLabels(ctx, container); // Call drawOnCanvasLabels and pass ctx
+    });
     const nodesDat = data.nodes.get();
     console.log(nodesDat);
     //to be able to animate graph
-    await sleep(3000);
+    /*await sleep(3000);*/
     Graphik(isDag, nodesData, isChecked);
+}
+
+function drawOnCanvasLabels(ctx, container) {
+    // Draw text onto the canvas
+    const canvasWidth = container.offsetWidth;
+    const canvasHeight = container.offsetHeight;
+    const centerX = canvasWidth / 2;
+    const centerY = canvasHeight / 2;
+    ctx.font = "16px Arial";
+    ctx.fillStyle = "black";
+    ctx.fillText("Barvy hran:", 100 - centerX, 100 - centerY); // Adjust position as needed
+    ctx.fillStyle = "blue";
+    ctx.fillRect(195 - centerX, 111 - centerY, 10, 10); // Sample color indicator
+    ctx.fillText("Levá strana", 100 - centerX, 120 - centerY); // Adjust position as needed
+    ctx.fillStyle = "orange";
+    ctx.fillRect(195 - centerX, 133 - centerY, 10, 10); // Sample color indicator
+    ctx.fillText("Pravá strana", 100 - centerX, 140 - centerY); // Adjust position as needed
+        // Add more color descriptions as needed
 }
 
 function modifyNodes(nodesData) {
