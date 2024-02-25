@@ -23,23 +23,23 @@
                 <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
                     <ul class="navbar-nav flex-grow-1">
                         <li class="nav-item dropdown">
-                            <a class="nav-link text-dark dropdown-toggle" asp-page="/SyntacticTree" id="syntacticTreeDropdown" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            <a class="nav-link text-dark dropdown-toggle" asp-page="/Tree/SyntacticTree" id="syntacticTreeDropdown" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                 Strom výrokové logiky
                             </a>
                             <div class="dropdown-menu" aria-labelledby="syntacticTreeDropdown" id="syntacticTreeSubMenu">
-                                <a class="dropdown-item" asp-area="" asp-page="/DrawTree">Vykresli strom</a>
-                                <a class="dropdown-item" asp-area="" asp-page="/CreateTree">Vytvoř strom</a>
-                                <a class="dropdown-item" asp-area="" asp-page="/TruthTree">Vytvoř pravdivostní strom</a>
+                                <a class="dropdown-item" asp-area="" asp-page="/Tree/DrawTree">Vykresli strom</a>
+                                <a class="dropdown-item" asp-area="" asp-page="/Tree/CreateTree">Vytvoř strom</a>
+                                <a class="dropdown-item" asp-area="" asp-page="/Tree/TruthTree">Vytvoř pravdivostní strom</a>
                                 <!-- Add more submenu items as needed -->
                             </div>
                         </li>
 
                         <li class="nav-item dropdown">
-                            <a class="nav-link text-dark dropdown-toggle" asp-page="/DAG" id="dagDropdown" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            <a class="nav-link text-dark dropdown-toggle" asp-page="/DAG/DAG" id="dagDropdown" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                 DAG
                             </a>
                             <div class="dropdown-menu" aria-labelledby="dagDropdown" id="dagSubMenu">
-                                <a class="dropdown-item" asp-area="" asp-page="/DrawDAG">Vykresli DAG</a>
+                                <a class="dropdown-item" asp-area="" asp-page="/DAG/DrawDAG">Vykresli DAG</a>
                             </div>
                         </li>
 

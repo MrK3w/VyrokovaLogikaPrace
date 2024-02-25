@@ -189,13 +189,15 @@ async function Graphik(isDag, nodesData, isChecked) {
         },
         nodes: {
             physics: false,
+            size: 30,
         },
-        layout: { randomSeed: 0 }
     };
+    
     const network = new vis.Network(container, data, options);
+    const nodesDat = data.nodes.get();
+    console.log(nodesDat);
     //to be able to animate graph
-    await sleep(10000);
-    nodePositions = network.getPositions();
+    await sleep(3000);
     Graphik(isDag, nodesData, isChecked);
 }
 
