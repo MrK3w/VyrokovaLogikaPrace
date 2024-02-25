@@ -1,3 +1,16 @@
 ﻿#treeVisualization {
     height: 100vh;
+    border: 1px solid #000; /* Black border with 1px width */
+    box-sizing: border-box; /* Include border in the height calculation */
+}
+
+.vis-tooltip {
+    position: absolute;
+    background-color: lightblue; /* Set light blue background color */
+    padding: 10px; /* Add more padding for better readability */
+    font-size: 20px; /* Increase font size */
+    font-weight: bold; /* Make the font bold */
+    z-index: 9999; /* Ensure the tooltip is on top of other elements */
+    left: 20px; /* Adjust horizontal distance from the hover */
+    top: 30px; /* Adjust vertical distance from the hover */
 }

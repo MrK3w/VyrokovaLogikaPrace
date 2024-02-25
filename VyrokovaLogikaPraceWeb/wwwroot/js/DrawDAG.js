@@ -1,22 +1,16 @@
 ﻿// Map to store unique labels and their corresponding IDs
 const labelIdMap = new Map();
-var finishedList = false;
-var lbl = "";
-var changedLabels = [];
-var firstRun;
-var change;
+var finished = true;
 
 function handleButtonDrawGraphButton() {
-    const isChecked = document.getElementById("labelCheckbox").checked;
-    CallAjaxToGetPaths(false, isChecked);
+    CallAjaxToGetPaths(false);
 }
 
 function handleButtonDrawDAGButton() {
-    const isChecked = document.getElementById("labelCheckbox").checked;
-    CallAjaxToGetPaths(true, isChecked);
+    CallAjaxToGetPaths(true);
 }
 
-function CallAjaxToGetPaths(isDag, isChecked) {
+function CallAjaxToGetPaths(isDag) {
     var userInput = $('#UserInput').val();
     var formula = $('#formula').val();
     var dataToSend = userInput ? userInput : formula;
@@ -28,6 +22,7 @@ function CallAjaxToGetPaths(isDag, isChecked) {
         .replace(/>/g, '⇒')
         .replace(/--/g, '¬¬');
     $('#UserInput').val("");
+
     if ($('#formula option[value="' + dataToSend + '"]').length === 0) {
         // Create a new option element
         var newOption = $('<option>', {
@@ -54,12 +49,8 @@ function CallAjaxToGetPaths(isDag, isChecked) {
         data: JSON.stringify(dataToSend),
         success: function (output) {
             var parsedOutput = JSON.parse(output);
-            parsedOutput = modifyNodes(parsedOutput);
             parsedOutput.sort((a, b) => b.Id - a.Id);
-            // Log the parsed object with Unicode characters properly displayed
-            
-
-            createGraph(isDag, output, isChecked);
+            createGraph(isDag, parsedOutput);
         },
         error: function (error) {
             console.error('Error:', error);
@@ -68,47 +59,20 @@ function CallAjaxToGetPaths(isDag, isChecked) {
     });
 }
 
-function Node(id, label, parentId = null) {
-    this.id = id;
-    this.label = label;
-    this.parentId = parentId;
-}
-
 function sleep(milliseconds) {
     return new Promise(resolve => setTimeout(resolve, milliseconds));
 }
 
 //function to draw graph
-async function createGraph(isDag, dagPaths, isChecked) {
-    // Parse the JSON string to get the array of node objects
-    var nodesData = JSON.parse(dagPaths);
-    changedLabels = [];
-    firstRun = true;
-    finishedList = false;
+async function createGraph(isDag, nodesData, isChecked) {
     document.getElementById("zmeny").innerHTML = "";
-    lbl = "";
     Graphik(isDag, nodesData, isChecked);
-    nodePositions = {};
 }
 
-var nodePositions = {};
-
-async function Graphik(isDag, nodesData, isChecked) {
+async function Graphik(isDag, nodesData) {
     //if it is not first run we will not change from tree
-    if (!firstRun) {
-        if (isDag) {
-            nodesData = modifyNodes(nodesData);
-        }
-    }
-    firstRun = false;
-    const existingNodes = {};
     const nodes = new vis.DataSet();
     const edges = new vis.DataSet();
-
-    nodesData.sort((a, b) => b.Id - a.Id);
-    console.log('Node Object:', nodesData);
-    if (finishedList) return;
-
 
     // Iterate through nodesData to create nodes and edges
     for (let i = 0; i < nodesData.length; i++) {
@@ -124,46 +88,11 @@ async function Graphik(isDag, nodesData, isChecked) {
         //if node does not have parentId then it is root
         if (parentId === 0)
         {
-            // isChecked is for checkbox it will show full form/operators
-            if (isChecked)
-            {
-                nodes.add({ id: nodeId, label: label, title: operator, color: { background: '#FFD700' } });
-            }
-            else
-            {
-                nodes.add({ id: nodeId, label: operator, title: label, color: { background: '#FFD700' } });
-            }
+            nodes.add({ id: nodeId, label: operator, title: label, parentId, color: { background: '#FFD700' } });
         }
         else {
-            // Create a new node if it doesn't exist
-            if (!existingNodes[nodeId])
-            {
-                //store id of already create node
-                existingNodes[nodeId] = true;
-                //label of node is same like just concated node we will change background color
-                if (isChecked)
-                {
-                    if (label != lbl)
-                    {
-                        nodes.add({ id: nodeId, label: label, title: operator, parentId });
-                    }
-                    else
-                    {
-                        nodes.add({ id: nodeId, label: label, title: operator, parentId, color: { background: '#53db15' } });
-                    }
-                }
-                else
-                {
-                    if (label != lbl)
-                    {
-                        nodes.add({ id: nodeId, label: operator, title: label, parentId });
-                    }
-                    else
-                    {
-                        nodes.add({ id: nodeId, label: operator, title: label, parentId, color: { background: '#53db15' } });
-                    }
-                }
-            }
+            nodes.add({ id: nodeId, label: operator, title: label, parentId });
+
             // Check if the parent node label starts with the same text up to the length of the current node's label
             const parentNode = nodesData.find(node => node.Id === parentId);
             var tempLabel = label;
@@ -180,18 +109,20 @@ async function Graphik(isDag, nodesData, isChecked) {
             }
             edges.add({ from: nodeId, to: parentId, arrows: 'to', color: edgeColor });
         }
+     
     }
 
     // Update the vis.js network
     const container = document.getElementById('treeVisualization');
     const data = { nodes, edges };
     var options = {
+        interaction: {
+            hover: true
+        },
         physics: {
             stabilization: true,
         },
-   
         nodes: {
-            title: 'title',
             physics: false,
             size: 30,
             font: {
@@ -202,15 +133,64 @@ async function Graphik(isDag, nodesData, isChecked) {
     
     const network = new vis.Network(container, data, options);
 
-
     network.on("afterDrawing", function (ctx) {
         drawOnCanvasLabels(ctx, container); // Call drawOnCanvasLabels and pass ctx
     });
-    const nodesDat = data.nodes.get();
-    console.log(nodesDat);
-    //to be able to animate graph
-    /*await sleep(3000);*/
-    Graphik(isDag, nodesData, isChecked);
+    if(isDag)
+    updateNodes(data, network);
+}
+
+async function updateNodes(data, network) {
+    await sleep(3000);
+    var dataFromGraph = data.nodes.get();
+    var changeTitle = modifyNodes(dataFromGraph);
+    if (finished) return; 
+    var nodesToUpdate = dataFromGraph.filter(function (node) {
+        return node.title === changeTitle;
+    });
+
+    // Update color for filtered nodes
+    nodesToUpdate.forEach(function (node) {
+        data.nodes.update({ id: node.id, color: { background: 'green' } });
+    });
+    console.log(data.nodes.get());
+    var positions = network.getPositions();
+    network.setData(data);
+
+    network.once("stabilizationIterationsDone", function () {
+        // Iterate over the positions object and update node positions
+        for (const nodeId in positions) {
+            if (positions.hasOwnProperty(nodeId)) {
+                const position = positions[nodeId];
+                network.moveNode(nodeId, position.x, position.y);
+            }
+        }
+    });
+    await sleep(3000);
+
+    nodesToUpdate.slice(1).forEach(function (node) {
+        data.edges.add({ from: nodesToUpdate[0].id, to: node.parentId, arrows: 'to' });
+        dataFromGraph.forEach(function (allNodes) {
+            if (allNodes.parentId == node.id) {
+                allNodes.parentId = nodesToUpdate[0].id;
+                data.edges.add({ from: allNodes.id, to: nodesToUpdate[0].id, arrows: 'to' });
+            }
+        })
+        data.nodes.remove({ id: node.id });
+    });
+    data.nodes.update({ id: nodesToUpdate[0].id, color: { background: '#97c2fc' } });
+    positions = network.getPositions();
+    network.setData(data);
+    network.once("stabilizationIterationsDone", function () {
+        // Iterate over the positions object and update node positions
+        for (const nodeId in positions) {
+            if (positions.hasOwnProperty(nodeId)) {
+                const position = positions[nodeId];
+                network.moveNode(nodeId, position.x, position.y);
+            }
+        }
+    });
+    updateNodes(data, network);
 }
 
 function drawOnCanvasLabels(ctx, container) {
@@ -233,51 +213,32 @@ function drawOnCanvasLabels(ctx, container) {
 
 function modifyNodes(nodesData) {
     const labelToIdMap = {};
-    var changedLabel = "";
+    var changeTitle = "";
+    finished = true;
     // Iterate through nodesData and update the IDs based on label
     for (const nodeData of nodesData) {
-        const label = nodeData.Label;
-        const oldId = nodeData.Id;
+        const label = nodeData.title;
         //if we already have label stored in map we will do operation
         if (labelToIdMap[label] !== undefined) {
-            //if changedLabel is "" it means that we find first nodes to concat
-            if (changedLabel == "")
-            {
-                //store label into global property to be able in graph function change color
-                lbl = nodeData.Label;
-                //if our list of changedLabels don't include this then it means that we didnt concat this node yet
-                if (!changedLabels.includes(nodeData.Label)) {
-                    //we will add changedLabel to list
-                    changedLabel = nodeData.Label;
-                    changedLabels.push(nodeData.Label);
-                    //we will create div to show what we changed
-                    var newAlertDiv = document.createElement("div");
-                    newAlertDiv.className = "alert alert-primary";
-                    newAlertDiv.textContent = "Spojena noda " + nodeData.Label;
+            changeTitle = label;
+            finished = false;
 
-                    // Append new alert div to the "zmeny" div
-                    document.getElementById("zmeny").appendChild(newAlertDiv);
-                }
-            }        
-                // If label already exists, override the ID of the next node
-                if (changedLabel == nodeData.Label) {
-                    nodeData.Id = labelToIdMap[label];
-            }
+            //we will create div to show what we changed
+            var newAlertDiv = document.createElement("div");
+            newAlertDiv.className = "alert alert-primary";
+            newAlertDiv.textContent = "Spojena noda " + changeTitle;
+
+            // Append new alert div to the "zmeny" div
+            document.getElementById("zmeny").appendChild(newAlertDiv);
+
+            return changeTitle;
         } else {
             // If label doesn't exist, store the current ID for future reference
-            labelToIdMap[label] = nodeData.Id;
-        }
-
-        // Update ParentId of nodes that have their ParentId matching the oldId
-        for (const node of nodesData) {
-            if (node.ParentId === oldId) {
-                node.ParentId = nodeData.Id;
-            }
+            labelToIdMap[label] = nodeData.id;
         }
     }
-    change = !change;
-    if(changedLabel == "") finishedList = true;
-    return nodesData;
+    
+    return changeTitle;
 }
 
 $(document).ready(function () {
