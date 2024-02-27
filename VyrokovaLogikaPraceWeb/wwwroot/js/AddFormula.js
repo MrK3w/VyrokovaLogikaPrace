@@ -1,14 +1,7 @@
-﻿function handleButtonPridejFormuliClick(event) {
+﻿function handleButtonPridejFormuliClick() {
     //Get value from input
     var inputValue = $('#FormulaInput').val();
-
-    inputValue = inputValue
-        .replace(/&/g, '∧')
-        .replace(/\|/g, '∨')
-        .replace(/=/g, '≡')
-        .replace(/-/g, '¬')
-        .replace(/>/g, '⇒')
-        .replace(/--/g, '¬¬');
+    inputValue = transformInputValue(inputValue);
     $('#FormulaInput').val(inputValue);
 }
 

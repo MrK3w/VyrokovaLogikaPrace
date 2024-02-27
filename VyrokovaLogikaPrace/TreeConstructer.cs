@@ -123,6 +123,7 @@ namespace VyrokovaLogikaPrace
                 //finish on child nodes, we need to return to parent
                 else if (tag == "</ul>")
                 {
+                    if(tree.Parent != null)
                     tree = tree.Parent;
                 }
                 //this let us know that there will be some child nodes, so we will add to left side of tree
@@ -146,7 +147,6 @@ namespace VyrokovaLogikaPrace
             //split by this delimeter
             //we will strip tree with this delimetrs to create list
             string[] delimiters = { "<li>", "</li>", "<item>", "</item>", "<ul>", "</ul>" };
-
             // Split the input string by the delimiters
             return SplitWithDelimiters(mHtmlTree, delimiters);
         }

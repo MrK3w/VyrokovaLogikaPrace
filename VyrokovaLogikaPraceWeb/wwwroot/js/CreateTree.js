@@ -105,7 +105,6 @@ function handleButtonOdstranNoduClick() {
         // Check if the div with tree is empty
         var divElement = document.querySelector('.tf-tree');
 
-
         if (divElement.innerHTML.trim() === '') {
             divElement.remove();
         }
@@ -157,7 +156,6 @@ function handleButtonUlozFormuli() {
         }
     });
 }
-
 
 //Create formula from just create tree
 function handleButtonVytvorFormuliClick() {
@@ -265,7 +263,6 @@ function createNewUlWithLi(newSpan) {
     return newUl;
 }
 
-
 // Helper function to handle button click for adding a new node
 function handleButtonPridejNoduClick() {
     var spanElement = document.querySelector('.tf-nc[style="border-color: blue;"]');
@@ -313,8 +310,6 @@ function handleButtonPridejNoduClick() {
     // set functions to node
     $(".tf-nc").on("click", handleNodeClick);
 }
-
-
 
 function showDialog(title, message) {
     alert(title + "\n\n" + message);
