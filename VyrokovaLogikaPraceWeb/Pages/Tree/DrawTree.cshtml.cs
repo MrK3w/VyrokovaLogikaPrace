@@ -1,6 +1,9 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using System.Data.SqlTypes;
+using System.Reflection.Emit;
+using System.Xml.Linq;
 using VyrokovaLogikaPrace;
 using VyrokovaLogikaPraceWeb.Helpers;
 
@@ -76,9 +79,28 @@ namespace VyrokovaLogikaPraceWeb.Pages
         {
             htmlTree.Add("<li id='node_" + tree.id + "'>");
             string op = string.Empty;
+
             op = TreeHelper.GetOP(tree);
+            int position;
+            if(tree is NegationOperatorNode || tree is DoubleNegationOperatorNode || tree is ValueNode)
+              position = tree.Value.IndexOf(op);
+            else
+            {
+
+                if (tree.Value[0] == '(')
+                {
+                    position = tree.Left.Value.Length + 2;
+                    var firstPart = tree.Value.Substring(0, position);
+                    var secondPart = tree.Value.Substring(position+1);
+                    var temp = firstPart + op + secondPart;
+                    if (temp != tree.Value) position = position-2;
+                }
+
+                else position = tree.Left.Value.Length;
+            }
             //we store tree value and tree op to be able to switch between full form and syntax form
-            htmlTree.Add("<span class='tf-nc' onclick='toggleNode(" + tree.id + ", \"" + tree.Value + "\", \"" + op + "\")'>" + op + "</span>");
+            htmlTree.Add("<span class='tf-nc' onclick='toggleNode(" + tree.id + ", \"" + tree.Value + "\", \"" + op + "\", " + position + ")'>" + op + "</span>");
+
 
             if (tree.Left != null)
             {
