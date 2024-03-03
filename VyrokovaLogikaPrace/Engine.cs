@@ -17,6 +17,7 @@ namespace VyrokovaLogikaPrace
         public Node pSyntaxTree { get; set; }
 
         public List<string> Errors { get; private set; } = new List<string>();
+        public List <int> ErrorsIndex { get; private set; } = new List<int>();
         public Engine(string input)
         {
             mInput = input;
@@ -55,7 +56,7 @@ namespace VyrokovaLogikaPrace
 
             // Retrieve the errors from the custom error listener
             Errors = customErrorListener.Errors;
-
+            ErrorsIndex = customErrorListener.ErrorsIndex;
             // Get the total number of errors encountered during parsing
             int errorCount = customErrorListener.ErrorCount;
 

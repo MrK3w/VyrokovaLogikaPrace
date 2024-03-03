@@ -14,7 +14,12 @@ namespace VyrokovaLogikaPraceWeb
 
         public List<string> Errors { get; set; } = new List<string>();
 
-        public string Formula = "";
+        public string Formula { get; set; } = "";
+
+        public List<int> ErrorsIndex { get; set; } = new List<int>();
+
+        public bool FormulaAdded { get; set; } = false;
+
 
         public AddFormulaModel(IWebHostEnvironment env)
         {
@@ -31,6 +36,20 @@ namespace VyrokovaLogikaPraceWeb
             if (regex.IsMatch(formula))
             {
                 Errors.Add("Pøed negací nemùže být literál!");
+                var matches = regex.Matches(formula);
+                foreach (Match match in matches)
+                {
+                    // Update ErrorsIndex list with the index positions of letters preceding the negation
+                    int startIndex = match.Index;
+                    int endIndex = match.Index + match.Length - 1;
+                    for (int i = startIndex; i <= endIndex; i++)
+                    {
+                        if (!ErrorsIndex.Contains(i))
+                        {
+                            ErrorsIndex.Add(i);
+                        }
+                    }
+                }
                 Formula = formula;
                 return Page();
             }
@@ -43,11 +62,14 @@ namespace VyrokovaLogikaPraceWeb
                 //get updated list of formula
                 AllFormulas = FormulaHelper.InitializeAllFormulas(mEnv);
                 Errors = FormulaHelper.Errors;
+                if (Errors.Count == 0) FormulaAdded = true;
+                Formula = formula;
             }
             else
             {
                 Errors = engine.Errors;
                 Formula = formula;
+                ErrorsIndex = engine.ErrorsIndex;
             }
             return Page();
         }

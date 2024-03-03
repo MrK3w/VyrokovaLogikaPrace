@@ -13,6 +13,8 @@ namespace VyrokovaLogikaPrace
         public int ErrorCount { get; private set; } = 0;
         public List<string> Errors { get; private set; } = new List<string>();
 
+        public List<int> ErrorsIndex { get; private set; } = new List<int>();
+
         public override void SyntaxError(IRecognizer recognizer, IToken offendingSymbol, int line, int charPositionInLine, string msg, RecognitionException e)
         {
             // Check if the error is related to an unsupported operator
@@ -20,15 +22,15 @@ namespace VyrokovaLogikaPrace
             {
                 if(offendingSymbol.Text == "<EOF>")
                 {
-                    var myMessage = $"Formule není správně ukončena na pozici {charPositionInLine + 1} zkontroluj prosím závorky!";
-                    Console.WriteLine(myMessage);
+                    var myMessage = $"Formule není správně ukončena na pozici {charPositionInLine-1} zkontroluj prosím závorky!";
+                    ErrorsIndex.Add(charPositionInLine-1);
                     Errors.Add(myMessage);
                     ErrorCount++;
                 }
                 else
                 {
-                    var myMessage = $"Nerozpoznán symbol {msg[msg.Length - 2]} na pozici {charPositionInLine + 1}";
-                    Console.WriteLine(myMessage);
+                    var myMessage = $"Nerozpoznán symbol {msg[msg.Length - 2]} na pozici {charPositionInLine}";
+                    ErrorsIndex.Add(charPositionInLine);
                     Errors.Add(myMessage);
                     ErrorCount++;
                 }
@@ -45,8 +47,8 @@ namespace VyrokovaLogikaPrace
             // Check if the error is related to an unsupported operator
             if (offendingSymbol != -1)
             {
-                var myMessage = $"Nerozpoznán symbol {msg[msg.Length - 2]} na pozici {charPositionInLine+1}";
-                Console.WriteLine(myMessage);
+                var myMessage = $"Nerozpoznán symbol {msg[msg.Length - 2]} na pozici {charPositionInLine}";
+                ErrorsIndex.Add(charPositionInLine);
                 Errors.Add(myMessage);
                 ErrorCount++;
             }
@@ -54,7 +56,7 @@ namespace VyrokovaLogikaPrace
             {
                 // Handle other types of errors if needed
                 var myMessage = $"Syntaktický error na řádku {line}, pozice {charPositionInLine}: {msg}";
-                Console.WriteLine(myMessage);
+                ErrorsIndex.Add(charPositionInLine);
                 Errors.Add(myMessage);
                 ErrorCount++;
             }

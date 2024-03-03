@@ -7,6 +7,7 @@
     <title>My Page</title>
     <script src="~/js/AddFormula.js"></script>
     <script src="~/js/InputValueTransform.js"></script>
+    <link rel="stylesheet" href="~/css/Formula.css" />
 </head>
 
 <body>
@@ -55,6 +56,22 @@
             </form>
             @if (Model.Errors != null && Model.Errors.Any())
             {
+                <div class="alert alert-warning alert-dismissible fade show" role="alert">
+                    <strong>Formule:</strong>
+                    <span class="formula">
+                        @foreach (var (index, letter) in Model.Formula.Select((value, index) => (index, value)))
+                        {
+                            if (Model.ErrorsIndex.Contains(index))
+                            {
+                                <span class="error">@letter</span>
+                            }
+                            else
+                            {
+                                @letter
+                            }
+                        }
+                    </span>
+                </div>
                 <div class="container mt-4" id='errors'>
                     @foreach (var error in Model.Errors)
                     {
@@ -62,6 +79,13 @@
                             <strong>Chyba:</strong> @error
                         </div>
                     }
+                    
+                </div>
+            }
+            @if (Model.FormulaAdded)
+            {
+                <div class="alert alert-success alert-dismissible fade show" role="alert">
+                    <strong>Formule @Model.Formula úspěšně přidaná.</strong>
                 </div>
             }
             </div>
