@@ -26,21 +26,24 @@ namespace VyrokovaLogikaPrace
         {
             if (tree.IsLeaf) return;
             var sideValues = TreeHelper.GetValuesOfBothSides(tree.TruthValue, tree);
-            contradictionInTree = false;
+            contradictionInTree = true;
+            tree.Red = true;
             foreach (var sideValue in sideValues)
             {
                 if (tree.Right != null)
                 {
-                    if (sideValue.Item1 != tree.Left.TruthValue && sideValue.Item2 != tree.Right.TruthValue)
-                        contradictionInTree = true;
-                        tree.Left.Red = true;
+                    if (sideValue.Item1 == tree.Left.TruthValue && sideValue.Item2 == tree.Right.TruthValue)
+                    {
+                        contradictionInTree = false;
+                        tree.Red = false;
+                    }
                 }
                 else
                 {
-                    if (sideValue.Item1 != tree.Left.TruthValue)
+                    if (sideValue.Item1 == tree.Left.TruthValue)
                     {
-                        tree.Left.Red = true;
-                        contradictionInTree = true;
+                        tree.Left.Red = false;
+                        contradictionInTree = false;
                     }
                 }
             }
@@ -53,7 +56,7 @@ namespace VyrokovaLogikaPrace
                 }
                 if (tree.Right != null)
                 {
-                    FindContradiction(tree.Right);
+                    FindContradictionInTree(tree.Right);
                 }
             }
         }

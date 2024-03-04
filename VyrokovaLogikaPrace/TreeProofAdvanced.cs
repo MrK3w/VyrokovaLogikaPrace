@@ -10,87 +10,52 @@ namespace VyrokovaLogikaPrace
         public bool IsTautology { get; set; }
         public Node CounterModel { get; set; }
         public List<Tuple<string, int>> DistinctNodes { get; set; } = new List<Tuple<string, int>>();
-        Node tempTree = new Node(0);
+
         bool treeIsCompleted = true;
-        Dictionary<string, int> nodes;
+        Dictionary<string, int> nodes = new Dictionary<string, int>();
         bool contradiction;
+        public List<Node> treees = new List<Node>();
         public void ProcessTree(Node tree, int truthValue = 0)
         {
-            //if tree is leaf we will try to fill all other leaf if already there is same value node
-            if(tree.IsLeaf)
+            if (tree.IsLeaf)
             {
-                List<Node> leafNodes = new List<Node>();
-                nodes = new Dictionary<string, int>();
-                ContradictionHelper contradiction = new ContradictionHelper();
-                contradiction.GetLeafNodes(GetToRoot(tree), ref leafNodes);
-                foreach (var leafNode in leafNodes)
-                {
-                    if (leafNode.TruthValue != -1) nodes.Add(leafNode.Value, leafNode.TruthValue);
-                }
-                FillSameTruthWithSameValues(GetToRoot(tree));
+               
                 return;
             }
-            //if tree is root we will assign truth value to root
-            if (tree.IsRoot) tree.TruthValue = truthValue;
-            //if we did not created combinations for node we will do it now
-            if(tree.UsedCombinations == null)
-            {
-                tree.UsedCombinations = TreeHelper.GetValuesOfBothSides(truthValue, tree);
-            }
-            //if there is left only one combination we will mark it as final
-            if(tree.UsedCombinations.Count == 1)
-            {
-                tree.isFinal = true;
-            }
-            //we will try one of options and remove it from lsit
-            var truthValues = tree.UsedCombinations[tree.UsedCombinations.Count - 1];
-            tree.UsedCombinations.RemoveAt(tree.UsedCombinations.Count - 1);
-            //if tree is not final we will save this true for later use
-            if (!tree.isFinal)
-            {
-                tempTree = Node.DeepCopy(tree);
-            }
-            //if tree has left or right side we will assign truth value for that
-            if (tree.Left != null) tree.Left.TruthValue = truthValues.Item1;
-            if(tree.Right != null) tree.Right.TruthValue = truthValues.Item2;
-            //has tree complete all sides
-            IsTreeCompleted(GetToRoot(tree));
-           
-            //if tree is not completed we will try to go left side
             if (tree.Left != null)
             {
-                ProcessTree(tree.Left, tree.Left.TruthValue);
+                var values = TreeHelper.GetValuesOfBothSides(truthValue, tree);
+                //this is for just one variant
+                tree.Left.TruthValue = values[0].Item1;
+                if(tree.Left.IsLeaf) nodes[tree.Left.Value] = tree.Left.TruthValue;
+                ProcessTree(tree.Left, values[0].Item1);
+                if (tree.Right != null)
+                {
+                    tree.Right.TruthValue = values[0].Item2;
+                    if (tree.Right.IsLeaf) nodes[tree.Right.Value] = tree.Right.TruthValue;
+                }
             }
-           
-           if (tree.IsRoot)
-           {
+            if (tree.IsRoot)
+            {
+                tree.TruthValue = truthValue;
+                FillSameLiteralsWithSameTruthValue(tree);
                 FillTruthTree(tree);
                 treeIsCompleted = true;
                 IsTreeCompleted(GetToRoot(tree));
-                if(treeIsCompleted)
+                if (treeIsCompleted)
                 {
                     ContradictionHelper contradictionHelper = new ContradictionHelper();
-                    if(contradictionHelper.FindContradiction(tree))
+                    if (contradictionHelper.FindContradiction(tree))
                     {
                         contradiction = true;
                     }
-                    if (tree.isFinal)
-                    {
-                        if (contradiction) IsTautology = true;
-                        else IsTautology = false;
-                        DistinctNodes = contradictionHelper.DistinctNodes;
-                        CounterModel = contradictionHelper.CounterModel;
-                    }
-                    else
-                    {
-                        ProcessTree(tempTree, 0);
-                    }
-                   
-                }    
-           }
-            return;
+                    if (contradiction) IsTautology = true;
+                    else IsTautology = false;
+                    DistinctNodes = contradictionHelper.DistinctNodes;
+                    CounterModel = contradictionHelper.CounterModel;
+                }
+            }
         }
-
         private void FillTruthTree(Node tree)
         {
             if (tree == null)
@@ -116,7 +81,7 @@ namespace VyrokovaLogikaPrace
             }
         }
 
-        private void FillSameTruthWithSameValues(Node tree)
+        private void FillSameLiteralsWithSameTruthValue(Node tree)
         {
             if (tree == null)
                 return;
@@ -135,9 +100,9 @@ namespace VyrokovaLogikaPrace
             {
                 // Recursively traverse left and right subtrees
                 if(tree.Left != null)
-                FillSameTruthWithSameValues(tree.Left);
+                FillSameLiteralsWithSameTruthValue(tree.Left);
                 if(tree.Right != null)
-                FillSameTruthWithSameValues(tree.Right);
+                FillSameLiteralsWithSameTruthValue(tree.Right);
             }
         }
 

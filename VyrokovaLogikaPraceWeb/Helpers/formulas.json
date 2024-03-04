@@ -1,5 +1,8 @@
 [
   {
+    "Formula": "(p⇒q)≡(¬q⇒¬p)"
+  },
+  {
     "Formula": "(¬x∨b)∧(x∨a)"
   },
   {
@@ -61,9 +64,6 @@
   },
   {
     "Formula": "(((x∧¬(((x∧y)∧(x∨y))))∧(x⇒y))≡¬(((x≡z)∧¬x)))"
-  },
-  {
-    "Formula": "(p⇒q)≡(¬q⇒¬p)"
   },
   {
     "Formula": "x∧a"
