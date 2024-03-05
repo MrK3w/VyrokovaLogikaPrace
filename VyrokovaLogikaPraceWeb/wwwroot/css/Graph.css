@@ -1,5 +1,5 @@
 ﻿#treeVisualization {
-    height: 100vh;
+    height: 80vh;
     border: 1px solid #000; /* Black border with 1px width */
     box-sizing: border-box; /* Include border in the height calculation */
 }

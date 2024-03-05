@@ -42,8 +42,8 @@ namespace VyrokovaLogikaPrace
                 FillTruthTree(tree);
                 treeIsCompleted = true;
                 IsTreeCompleted(GetToRoot(tree));
-                if (treeIsCompleted)
-                {
+                //if (treeIsCompleted)
+                //{
                     ContradictionHelper contradictionHelper = new ContradictionHelper();
                     if (contradictionHelper.FindContradiction(tree))
                     {
@@ -53,7 +53,8 @@ namespace VyrokovaLogikaPrace
                     else IsTautology = false;
                     DistinctNodes = contradictionHelper.DistinctNodes;
                     CounterModel = contradictionHelper.CounterModel;
-                }
+                //}
+         
             }
         }
         private void FillTruthTree(Node tree)
@@ -71,14 +72,34 @@ namespace VyrokovaLogikaPrace
                     }
                 }
             }
-            else
+            if(tree is NegationOperatorNode)
             {
-                // Recursively traverse left and right subtrees
-                if (tree.Left != null)
+                if (tree.TruthValue != -1)
+                {
+                    if (tree.Left.TruthValue != -1 && (tree.TruthValue ^ 1) != tree.Left.TruthValue)
+                    {
+                        tree.Left.TruthValue2 = tree.TruthValue ^ 1;
+                    }
+                    else tree.Left.TruthValue = tree.TruthValue ^ 1;
+                }
+            }
+            if (tree is DoubleNegationOperatorNode)
+            {
+                if (tree.TruthValue != -1)
+                {
+                    if (tree.Left.TruthValue != -1 && tree.TruthValue != tree.Left.TruthValue)
+                    {
+                        tree.Left.TruthValue2 = tree.TruthValue;
+                    }
+                    else tree.Left.TruthValue = tree.TruthValue;
+                }
+            }
+            // Recursively traverse left and right subtrees
+            if (tree.Left != null)
                     FillTruthTree(tree.Left);
                 if (tree.Right != null)
                     FillTruthTree(tree.Right);
-            }
+
         }
 
         private void FillSameLiteralsWithSameTruthValue(Node tree)

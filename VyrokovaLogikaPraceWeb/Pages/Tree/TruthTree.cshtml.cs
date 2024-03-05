@@ -73,9 +73,11 @@ namespace VyrokovaLogikaPraceWeb.Pages
                     Message = "Zvolená formule není tautologií";
                 }
                 DistinctNodes = adv.DistinctNodes;
+
                 PrintTree(adv.CounterModel);
                 string div = "<div class='tf-tree tf-gap-sm'>".Replace("'", "\"");
-                ConvertedTree = div + string.Join("", htmlTree.ToArray()) + "</div>";
+                ConvertedTree += div + string.Join("", htmlTree.ToArray()) + "</div>";
+
             }
 
             else
@@ -179,12 +181,30 @@ namespace VyrokovaLogikaPraceWeb.Pages
             htmlTree.Add("<li id='node_" + tree.id + "'>");
             string op = TreeHelper.GetOP(tree);
             //we store tree value and tree op to be able to switch between full form and syntax form
-            
-            if(tree.Red)
-            htmlTree.Add("<span class='tf-nc' onclick='toggleNode(" + tree.id + ", \"" + tree.Value + "\", \"" + op + "\",\"" + tree.TruthValue + "\",)' style='color: red'>" + op + "= " + tree.TruthValue + "</span>");
+
+            if (tree.Red)
+            {
+                if (tree.TruthValue2 == -1)
+                {
+                    htmlTree.Add("<span class='tf-nc' onclick='toggleNode(" + tree.id + ", \"" + tree.Value + "\", \"" + op + "\",\"" + tree.TruthValue + "\",)' style='color: red'>" + op + "= " + tree.TruthValue + "</span>");
+                }
+                else
+                {
+                    htmlTree.Add("<span class='tf-nc' onclick='toggleNode(" + tree.id + ", \"" + tree.Value + "\", \"" + op + "\",\"" + tree.TruthValue + "\",)' style='color: red'>" + op + "= " + tree.TruthValue + "/" + tree.TruthValue2+"</span>");
+
+                }
+            }
             else
             {
-                htmlTree.Add("<span class='tf-nc' onclick='toggleNode(" + tree.id + ", \"" + tree.Value + "\", \"" + op + "\",\"" + tree.TruthValue + "\",)'>" + op + "= " + tree.TruthValue + "</span>");
+                if (tree.TruthValue2 == -1)
+                {
+                    htmlTree.Add("<span class='tf-nc' onclick='toggleNode(" + tree.id + ", \"" + tree.Value + "\", \"" + op + "\",\"" + tree.TruthValue + "\",)' style='color: red'>" + op + "= " + tree.TruthValue + "</span>");
+                }
+                else
+                {
+                    htmlTree.Add("<span class='tf-nc' onclick='toggleNode(" + tree.id + ", \"" + tree.Value + "\", \"" + op + "\",\"" + tree.TruthValue + "\",)' style='color: red'>" + op + "= " + tree.TruthValue + "/" + tree.TruthValue2 + "</span>");
+
+                }
             }
 
             if (tree.Left != null)

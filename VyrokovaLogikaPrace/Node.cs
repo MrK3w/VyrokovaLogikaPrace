@@ -14,11 +14,13 @@ namespace VyrokovaLogikaPrace
         public bool IsRoot => Parent == null; //if it is root value is true, otherwise it is false
         public bool Red { get; set; } = false;
         public int TruthValue { get; set; } = -1;
+
+        public int TruthValue2 { get; set; } = -1;
         public int id { get; set; } //id of the node
         public bool IsLeaf { get; set; } // Indicates whether this node is a leaf (value) node
         public bool WillBeChanged { get; set; } = false;
 
-        public List<(int,int)> UsedCombinations { get; set; }
+        public List<(int, int)> UsedCombinations { get; set; }
         public bool isFinal {get;set;}
         public Node(string value, int id)
         {
