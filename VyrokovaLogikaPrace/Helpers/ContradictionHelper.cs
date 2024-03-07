@@ -47,6 +47,14 @@ namespace VyrokovaLogikaPrace
                     }
                 }
             }
+            if(tree.Red == true )
+            {
+                if (tree.TruthValue == 1)
+                    tree.TruthValue2 = 0;
+                else if (tree.TruthValue == 0)
+                    tree.TruthValue2 = 1;
+
+            }
             if (contradictionInTree) return;
             else
             {
