@@ -21,18 +21,22 @@ namespace VyrokovaLogikaPrace
         {
             if (tree.IsLeaf)
             {
-               
+
                 return;
+            }
+            if (tree.IsRoot)
+            {
+                tree.TruthValue = truthValue;
             }
             if (tree.Left != null)
             {
                 var values = TreeHelper.GetValuesOfBothSides(truthValue, tree);
                 var value = values[0];
-                if(tree.UsedCombinations != null)
+                if(tree.UsedCombinations != null && tree.UsedCombinations.Count > 0)
                 {
                         value = tree.UsedCombinations[tree.UsedCombinations.Count - 1];
                         tree.UsedCombinations.RemoveAt(tree.UsedCombinations.Count - 1);
-                    if (tree.UsedCombinations.Count != 0)
+                    if (tree.UsedCombinations.Count > 1)
                     {
                         Node tr = new Node(0);
 
@@ -67,7 +71,7 @@ namespace VyrokovaLogikaPrace
             }
             if (tree.IsRoot)
             {
-                tree.TruthValue = truthValue;
+               
                 FillSameLiteralsWithSameTruthValue(tree);
                 FillTruthTree(tree);
                 treeIsCompleted = true;
@@ -78,11 +82,11 @@ namespace VyrokovaLogikaPrace
                 {
                     contradiction = true;
                 }
-            if (contradiction)
-            {
-                IsTautology = true;
-            }
-            else IsTautology = false;
+                if (contradiction)
+                {
+                    IsTautology = true;
+                }
+                else IsTautology = false;
                 DistinctNodes = contradictionHelper.DistinctNodes;
                 CounterModel = contradictionHelper.CounterModel;
                 if(moreOptions.Count != 0)
