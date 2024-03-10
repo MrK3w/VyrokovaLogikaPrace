@@ -10,23 +10,36 @@ namespace VyrokovaLogikaPrace
     {
         public List<Tuple<string, int>> DistinctNodes { get; set; } = new List<Tuple<string, int>>();
         public Node CounterModel { get; set; } = new Node(0);
-        bool contradictionInTree;
+        bool contradictionInTree = false;
 
         public bool FindContradiction(Node tree)
         {
             if (!FindContradictionInLeafs(new List<Node> { tree}))
             {
                 FindContradictionInTree(tree);
+                IsThereContradiction(tree);
                 if (!contradictionInTree) return false;
             }
             return true;
+        }
+
+        private void IsThereContradiction(Node tree)
+        {
+            if(tree.Left != null)
+            {
+                IsThereContradiction(tree.Left);
+            }
+            if(tree.Right != null)
+            {
+                IsThereContradiction(tree.Right);
+            }
+            if (tree.Red) contradictionInTree = true;
         }
 
         private void FindContradictionInTree(Node tree)
         {
             if (tree.IsLeaf) return;
             var sideValues = TreeHelper.GetValuesOfBothSides(tree.TruthValue, tree);
-            contradictionInTree = true;
             tree.Red = true;
             foreach (var sideValue in sideValues)
             {
@@ -34,7 +47,6 @@ namespace VyrokovaLogikaPrace
                 {
                     if (sideValue.Item1 == tree.Left.TruthValue && sideValue.Item2 == tree.Right.TruthValue)
                     {
-                        contradictionInTree = false;
                         tree.Red = false;
                     }
                 }
@@ -43,7 +55,7 @@ namespace VyrokovaLogikaPrace
                     if (sideValue.Item1 == tree.Left.TruthValue)
                     {
                         tree.Red = false;
-                        contradictionInTree = false;
+
                     }
                 }
             }
@@ -55,7 +67,6 @@ namespace VyrokovaLogikaPrace
                     tree.TruthValue2 = 1;
 
             }
-            if (contradictionInTree) return;
             else
             {
                 if (tree.Left != null)

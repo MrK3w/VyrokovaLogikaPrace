@@ -86,19 +86,26 @@ namespace VyrokovaLogikaPrace
                 {
                     contradiction = true;
                 }
-                if (contradiction)
+                if (!contradiction)
                 {
-                    IsTautology = true;
+                    IsTautology = false;
                 }
-                else IsTautology = false;
+                else IsTautology = true;
+         
                 DistinctNodes = contradictionHelper.DistinctNodes;
                 CounterModel = contradictionHelper.CounterModel;
+                if (!IsTautology)
+                {
+                    trees.Add(tree);
+                    return;
+                }
                 trees.Add(CounterModel);
                 if(moreOptions.Count != 0)
                 {
                     nodes = new Dictionary<string, int>();
                     var xd = moreOptions[moreOptions.Count - 1];
                     moreOptions.RemoveAt(moreOptions.Count - 1);
+                    contradiction = false;
                     ProcessTree(xd);
                 }
          
@@ -159,6 +166,12 @@ namespace VyrokovaLogikaPrace
                     }
                     else tree.Left.TruthValue = tree.TruthValue;
                 }
+            }
+            if(tree is DisjunctionOperatorNode)
+            {
+                if (tree.Left.TruthValue == 0 && tree.Right.TruthValue2 == 0) tree.TruthValue = 0;
+                if (tree.Left.TruthValue == 1 || tree.Right.TruthValue == 1) tree.TruthValue = 1;
+                  
             }
             // Recursively traverse left and right subtrees
             if (tree.Left != null)

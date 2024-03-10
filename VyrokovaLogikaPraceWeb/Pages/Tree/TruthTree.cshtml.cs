@@ -33,6 +33,8 @@ namespace VyrokovaLogikaPraceWeb.Pages
         public string YourFormula { get; set; } = "";
         public string Input { get; set; } = "";
 
+        private bool IsTautology;
+
         public TruthTreeModel(IWebHostEnvironment env)
         {
             mEnv = env;
