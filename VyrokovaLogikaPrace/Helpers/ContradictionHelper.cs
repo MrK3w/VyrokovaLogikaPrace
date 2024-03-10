@@ -42,7 +42,7 @@ namespace VyrokovaLogikaPrace
                 {
                     if (sideValue.Item1 == tree.Left.TruthValue)
                     {
-                        tree.Left.Red = false;
+                        tree.Red = false;
                         contradictionInTree = false;
                     }
                 }

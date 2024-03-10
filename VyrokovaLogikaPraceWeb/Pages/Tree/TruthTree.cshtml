@@ -33,7 +33,10 @@
                 @if (Model.ConvertedTree != null)
                 {
                    <div> <p>Synktaktický strom formule <span style="color: red;"> @Model.Formula</span>. Po kliknutí na nodu zobraz plnou formu.</p>
-                    @Html.Raw(Model.ConvertedTree)
+                       @foreach(var tree in Model.ConvertedTrees)
+                       {
+                    @Html.Raw(tree)
+                       }
                     </div>
                         <div class="table-container">
 

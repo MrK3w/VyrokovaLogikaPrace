@@ -11,7 +11,7 @@ namespace VyrokovaLogikaPraceWeb.Pages
         //If we have tree then it is valid
         public bool Valid { get; private set; } = true;
         //tree in html string
-        private readonly List<string> htmlTree = new();
+        private  List<string> htmlTree = new();
         //formula selected from select list
         private string selectFromSelectList;
         //formula selected from user Input
@@ -22,6 +22,8 @@ namespace VyrokovaLogikaPraceWeb.Pages
         public string Formula;
         public List<string> Errors { get; private set; } = new();
         public string ConvertedTree { get; set; }
+
+        public List<string> ConvertedTrees { get; set; } = new List<string>();
         public  string Message { get; set; }
 
         public List<Tuple<string,int>> DistinctNodes { get; set; }
@@ -73,11 +75,14 @@ namespace VyrokovaLogikaPraceWeb.Pages
                     Message = "Zvolená formule není tautologií";
                 }
                 DistinctNodes = adv.DistinctNodes;
-
-                PrintTree(adv.CounterModel);
-                string div = "<div class='tf-tree tf-gap-sm'>".Replace("'", "\"");
-                ConvertedTree += div + string.Join("", htmlTree.ToArray()) + "</div>";
-
+                foreach (var trx in adv.trees)
+                {
+                    htmlTree = new();
+                    PrintTree(trx);
+                    string div =  "<div class='tf-tree tf-gap-sm'>".Replace("'", "\"");
+                    ConvertedTree = div + string.Join("", htmlTree.ToArray()) + "</div>";
+                    ConvertedTrees.Add(ConvertedTree);
+                }
             }
 
             else
@@ -122,6 +127,7 @@ namespace VyrokovaLogikaPraceWeb.Pages
                 PrintTree(contradictionHelper.CounterModel);
                 string div = "<div class='tf-tree tf-gap-sm'>".Replace("'", "\"");
                 ConvertedTree = div + string.Join("", htmlTree.ToArray()) + "</div>";
+                ConvertedTrees.Add(ConvertedTree);
             }
             //prepare tree for css library treeflex
             else
@@ -166,6 +172,7 @@ namespace VyrokovaLogikaPraceWeb.Pages
                 PrintTree(contradictionHelper.CounterModel);
                 string div = "<div class='tf-tree tf-gap-sm'>".Replace("'", "\"");
                 ConvertedTree = div + string.Join("", htmlTree.ToArray()) + "</div>";
+                ConvertedTrees.Add(ConvertedTree);
             }
             //prepare tree for css library treeflex
             else

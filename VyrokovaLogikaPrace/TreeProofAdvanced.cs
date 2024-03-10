@@ -16,7 +16,7 @@ namespace VyrokovaLogikaPrace
         bool contradiction;
         public List<Node> moreOptions = new List<Node>();
 
-
+        public List<Node> trees { get; set; } = new List<Node>();
         public void ProcessTree(Node tree, int truthValue = 0)
         {
             if (tree.IsLeaf)
@@ -32,7 +32,7 @@ namespace VyrokovaLogikaPrace
             {
                 var values = TreeHelper.GetValuesOfBothSides(truthValue, tree);
                 var value = values[0];
-                if(tree.UsedCombinations != null && tree.UsedCombinations.Count > 0)
+                if(tree.UsedCombinations != null && tree.UsedCombinations.Count > 1)
                 {
                         value = tree.UsedCombinations[tree.UsedCombinations.Count - 1];
                         tree.UsedCombinations.RemoveAt(tree.UsedCombinations.Count - 1);
@@ -56,18 +56,22 @@ namespace VyrokovaLogikaPrace
                     moreOptions.Add(tr);
                 }
                 //this is for just one variant
-                if (tree.Left.TruthValue == -1)
+
+                if (tree.Left != null)
                 {
-                    tree.Left.TruthValue = value.Item1;
+                    if(tree.Left.TruthValue == -1)
+                        tree.Left.TruthValue = value.Item1;
+                    if (tree.Left.IsLeaf) nodes[tree.Left.Value] = tree.Left.TruthValue;
                 }
-                if(tree.Left.IsLeaf) nodes[tree.Left.Value] = tree.Left.TruthValue;
-                ProcessTree(tree.Left, value.Item1);
+                if (tree.Left.IsLeaf) nodes[tree.Left.Value] = tree.Left.TruthValue;
+
                 if (tree.Right != null)
                 {
-                    if (tree.Right.TruthValue == -1)
+                    if(tree.Right.TruthValue == -1)
                         tree.Right.TruthValue = value.Item2;
                     if (tree.Right.IsLeaf) nodes[tree.Right.Value] = tree.Right.TruthValue;
                 }
+                ProcessTree(tree.Left, value.Item1);
             }
             if (tree.IsRoot)
             {
@@ -89,6 +93,7 @@ namespace VyrokovaLogikaPrace
                 else IsTautology = false;
                 DistinctNodes = contradictionHelper.DistinctNodes;
                 CounterModel = contradictionHelper.CounterModel;
+                trees.Add(CounterModel);
                 if(moreOptions.Count != 0)
                 {
                     nodes = new Dictionary<string, int>();
