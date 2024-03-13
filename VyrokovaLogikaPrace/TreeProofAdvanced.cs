@@ -155,6 +155,25 @@ namespace VyrokovaLogikaPrace
                     }
                     else tree.TruthValue = 1;
                 }
+             
+            }
+            if (tree is ConjunctionOperatorNode)
+            {
+                if (tree.Left.TruthValue != -1 && tree.Right.TruthValue != -1)
+                {
+                    if (tree.Left.TruthValue == 1 && tree.Right.TruthValue == 1)
+                    {
+                        tree.TruthValue = 1;
+                    }
+                    else tree.TruthValue = 0;
+                }
+                if(tree.TruthValue == 1)
+                {
+                    if (tree.Left.TruthValue == -1) tree.Left.TruthValue = 1;
+                    else if (tree.Left.TruthValue == 0) tree.Left.TruthValue2 = 1;
+                    if (tree.Right.TruthValue == -1) tree.Right.TruthValue = 1;
+                    else if (tree.Right.TruthValue == 0) tree.Right.TruthValue2 = 1;
+                }
             }
             if (tree is DoubleNegationOperatorNode)
             {

@@ -43,19 +43,37 @@ namespace VyrokovaLogikaPrace
             tree.Red = true;
             foreach (var sideValue in sideValues)
             {
+               
                 if (tree.Right != null)
                 {
                     if (sideValue.Item1 == tree.Left.TruthValue && sideValue.Item2 == tree.Right.TruthValue)
                     {
                         tree.Red = false;
                     }
+                    else if (tree.Left.TruthValue == -1 || tree.Right.TruthValue == -1)
+                    {
+                        tree.Red = false;
+                    }
+                  
                 }
+            
                 else
                 {
                     if (sideValue.Item1 == tree.Left.TruthValue)
                     {
                         tree.Red = false;
+                    }
+                    else if (tree.Left.TruthValue == -1)
+                    {
+                        tree.Red = false;
+                    }
+                }
 
+                if(tree is ImplicationOperatorNode)
+                {
+                    if(tree.TruthValue == 0 && tree.Left.TruthValue == 0)
+                    {
+                        tree.Red = true;
                     }
                 }
             }

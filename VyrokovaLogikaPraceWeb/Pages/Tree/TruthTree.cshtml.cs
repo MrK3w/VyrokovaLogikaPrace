@@ -95,6 +95,54 @@ namespace VyrokovaLogikaPraceWeb.Pages
             return Page();
         }
 
+
+        public IActionResult OnPostDrawTruthTreeContradictionAdvanced()
+        {
+            //get formula from inputs
+            Formula = GetFormula()!;
+            Converter.ConvertSentence(ref Formula);
+            //if it not valid save user input to YourFormula and return page
+            if (!Valid)
+            {
+                if (Formula != null)
+                {
+                    YourFormula = Formula;
+                }
+                return Page();
+            }
+            //otherwise prepare engine with sentence we got
+            Engine engine = new Engine(Formula);
+            if (engine.CreateTree())
+            {
+                TreeProofAdvanced adv = new TreeProofAdvanced();
+                adv.ProcessTree(engine.pSyntaxTree, 1);
+                //prepare tree for css library treeflex
+                if (adv.IsTautology)
+                {
+                    Message = "Zvolená formule je kontradikcí";
+                }
+                else
+                {
+                    Message = "Zvolená formule není kontradikcí";
+                }
+                DistinctNodes = adv.DistinctNodes;
+                foreach (var trx in adv.trees)
+                {
+                    htmlTree = new();
+                    PrintTree(trx);
+                    string div = "<div class='tf-tree tf-gap-sm'>".Replace("'", "\"");
+                    ConvertedTree = div + string.Join("", htmlTree.ToArray()) + "</div>";
+                    ConvertedTrees.Add(ConvertedTree);
+                }
+            }
+            else
+            {
+                Errors = engine.Errors;
+                Valid = false;
+            }
+            return Page();
+        }
+
         public IActionResult OnPostDrawTruthTreeTautology()
         {
             //get formula from inputs

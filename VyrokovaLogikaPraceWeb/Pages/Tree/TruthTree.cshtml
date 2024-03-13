@@ -21,8 +21,11 @@
                     <div class="btn-toolbar ml-2 flex-fill" role="toolbar" aria-label="Toolbar with button groups">
                         <div class="btn-group flex-fill" role="group" aria-label="First group">
                             <input type='submit' class="btn btn-primary flex-fill mb-2 mr-1" value='Ověř tautologii ve formuli' name='submit' asp-page-handler="DrawTruthTreeTautology" />
-                            <input type='submit' class="btn btn-primary flex-fill mb-2 mr-1" value='TEST' name='submit' asp-page-handler="DrawTruthTreeTautologyAdvanced" />
                             <input type='submit' class="btn btn-primary flex-fill mb-2 mr-1" value='Ověř kontradikci ve formuli' name='submit' asp-page-handler="DrawTruthTreeContradiction" />
+                        </div>
+                        <div class="btn-group flex-fill" role="group" aria-label="Second group">
+                            <input type='submit' class="btn btn-primary flex-fill mb-2 mr-1" value='Ověř tautologii' name='submit' asp-page-handler="DrawTruthTreeTautologyAdvanced" />
+                            <input type='submit' class="btn btn-primary flex-fill mb-2 mr-1" value='Ověř kontradikci' name='submit' asp-page-handler="DrawTruthTreeContradictionAdvanced" />
                         </div>
 
                     </div>
