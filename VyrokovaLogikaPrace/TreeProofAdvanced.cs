@@ -1,10 +1,9 @@
-﻿
-using System;
+﻿using System;
 using System.Collections.Generic;
 
 namespace VyrokovaLogikaPrace
 {
-   
+
     public class TreeProofAdvanced
     {
         public bool IsTautology { get; set; }
@@ -15,6 +14,7 @@ namespace VyrokovaLogikaPrace
         Dictionary<string, int> nodes = new Dictionary<string, int>();
         bool contradiction;
         public List<Node> moreOptions = new List<Node>();
+        private bool assignedLiteral = false;
 
         public List<Node> trees { get; set; } = new List<Node>();
         public void ProcessTree(Node tree, int truthValue = 0)
@@ -32,10 +32,10 @@ namespace VyrokovaLogikaPrace
             {
                 var values = TreeHelper.GetValuesOfBothSides(truthValue, tree);
                 var value = values[0];
-                if(tree.UsedCombinations != null && tree.UsedCombinations.Count > 1)
+                if (tree.UsedCombinations != null && tree.UsedCombinations.Count > 1)
                 {
-                        value = tree.UsedCombinations[tree.UsedCombinations.Count - 1];
-                        tree.UsedCombinations.RemoveAt(tree.UsedCombinations.Count - 1);
+                    value = tree.UsedCombinations[tree.UsedCombinations.Count - 1];
+                    tree.UsedCombinations.RemoveAt(tree.UsedCombinations.Count - 1);
                     if (tree.UsedCombinations.Count > 1)
                     {
                         Node tr = new Node(0);
@@ -55,11 +55,10 @@ namespace VyrokovaLogikaPrace
                     tr = Node.DeepCopy(GetToRoot(tree));
                     moreOptions.Add(tr);
                 }
-                //this is for just one variant
 
                 if (tree.Left != null)
                 {
-                    if(tree.Left.TruthValue == -1)
+                    if (tree.Left.TruthValue == -1)
                         tree.Left.TruthValue = value.Item1;
                     if (tree.Left.IsLeaf) nodes[tree.Left.Value] = tree.Left.TruthValue;
                 }
@@ -67,7 +66,7 @@ namespace VyrokovaLogikaPrace
 
                 if (tree.Right != null)
                 {
-                    if(tree.Right.TruthValue == -1)
+                    if (tree.Right.TruthValue == -1)
                         tree.Right.TruthValue = value.Item2;
                     if (tree.Right.IsLeaf) nodes[tree.Right.Value] = tree.Right.TruthValue;
                 }
@@ -75,12 +74,28 @@ namespace VyrokovaLogikaPrace
             }
             if (tree.IsRoot)
             {
-               
                 FillSameLiteralsWithSameTruthValue(tree);
                 FillTruthTree(tree);
                 treeIsCompleted = true;
                 IsTreeCompleted(GetToRoot(tree));
 
+                if (!treeIsCompleted)
+                {
+                    nodes = new Dictionary<string, int>();
+                    FillNodes(tree);
+                    FillSameLiteralsWithSameTruthValue(tree);
+                    FillTruthTree(tree);
+                }
+                IsTreeCompleted(GetToRoot(tree));
+                if (!treeIsCompleted)
+                {
+                    assignedLiteral = false;
+                    TryToAssignValueToLiteral(tree);
+                    nodes = new Dictionary<string, int>();
+                    FillNodes(tree);
+                    FillSameLiteralsWithSameTruthValue(tree);
+                    FillTruthTree(tree);
+                }
                 ContradictionHelper contradictionHelper = new ContradictionHelper();
                 if (contradictionHelper.FindContradiction(tree))
                 {
@@ -91,7 +106,7 @@ namespace VyrokovaLogikaPrace
                     IsTautology = false;
                 }
                 else IsTautology = true;
-         
+
                 DistinctNodes = contradictionHelper.DistinctNodes;
                 CounterModel = contradictionHelper.CounterModel;
                 if (!IsTautology)
@@ -100,7 +115,7 @@ namespace VyrokovaLogikaPrace
                     return;
                 }
                 trees.Add(CounterModel);
-                if(moreOptions.Count != 0)
+                if (moreOptions.Count != 0)
                 {
                     nodes = new Dictionary<string, int>();
                     var xd = moreOptions[moreOptions.Count - 1];
@@ -108,9 +123,36 @@ namespace VyrokovaLogikaPrace
                     contradiction = false;
                     ProcessTree(xd);
                 }
-         
+
             }
         }
+
+        private void TryToAssignValueToLiteral(Node tree)
+        {
+            if (tree == null)
+                return;
+
+            if (tree.IsLeaf) // Leaf node
+            {
+                if (tree.TruthValue == -1)
+                {
+                    if(assignedLiteral == false)
+                    {
+                        tree.TruthValue = 0;
+                        assignedLiteral = true;
+                    }
+                }
+            }
+            else
+            {
+                // Recursively traverse left and right subtrees
+                if (tree.Left != null)
+                    TryToAssignValueToLiteral(tree.Left);
+                if (tree.Right != null)
+                    TryToAssignValueToLiteral(tree.Right);
+            }
+        }
+
         private void FillTruthTree(Node tree)
         {
             if (tree == null)
@@ -126,7 +168,7 @@ namespace VyrokovaLogikaPrace
                     }
                 }
             }
-            if(tree is NegationOperatorNode)
+            if (tree is NegationOperatorNode)
             {
                 if (tree.TruthValue != -1)
                 {
@@ -140,14 +182,17 @@ namespace VyrokovaLogikaPrace
                         {
                             tree.Left.TruthValue = tree.TruthValue ^ 1;
                         }
-
+                        else if (tree.Left.TruthValue == -1)
+                        {
+                            tree.Left.TruthValue = tree.TruthValue ^ 1;
+                        }
 
                     }
                 }
             }
-            if(tree is ImplicationOperatorNode)
+            if (tree is ImplicationOperatorNode)
             {
-                if(tree.Left.TruthValue != -1 && tree.Right.TruthValue != -1)
+                if (tree.Left.TruthValue != -1 && tree.Right.TruthValue != -1)
                 {
                     if (tree.Left.TruthValue == 1 && tree.Right.TruthValue == 0)
                     {
@@ -155,7 +200,14 @@ namespace VyrokovaLogikaPrace
                     }
                     else tree.TruthValue = 1;
                 }
-             
+                if (tree.TruthValue == 1 && tree.Left.TruthValue == 0)
+                {
+                    tree.Right.TruthValue = 1;
+                }
+                if(tree.TruthValue == -1 && tree.Left.TruthValue == 0 && tree.Right.TruthValue == 1)
+                {
+                    tree.TruthValue = 1;
+                }
             }
             if (tree is ConjunctionOperatorNode)
             {
@@ -167,7 +219,7 @@ namespace VyrokovaLogikaPrace
                     }
                     else tree.TruthValue = 0;
                 }
-                if(tree.TruthValue == 1)
+                if (tree.TruthValue == 1)
                 {
                     if (tree.Left.TruthValue == -1) tree.Left.TruthValue = 1;
                     else if (tree.Left.TruthValue == 0) tree.Left.TruthValue2 = 1;
@@ -186,17 +238,18 @@ namespace VyrokovaLogikaPrace
                     else tree.Left.TruthValue = tree.TruthValue;
                 }
             }
-            if(tree is DisjunctionOperatorNode)
+            if (tree is DisjunctionOperatorNode)
             {
-                if (tree.Left.TruthValue == 0 && tree.Right.TruthValue2 == 0) tree.TruthValue = 0;
+                if (tree.Left.TruthValue == 0 && tree.Right.TruthValue == 0) tree.TruthValue = 0;
                 if (tree.Left.TruthValue == 1 || tree.Right.TruthValue == 1) tree.TruthValue = 1;
-                  
+
+
             }
             // Recursively traverse left and right subtrees
             if (tree.Left != null)
-                    FillTruthTree(tree.Left);
-                if (tree.Right != null)
-                    FillTruthTree(tree.Right);
+                FillTruthTree(tree.Left);
+            if (tree.Right != null)
+                FillTruthTree(tree.Right);
 
         }
 
@@ -207,7 +260,7 @@ namespace VyrokovaLogikaPrace
 
             if (tree.IsLeaf) // Leaf node
             {
-                if(tree.TruthValue == -1)
+                if (tree.TruthValue == -1)
                 {
                     if (nodes.ContainsKey(tree.Value))
                     {
@@ -218,13 +271,27 @@ namespace VyrokovaLogikaPrace
             else
             {
                 // Recursively traverse left and right subtrees
-                if(tree.Left != null)
-                FillSameLiteralsWithSameTruthValue(tree.Left);
-                if(tree.Right != null)
-                FillSameLiteralsWithSameTruthValue(tree.Right);
+                if (tree.Left != null)
+                    FillSameLiteralsWithSameTruthValue(tree.Left);
+                if (tree.Right != null)
+                    FillSameLiteralsWithSameTruthValue(tree.Right);
             }
         }
 
+        private void FillNodes(Node tree)
+        {
+            if (tree.Left != null)
+            {
+                if (tree.Left.IsLeaf && tree.Left.TruthValue != -1) nodes[tree.Left.Value] = tree.Left.TruthValue;
+                FillNodes(tree.Left);
+            }
+            if (tree.Right != null)
+            {
+                if (tree.Right.IsLeaf && tree.Right.TruthValue != -1) nodes[tree.Right.Value] = tree.Right.TruthValue;
+                FillNodes(tree.Right);
+            }
+            return;
+        }
 
         private void IsTreeCompleted(Node tree)
         {
@@ -242,7 +309,7 @@ namespace VyrokovaLogikaPrace
 
         private Node GetToRoot(Node tree)
         {
-            if(tree.IsRoot == false)
+            if (tree.IsRoot == false)
             {
                 return GetToRoot(tree.Parent);
             }

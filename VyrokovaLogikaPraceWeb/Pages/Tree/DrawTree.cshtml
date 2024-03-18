@@ -11,7 +11,11 @@
 <body>
             <div class="col-md-10">
                 <div class="text-center">
-                    <h3 class="display-7">Výroková  logika</h3>
+                    <h3 class="display-7">Vykreslení stromu</h3>
+            <p>
+                Vyberte si formulí z nabídky uložených formulí a nebo napište svou vlastní, pomocí textového pole. Následně strom vykreslete pomocí tlačítka Vykresli syntaktický strom.
+                <br /> Po vykreslení lze zobrazit celou formu uzlu, kliknutím na něj.
+            </p>
                     <form method="post" asp-action="Index" asp-controller="Home" id="TheForm" class="d-flex flex-column">
                         <div class="d-flex">
                             @Html.DropDownList("formula", Model.ListItems, new { @class = "form-control custom-font", @style = "height: 66.67%;" })
@@ -26,11 +30,12 @@
                             </div>
                         </div>
                     </form>
+
                     @if (Model.Valid)
                     {
                         @if (Model.ConvertedTree != null)
                         {
-                            <p>Synktaktický strom formule <span style="color: red;"> @Model.Formula</span>. Po kliknutí na nodu zobraz plnou formu.</p>
+                            <p>Synktaktický strom formule <span style="color: red;"> @Model.Formula</span>.</p>
                             @Html.Raw(Model.ConvertedTree)
                         }
                     }
