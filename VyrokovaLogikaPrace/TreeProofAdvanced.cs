@@ -195,16 +195,25 @@ namespace VyrokovaLogikaPrace
                     if (tree.Left.TruthValue != -1 && (tree.TruthValue ^ 1) != tree.Left.TruthValue)
                     {
                         tree.Left.TruthValue2 = tree.TruthValue ^ 1;
+                        Node tempTree = new Node(0);
+                        tempTree = Node.DeepCopy(GetToRoot(tree));
+                        trees.Add(tempTree);
                     }
                     else
                     {
                         if (tree.Left.TruthValue != -1)
                         {
                             tree.Left.TruthValue = tree.TruthValue ^ 1;
+                            Node tempTree = new Node(0);
+                            tempTree = Node.DeepCopy(GetToRoot(tree));
+                            trees.Add(tempTree);
                         }
                         else if (tree.Left.TruthValue == -1)
                         {
                             tree.Left.TruthValue = tree.TruthValue ^ 1;
+                            Node tempTree = new Node(0);
+                            tempTree = Node.DeepCopy(GetToRoot(tree));
+                            trees.Add(tempTree);
                         }
 
                     }
@@ -217,16 +226,32 @@ namespace VyrokovaLogikaPrace
                     if (tree.Left.TruthValue == 1 && tree.Right.TruthValue == 0)
                     {
                         tree.TruthValue = 0;
+                        Node tempTree = new Node(0);
+                        tempTree = Node.DeepCopy(GetToRoot(tree));
+                        trees.Add(tempTree);
                     }
-                    else tree.TruthValue = 1;
+                    else
+                    {
+                        tree.TruthValue = 1;
+                        Node tempTree = new Node(0);
+                        tempTree = Node.DeepCopy(GetToRoot(tree));
+                        trees.Add(tempTree);
+
+                    }
                 }
                 if (tree.TruthValue == 1 && tree.Left.TruthValue == 0)
                 {
                     tree.Right.TruthValue = 1;
+                    Node tempTree = new Node(0);
+                    tempTree = Node.DeepCopy(GetToRoot(tree));
+                    trees.Add(tempTree);
                 }
                 if(tree.TruthValue == -1 && tree.Left.TruthValue == 0 && tree.Right.TruthValue == 1)
                 {
                     tree.TruthValue = 1;
+                    Node tempTree = new Node(0);
+                    tempTree = Node.DeepCopy(GetToRoot(tree));
+                    trees.Add(tempTree);
                 }
             }
             if (tree is ConjunctionOperatorNode)
@@ -236,15 +261,49 @@ namespace VyrokovaLogikaPrace
                     if (tree.Left.TruthValue == 1 && tree.Right.TruthValue == 1)
                     {
                         tree.TruthValue = 1;
+                        Node tempTree = new Node(0);
+                        tempTree = Node.DeepCopy(GetToRoot(tree));
+                        trees.Add(tempTree);
                     }
-                    else tree.TruthValue = 0;
+                    else
+                    {
+                        tree.TruthValue = 0;
+                        Node tempTree = new Node(0);
+                        tempTree = Node.DeepCopy(GetToRoot(tree));
+                        trees.Add(tempTree);
+                    }
                 }
                 if (tree.TruthValue == 1)
                 {
-                    if (tree.Left.TruthValue == -1) tree.Left.TruthValue = 1;
-                    else if (tree.Left.TruthValue == 0) tree.Left.TruthValue2 = 1;
-                    if (tree.Right.TruthValue == -1) tree.Right.TruthValue = 1;
-                    else if (tree.Right.TruthValue == 0) tree.Right.TruthValue2 = 1;
+                    if (tree.Left.TruthValue == -1)
+                    {
+                        tree.Left.TruthValue = 1;
+                        Node tempTree = new Node(0);
+                        tempTree = Node.DeepCopy(GetToRoot(tree));
+                        trees.Add(tempTree);
+                    }
+                    else if (tree.Left.TruthValue == 0)
+                    {
+                        tree.Left.TruthValue2 = 1;
+                        Node tempTree = new Node(0);
+                        tempTree = Node.DeepCopy(GetToRoot(tree));
+                        trees.Add(tempTree);
+                    }
+                    if (tree.Right.TruthValue == -1)
+                    {
+                        tree.Right.TruthValue = 1;
+                        Node tempTree = new Node(0);
+                        tempTree = Node.DeepCopy(GetToRoot(tree));
+                        trees.Add(tempTree);
+                    }
+                    else if (tree.Right.TruthValue == 0)
+                    {
+                        tree.Right.TruthValue2 = 1;
+                        Node tempTree = new Node(0);
+                        tempTree = Node.DeepCopy(GetToRoot(tree));
+                        trees.Add(tempTree);
+
+                    }
                 }
             }
             if (tree is DoubleNegationOperatorNode)
@@ -254,15 +313,35 @@ namespace VyrokovaLogikaPrace
                     if (tree.Left.TruthValue != -1 && tree.TruthValue != tree.Left.TruthValue)
                     {
                         tree.Left.TruthValue2 = tree.TruthValue;
+                        Node tempTree = new Node(0);
+                        tempTree = Node.DeepCopy(GetToRoot(tree));
+                        trees.Add(tempTree);
                     }
-                    else tree.Left.TruthValue = tree.TruthValue;
+                    else
+                    {
+                        tree.Left.TruthValue = tree.TruthValue;
+                        Node tempTree = new Node(0);
+                        tempTree = Node.DeepCopy(GetToRoot(tree));
+                        trees.Add(tempTree);
+                    }
                 }
             }
             if (tree is DisjunctionOperatorNode)
             {
-                if (tree.Left.TruthValue == 0 && tree.Right.TruthValue == 0) tree.TruthValue = 0;
-                if (tree.Left.TruthValue == 1 || tree.Right.TruthValue == 1) tree.TruthValue = 1;
-
+                if (tree.Left.TruthValue == 0 && tree.Right.TruthValue == 0)
+                {
+                    tree.TruthValue = 0;
+                    Node tempTree = new Node(0);
+                    tempTree = Node.DeepCopy(GetToRoot(tree));
+                    trees.Add(tempTree);
+                }
+                if (tree.Left.TruthValue == 1 || tree.Right.TruthValue == 1)
+                {
+                    tree.TruthValue = 1;
+                    Node tempTree = new Node(0);
+                    tempTree = Node.DeepCopy(GetToRoot(tree));
+                    trees.Add(tempTree);
+                }
 
             }
             // Recursively traverse left and right subtrees
@@ -285,6 +364,9 @@ namespace VyrokovaLogikaPrace
                     if (nodes.ContainsKey(tree.Value))
                     {
                         tree.TruthValue = nodes[tree.Value];
+                        Node tempTree = new Node(0);
+                        tempTree = Node.DeepCopy(GetToRoot(tree));
+                        trees.Add(tempTree);
                     }
                 }
             }

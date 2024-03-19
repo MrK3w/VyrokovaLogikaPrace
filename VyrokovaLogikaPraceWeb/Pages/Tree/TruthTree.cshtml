@@ -35,14 +35,24 @@
             {
                 @if (Model.ConvertedTree != null)
                 {
-                   <div> <p>Synktaktický strom formule <span style="color: red;"> @Model.Formula</span>. Po kliknutí na nodu zobraz plnou formu.</p>
-                       @foreach(var tree in Model.ConvertedTrees)
-                       {
-                    @Html.Raw(tree)
-                       }
-                    </div>
-                        <div class="table-container">
+                    <div> <p>Synktaktický strom formule <span style="color: red;"> @Model.Formula</span>. Po kliknutí na nodu zobraz plnou formu.</p>                         </div>
+                    @if (Model.Advanced)
+                    {
+                         string convertedTreesJson = Newtonsoft.Json.JsonConvert.SerializeObject(Model.ConvertedTrees);
 
+                        <input type="hidden" id="convertedTreesJson" value="@convertedTreesJson" />
+                        Console.WriteLine(convertedTreesJson);
+                        var index = 0;
+                        <div id="treeContainer">
+                            @Html.Raw(@Model.ConvertedTrees[index])
+                        </div>
+                        
+                        <button id="prevBtn" onclick="showPreviousTree()" disabled>Previous Step</button>
+                        <button id="nextBtn" onclick="showNextTree()">Next Step</button>
+
+
+
+                        <div class="table-container">
                             <table>
                                 <tr>
                                     <th>Hodnota</th>
@@ -56,8 +66,33 @@
                                     </tr>
                                 }
                             </table>
-                    </div>
-                   <div> <p> @Model.Message</p> </div>
+                        </div>
+                        <div> <p> @Model.Message</p> </div>
+                    }
+                    else
+                    {
+                        @foreach(var tree in Model.ConvertedTrees)
+                        {
+                            @Html.Raw(tree)
+                        }
+
+                        <div class="table-container">
+                            <table>
+                                <tr>
+                                    <th>Hodnota</th>
+                                    <th>Literál</th>
+                                </tr>
+                                @foreach (var node in Model.DistinctNodes)
+                                {
+                                    <tr>
+                                        <td>@node.Item1</td>
+                                        <td>@node.Item2</td>
+                                    </tr>
+                                }
+                            </table>
+                        </div>
+                        <div> <p> @Model.Message</p> </div>
+                    }
                 }
             }
             else
