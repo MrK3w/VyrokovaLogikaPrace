@@ -111,7 +111,10 @@ namespace VyrokovaLogikaPrace
                     foreach (var node1 in leafNodes)
                     {
                         if (node1.Value == node.Value && node1.TruthValue != node.TruthValue)
+                        {
                             contradiction = true;
+                            MarkLiteralsInTree(tree, node.Value);
+                        }
                     }
                 }
                 if (contradiction == false)
@@ -135,7 +138,16 @@ namespace VyrokovaLogikaPrace
             return true;
         }
 
-      
+        private void MarkLiteralsInTree(Node tree, string value)
+        {
+            if (tree.IsLeaf && tree.Value == value) tree.Red = true;
+            if (tree.Left != null)
+            {
+               MarkLiteralsInTree(tree.Left, value);
+                if (tree.Right != null)
+                    MarkLiteralsInTree(tree.Right, value);
+            }
+        }
 
         public void GetLeafNodes(Node tree, ref List<Node> leafNodes)
         {

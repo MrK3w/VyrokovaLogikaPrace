@@ -17,6 +17,16 @@ namespace VyrokovaLogikaPrace
         private bool assignedLiteral = false;
 
         public List<Node> trees { get; set; } = new List<Node>();
+
+        public TreeProofAdvanced(Node tree, int truthValue = 0)
+        {
+            Node tempTree = new Node(0);
+            tempTree = Node.DeepCopy(GetToRoot(tree));
+            tempTree.TruthValue = truthValue;
+            trees.Add(tempTree);
+            ProcessTree(tree, truthValue);
+        }
+
         public void ProcessTree(Node tree, int truthValue = 0)
         {
             if (tree.IsLeaf)
@@ -59,7 +69,9 @@ namespace VyrokovaLogikaPrace
                 if (tree.Left != null)
                 {
                     if (tree.Left.TruthValue == -1)
+                    {
                         tree.Left.TruthValue = value.Item1;
+                    }
                     if (tree.Left.IsLeaf) nodes[tree.Left.Value] = tree.Left.TruthValue;
                 }
                 if (tree.Left.IsLeaf) nodes[tree.Left.Value] = tree.Left.TruthValue;
@@ -67,7 +79,12 @@ namespace VyrokovaLogikaPrace
                 if (tree.Right != null)
                 {
                     if (tree.Right.TruthValue == -1)
+                    {
                         tree.Right.TruthValue = value.Item2;
+                        Node tempTree = new Node(0);
+                        tempTree = Node.DeepCopy(GetToRoot(tree));
+                        trees.Add(tempTree);
+                    }
                     if (tree.Right.IsLeaf) nodes[tree.Right.Value] = tree.Right.TruthValue;
                 }
                 ProcessTree(tree.Left, value.Item1);
@@ -114,7 +131,10 @@ namespace VyrokovaLogikaPrace
                     trees.Add(tree);
                     return;
                 }
-                trees.Add(CounterModel);
+                else
+                {
+                    trees.Add(CounterModel);
+                }
                 if (moreOptions.Count != 0)
                 {
                     nodes = new Dictionary<string, int>();

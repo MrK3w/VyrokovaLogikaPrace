@@ -64,8 +64,7 @@ namespace VyrokovaLogikaPraceWeb.Pages
             Engine engine = new Engine(Formula);
             if (engine.CreateTree())
             {
-                TreeProofAdvanced adv = new TreeProofAdvanced();
-                adv.ProcessTree(engine.pSyntaxTree, 0);
+                TreeProofAdvanced adv = new TreeProofAdvanced(engine.pSyntaxTree,0);
                 //prepare tree for css library treeflex
                 if (adv.IsTautology)
                 {
@@ -114,8 +113,7 @@ namespace VyrokovaLogikaPraceWeb.Pages
             Engine engine = new Engine(Formula);
             if (engine.CreateTree())
             {
-                TreeProofAdvanced adv = new TreeProofAdvanced();
-                adv.ProcessTree(engine.pSyntaxTree, 1);
+                TreeProofAdvanced adv = new TreeProofAdvanced(engine.pSyntaxTree,1);
                 //prepare tree for css library treeflex
                 if (adv.IsTautology)
                 {
