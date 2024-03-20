@@ -30,7 +30,30 @@ namespace VyrokovaLogikaPrace
                     return string.Empty;
             }
         }
-        
+
+        public static string GetOperatorName(Node tree)
+        {
+            switch (tree)
+            {
+                case NegationOperatorNode _:
+                    return "negace";
+                case DoubleNegationOperatorNode _:
+                    return "dvojitá negace";
+                case ConjunctionOperatorNode _:
+                    return "implikace";
+                case DisjunctionOperatorNode _:
+                    return "disjunkce";
+                case EqualityOperatorNode _:
+                    return "ekvivalence";
+                case ImplicationOperatorNode _:
+                    return "implikace";
+                case ValueNode _:
+                    return ((ValueNode)tree).Value;
+                default:
+                    return string.Empty;
+            }
+        }
+
         //create from string with id, new nodes
         public static Node GetNode(string item, int id)
         {

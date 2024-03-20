@@ -1,0 +1,36 @@
+﻿body {
+    margin: 0;
+    padding: 0;
+}
+
+.table-container-wrapper {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    margin-top: 20px; /* Adjust spacing from top if needed */
+}
+
+.table-container {
+    width: 100%;
+    max-width: 800px; /* Optional: Adjust maximum width */
+}
+
+.center {
+    text-align: center;
+}
+
+.table-container table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.table-container th,
+.table-container td {
+    padding: 8px;
+    text-align: center;
+    border: 1px solid #ddd;
+}
+
+.table-container th {
+    background-color: #f2f2f2;
+}

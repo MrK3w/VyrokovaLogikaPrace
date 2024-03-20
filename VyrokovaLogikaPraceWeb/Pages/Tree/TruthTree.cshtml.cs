@@ -25,7 +25,7 @@ namespace VyrokovaLogikaPraceWeb.Pages
 
         public List<string> ConvertedTrees { get; set; } = new List<string>();
         public  string Message { get; set; }
-
+        public List<string> Steps { get; set; } = new List<string>();
         public List<Tuple<string,int>> DistinctNodes { get; set; }
         public List<SelectListItem> ListItems { get; set; } = new List<SelectListItem>();
         readonly IWebHostEnvironment mEnv;
@@ -75,6 +75,7 @@ namespace VyrokovaLogikaPraceWeb.Pages
                     Message = "Zvolená formule není tautologií";
                 }
                 DistinctNodes = adv.DistinctNodes;
+                Steps = adv.steps;
                 foreach (var trx in adv.trees)
                 {
                     htmlTree = new();
@@ -124,6 +125,7 @@ namespace VyrokovaLogikaPraceWeb.Pages
                     Message = "Zvolená formule není kontradikcí";
                 }
                 DistinctNodes = adv.DistinctNodes;
+                Steps = adv.steps;
                 foreach (var trx in adv.trees)
                 {
                     htmlTree = new();

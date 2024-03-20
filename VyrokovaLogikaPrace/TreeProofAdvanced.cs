@@ -16,6 +16,7 @@ namespace VyrokovaLogikaPrace
         public List<Node> moreOptions = new List<Node>();
         private bool assignedLiteral = false;
 
+        public List<string> steps { get; set; } = new List<string>();
         public List<Node> trees { get; set; } = new List<Node>();
 
         public TreeProofAdvanced(Node tree, int truthValue = 0)
@@ -23,6 +24,15 @@ namespace VyrokovaLogikaPrace
             Node tempTree = new Node(0);
             tempTree = Node.DeepCopy(GetToRoot(tree));
             tempTree.TruthValue = truthValue;
+            steps.Add("Přidáme " + truthValue + " na začátek stromu protože se snažíme dokázat");
+            if (truthValue == 0)
+            {
+                steps[steps.Count - 1] += " tautologii";
+            }
+            else
+            {
+                steps[steps.Count - 1] += " kontradikci";
+            }
             trees.Add(tempTree);
             ProcessTree(tree, truthValue);
         }
@@ -31,7 +41,6 @@ namespace VyrokovaLogikaPrace
         {
             if (tree.IsLeaf)
             {
-
                 return;
             }
             if (tree.IsRoot)
@@ -49,7 +58,6 @@ namespace VyrokovaLogikaPrace
                     if (tree.UsedCombinations.Count > 1)
                     {
                         Node tr = new Node(0);
-
                         tr = Node.DeepCopy(GetToRoot(tree));
                         moreOptions.Add(tr);
 
@@ -57,11 +65,9 @@ namespace VyrokovaLogikaPrace
                 }
                 if (values.Count > 1 && tree.UsedCombinations == null)
                 {
-
                     Node tr = new Node(0);
                     tree.UsedCombinations = new List<(int, int)>();
                     tree.UsedCombinations = values;
-
                     tr = Node.DeepCopy(GetToRoot(tree));
                     moreOptions.Add(tr);
                 }
@@ -81,12 +87,26 @@ namespace VyrokovaLogikaPrace
                     if (tree.Right.TruthValue == -1)
                     {
                         tree.Right.TruthValue = value.Item2;
-                        Node tempTree = new Node(0);
-                        tempTree = Node.DeepCopy(GetToRoot(tree));
-                        trees.Add(tempTree);
+;
                     }
                     if (tree.Right.IsLeaf) nodes[tree.Right.Value] = tree.Right.TruthValue;
                 }
+                Node tempTree = new Node(0);
+                tempTree = Node.DeepCopy(GetToRoot(tree));
+                trees.Add(tempTree);
+                if (values.Count == 1)
+                {
+                    steps.Add("Přidáme na levou stranu " + tree.Left.TruthValue);
+                }
+                else
+                {
+                    steps.Add("Zkusíme přidat jako jednu z možností na levou stranu " + tree.Left.TruthValue);
+                }
+                if (tree.Right != null)
+                {
+                    steps[steps.Count - 1] += " a na pravou stranu " + tree.Right.TruthValue;
+                }
+                steps[steps.Count - 1] += " protože operátor " + TreeHelper.GetOperatorName(tree) + " má pravdivostní hodnotu " + tree.TruthValue;
                 ProcessTree(tree.Left, value.Item1);
             }
             if (tree.IsRoot)
@@ -128,11 +148,39 @@ namespace VyrokovaLogikaPrace
                 CounterModel = contradictionHelper.CounterModel;
                 if (!IsTautology)
                 {
+                    steps.Add("není zde spor");
+                    steps[steps.Count - 1] += " nemůže se jednat o "; 
+                    if(truthValue == 0)
+                    {
+                        steps[steps.Count - 1] += "tautologii";
+                    }
+                    else
+                    {
+                        steps[steps.Count - 1] += "kontradikci";
+                    }
                     trees.Add(tree);
                     return;
                 }
                 else
                 {
+                    if (tree.TruthValue == 0)
+                    {
+                        if(moreOptions.Count != 0)
+                        steps.Add("Je zde spor, takže se může jednat o tautologii, musíme se vrátit do bodu, kde jsme zkusili dosadit hodnotu");
+                        else
+                        {
+                            steps.Add("Je zde spor, jedná se o tautologii vyzkoušeli jsme všechny možnosti");
+                        }
+                    }
+                    else
+                    {
+                        if (moreOptions.Count != 0)
+                            steps.Add("Je zde spor, takže se může jednat o kontradikci, musíme se vrátit do bodu, kde jsme zkusili dosadit hodnotu");
+                        else
+                        {
+                            steps.Add("Je zde spor, jedná se o kontradikci vyzkoušeli jsme všechny možnosti");
+                        }
+                    }
                     trees.Add(CounterModel);
                 }
                 if (moreOptions.Count != 0)
@@ -185,6 +233,10 @@ namespace VyrokovaLogikaPrace
                     if (tree.Parent is NegationOperatorNode)
                     {
                         tree.Parent.TruthValue = tree.TruthValue ^ 1;
+                        Node tempTree = new Node(0);
+                        tempTree = Node.DeepCopy(GetToRoot(tree));
+                        trees.Add(tempTree);
+                        steps.Add("Můžeme dosadit do uzlu negace negovanou hodnotu literálu");
                     }
                 }
             }
@@ -192,31 +244,22 @@ namespace VyrokovaLogikaPrace
             {
                 if (tree.TruthValue != -1)
                 {
-                    if (tree.Left.TruthValue != -1 && (tree.TruthValue ^ 1) != tree.Left.TruthValue)
+                    if (tree.Left.TruthValue != -1)
                     {
-                        tree.Left.TruthValue2 = tree.TruthValue ^ 1;
+                        tree.Left.TruthValue = tree.TruthValue ^ 1;
+                        Node tempTree = new Node(0);
+                        tempTree = Node.DeepCopy(GetToRoot(tree));
+                        trees.Add(tempTree);
+                        steps.Add("Dochází zde ke sporu!");
+                    }
+                    else if (tree.Left.TruthValue == -1)
+                    {
+                        tree.Left.TruthValue = tree.TruthValue ^ 1;
                         Node tempTree = new Node(0);
                         tempTree = Node.DeepCopy(GetToRoot(tree));
                         trees.Add(tempTree);
                     }
-                    else
-                    {
-                        if (tree.Left.TruthValue != -1)
-                        {
-                            tree.Left.TruthValue = tree.TruthValue ^ 1;
-                            Node tempTree = new Node(0);
-                            tempTree = Node.DeepCopy(GetToRoot(tree));
-                            trees.Add(tempTree);
-                        }
-                        else if (tree.Left.TruthValue == -1)
-                        {
-                            tree.Left.TruthValue = tree.TruthValue ^ 1;
-                            Node tempTree = new Node(0);
-                            tempTree = Node.DeepCopy(GetToRoot(tree));
-                            trees.Add(tempTree);
-                        }
 
-                    }
                 }
             }
             if (tree is ImplicationOperatorNode)
@@ -225,26 +268,38 @@ namespace VyrokovaLogikaPrace
                 {
                     if (tree.Left.TruthValue == 1 && tree.Right.TruthValue == 0)
                     {
-                        tree.TruthValue = 0;
-                        Node tempTree = new Node(0);
-                        tempTree = Node.DeepCopy(GetToRoot(tree));
-                        trees.Add(tempTree);
+                        if (tree.TruthValue != 0)
+                        {
+                            tree.TruthValue = 0;
+                            Node tempTree = new Node(0);
+                            tempTree = Node.DeepCopy(GetToRoot(tree));
+                            trees.Add(tempTree);
+                            steps.Add("Pokud operátor uzlu je implikace a levý uzel je 1 a zároveň pravý uzel je 0 můžeme dosadit do uzlu 0");
+
+                        }
                     }
                     else
                     {
-                        tree.TruthValue = 1;
-                        Node tempTree = new Node(0);
-                        tempTree = Node.DeepCopy(GetToRoot(tree));
-                        trees.Add(tempTree);
-
+                        if (tree.TruthValue != 1)
+                        {
+                            tree.TruthValue = 1;
+                            Node tempTree = new Node(0);
+                            tempTree = Node.DeepCopy(GetToRoot(tree));
+                            trees.Add(tempTree);
+                            steps.Add("Pokud operátor uzlu je implikace a levý uzel není 1 a zároveň pravý uzel není 0 můžeme dosadit do uzlu 1");
+                        }
                     }
                 }
                 if (tree.TruthValue == 1 && tree.Left.TruthValue == 0)
                 {
-                    tree.Right.TruthValue = 1;
-                    Node tempTree = new Node(0);
-                    tempTree = Node.DeepCopy(GetToRoot(tree));
-                    trees.Add(tempTree);
+                    if (tree.Right.TruthValue != 1)
+                    {
+                        tree.Right.TruthValue = 1;
+                        Node tempTree = new Node(0);
+                        tempTree = Node.DeepCopy(GetToRoot(tree));
+                        trees.Add(tempTree);
+                        steps.Add("Pokud operátor uzlu je implikace a levý uzel je 0 a zároveň hodnota uzlu je 1 můžeme do pravého uzlu dosadit 1");
+                    }
                 }
                 if(tree.TruthValue == -1 && tree.Left.TruthValue == 0 && tree.Right.TruthValue == 1)
                 {
@@ -252,6 +307,7 @@ namespace VyrokovaLogikaPrace
                     Node tempTree = new Node(0);
                     tempTree = Node.DeepCopy(GetToRoot(tree));
                     trees.Add(tempTree);
+                    steps.Add("Pokud operátor uzlu je implikace a levý uzel je 0 a zároveň hodnota pravého uzlu je 1 můžeme do  uzlu dosadit 1");
                 }
             }
             if (tree is ConjunctionOperatorNode)
@@ -264,6 +320,7 @@ namespace VyrokovaLogikaPrace
                         Node tempTree = new Node(0);
                         tempTree = Node.DeepCopy(GetToRoot(tree));
                         trees.Add(tempTree);
+                        steps.Add("Pokud operátor uzlu je konjunkce a levý uzel je 1 a zároveň hodnota pravého uzlu je 1 můžeme do  uzlu dosadit 1");
                     }
                     else
                     {
@@ -271,12 +328,14 @@ namespace VyrokovaLogikaPrace
                         Node tempTree = new Node(0);
                         tempTree = Node.DeepCopy(GetToRoot(tree));
                         trees.Add(tempTree);
+                        steps.Add("Pokud operátor uzlu je konjunkce a levý uzel není 1 a zároveň hodnota pravého uzlu není 1 můžeme do  uzlu dosadit 0");
                     }
                 }
                 if (tree.TruthValue == 1)
                 {
                     if (tree.Left.TruthValue == -1)
                     {
+                        steps.Add("Pokud operátor uzlu je konjunkce a hodnota uzlu je 1 můžeme do levého potomka dosadit 1");
                         tree.Left.TruthValue = 1;
                         Node tempTree = new Node(0);
                         tempTree = Node.DeepCopy(GetToRoot(tree));
@@ -285,6 +344,7 @@ namespace VyrokovaLogikaPrace
                     else if (tree.Left.TruthValue == 0)
                     {
                         tree.Left.TruthValue2 = 1;
+                        steps.Add("Pokud operátor uzlu je konjunkce a hodnota uzlu je 1 a levého potomku 0 dojde zde ke sporu");
                         Node tempTree = new Node(0);
                         tempTree = Node.DeepCopy(GetToRoot(tree));
                         trees.Add(tempTree);
@@ -292,6 +352,7 @@ namespace VyrokovaLogikaPrace
                     if (tree.Right.TruthValue == -1)
                     {
                         tree.Right.TruthValue = 1;
+                        steps.Add("Pokud operátor uzlu je konjunkce a hodnota uzlu je 0 můžeme do pravého uzlu dosadit 1");
                         Node tempTree = new Node(0);
                         tempTree = Node.DeepCopy(GetToRoot(tree));
                         trees.Add(tempTree);
@@ -299,6 +360,7 @@ namespace VyrokovaLogikaPrace
                     else if (tree.Right.TruthValue == 0)
                     {
                         tree.Right.TruthValue2 = 1;
+                        steps.Add("Pokud operátor uzlu je konjunkce a hodnota uzlu je 1 a práveho potomku 1 dojde zde ke sporu");
                         Node tempTree = new Node(0);
                         tempTree = Node.DeepCopy(GetToRoot(tree));
                         trees.Add(tempTree);
@@ -312,6 +374,7 @@ namespace VyrokovaLogikaPrace
                 {
                     if (tree.Left.TruthValue != -1 && tree.TruthValue != tree.Left.TruthValue)
                     {
+                        steps.Add("Pokud operátor uzlu je dvojitá negaace a hodnota uzlu není stejná jako hodnota potomka dojde zde ke sporu");
                         tree.Left.TruthValue2 = tree.TruthValue;
                         Node tempTree = new Node(0);
                         tempTree = Node.DeepCopy(GetToRoot(tree));
@@ -319,6 +382,7 @@ namespace VyrokovaLogikaPrace
                     }
                     else
                     {
+                        steps.Add("Pokud operátor uzlu je dvojitá negace můžeme do potomka dosadit stejnou hodnotu");
                         tree.Left.TruthValue = tree.TruthValue;
                         Node tempTree = new Node(0);
                         tempTree = Node.DeepCopy(GetToRoot(tree));
@@ -330,6 +394,7 @@ namespace VyrokovaLogikaPrace
             {
                 if (tree.Left.TruthValue == 0 && tree.Right.TruthValue == 0)
                 {
+                    steps.Add("Pokud operátor uzlu je disjunkce a zároveň hodnota levého i pravého potomka je 0 můžeme do uzlu dosadit 0");
                     tree.TruthValue = 0;
                     Node tempTree = new Node(0);
                     tempTree = Node.DeepCopy(GetToRoot(tree));
@@ -337,6 +402,7 @@ namespace VyrokovaLogikaPrace
                 }
                 if (tree.Left.TruthValue == 1 || tree.Right.TruthValue == 1)
                 {
+                    steps.Add("Pokud operátor uzlu je disjunkce a zároveň hodnota levého nebo pravého potomka je 1 můžeme do uzlu dosadit 1");
                     tree.TruthValue = 1;
                     Node tempTree = new Node(0);
                     tempTree = Node.DeepCopy(GetToRoot(tree));
@@ -366,6 +432,7 @@ namespace VyrokovaLogikaPrace
                         tree.TruthValue = nodes[tree.Value];
                         Node tempTree = new Node(0);
                         tempTree = Node.DeepCopy(GetToRoot(tree));
+                        steps.Add("Přidáme do uzlu " + tree.Value + " hodnotu " + tree.TruthValue + " protože ji známe");
                         trees.Add(tempTree);
                     }
                 }

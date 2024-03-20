@@ -1,0 +1,90 @@
+﻿@page
+@model VyrokovaLogikaPraceWeb.Pages.Pages_Rules
+@{
+}
+
+<head>
+    <title>My Page</title>
+    <link rel="stylesheet" href="~/css/tables.css" />
+</head>
+
+<body>
+    <div class="col-md-10">
+        <div class="text-center">
+            <h3 class="display-7">Pravidla</h3>
+            <h5>Unární operátory</h5>
+
+            <div class="table-container-wrapper">
+                <div class="table-container center">
+                    <table>
+                        <tr>
+                            <th>a</th>
+                            <th>¬a</th>
+                            <th>¬¬a</th>
+                        </tr>
+
+                        <tr>
+                            <td>0</td>
+                            <td>1</td>
+                            <td>0</td>
+                        </tr>
+                        <tr>
+                            <td>1</td>
+                            <td>1</td>
+                            <td>0</td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+
+            <h5>Binární operátory</h5>
+            <div class="table-container-wrapper">
+                <div class="table-container center">
+                    <table>
+                        <tr>
+                            <th>a</th>
+                            <th>b</th>
+                            <th>a∧b</th>
+                            <th>a∨b</th>
+                            <th>a≡b</th>
+                            <th>a⇒b</th>
+                        </tr>
+
+                        <tr>
+                            <td>0</td>
+                            <td>0</td>
+                            <td>0</td>
+                            <td>0</td>
+                            <td>1</td>
+                            <td>1</td>
+                        </tr>
+                        <tr>
+                            <td>0</td>
+                            <td>1</td>
+                            <td>0</td>
+                            <td>1</td>
+                            <td>0</td>
+                            <td>1</td>
+                        </tr>
+                        <tr>
+                            <td>1</td>
+                            <td>0</td>
+                            <td>0</td>
+                            <td>1</td>
+                            <td>0</td>
+                            <td>0</td>
+                        </tr>
+                        <tr>
+                            <td>1</td>
+                            <td>1</td>
+                            <td>1</td>
+                            <td>1</td>
+                            <td>1</td>
+                            <td>1</td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>

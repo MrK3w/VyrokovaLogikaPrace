@@ -7,16 +7,16 @@
 }
 
 var currentIndex = 0;
-var treeContainer = document.getElementById('treeContainer');
+var treeContainer;
 var convertedTrees;
+var steps; 
 
 function showNextTree() {
-    treeContainer = document.getElementById('treeContainer');
     var convertedTreesJson = document.getElementById('convertedTreesJson').value;
-
+    var convertedStepsJson = document.getElementById('convertedStepsJson').value;
     // Parse the JSON data into a JavaScript object
     convertedTrees = JSON.parse(convertedTreesJson);
-
+    steps = JSON.parse(convertedStepsJson);
     // Now you can work with convertedTrees like any other JavaScript array
     console.log(convertedTrees);
     currentIndex++;
@@ -29,12 +29,11 @@ function showNextTree() {
 }
 
 function showPreviousTree() {
-    treeContainer = document.getElementById('treeContainer');
     var convertedTreesJson = document.getElementById('convertedTreesJson').value;
-
+    var convertedStepsJson = document.getElementById('convertedStepsJson').value;
     // Parse the JSON data into a JavaScript object
     convertedTrees = JSON.parse(convertedTreesJson);
-
+    steps = JSON.parse(convertedStepsJson);
     // Now you can work with convertedTrees like any other JavaScript array
     console.log(convertedTrees);
     currentIndex--;
@@ -49,6 +48,8 @@ function showPreviousTree() {
 function updateTreeContainer() {
     var treeContainer = document.getElementById('treeContainer');
     treeContainer.innerHTML = convertedTrees[currentIndex];
+    var stepsContainer = document.getElementById('Steps');
+    stepsContainer.innerHTML = steps[currentIndex];
 }
 
 function updateButtonState() {

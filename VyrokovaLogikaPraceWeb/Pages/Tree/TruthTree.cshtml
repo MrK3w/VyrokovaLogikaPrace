@@ -39,16 +39,19 @@
                     @if (Model.Advanced)
                     {
                          string convertedTreesJson = Newtonsoft.Json.JsonConvert.SerializeObject(Model.ConvertedTrees);
+                         string convertedStepsJson = Newtonsoft.Json.JsonConvert.SerializeObject(Model.Steps);
 
                         <input type="hidden" id="convertedTreesJson" value="@convertedTreesJson" />
-                        Console.WriteLine(convertedTreesJson);
-                        var index = 0;
-                        <div id="treeContainer">
-                            @Html.Raw(@Model.ConvertedTrees[index])
-                        </div>
+                        <input type="hidden" id="convertedStepsJson" value="@convertedStepsJson" />
                         
-                        <button id="prevBtn" onclick="showPreviousTree()" disabled>Previous Step</button>
-                        <button id="nextBtn" onclick="showNextTree()">Next Step</button>
+                        <div id="treeContainer">
+                            @Html.Raw(@Model.ConvertedTrees[0])
+                        </div>
+                        <div class="alert alert-info" role="alert", id="Steps">
+                            @Html.Raw(@Model.Steps[0])
+                        </div>
+                        <button id="prevBtn" class="btn btn-primary flex-fill mb-2 mr-1" onclick="showPreviousTree()" disabled>Previous Step</button>
+                        <button id="nextBtn" class="btn btn-primary flex-fill mb-2 mr-1" onclick="showNextTree()">Next Step</button>
 
 
 
