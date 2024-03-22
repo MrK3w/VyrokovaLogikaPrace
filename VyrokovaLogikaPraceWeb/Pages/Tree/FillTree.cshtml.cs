@@ -1,4 +1,4 @@
-ï»¿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using VyrokovaLogikaPrace;
@@ -6,7 +6,7 @@ using VyrokovaLogikaPraceWeb.Helpers;
 
 namespace VyrokovaLogikaPraceWeb.Pages
 {
-    public class DrawTreeModel : PageModel
+    public class FillTreeModel : PageModel
     {
         public bool Valid { get; private set; } = true;
 
@@ -25,7 +25,7 @@ namespace VyrokovaLogikaPraceWeb.Pages
         public string YourFormula { get; set; } = "";
         public string Input { get; set; } = "";
 
-        public DrawTreeModel(IWebHostEnvironment env)
+        public FillTreeModel(IWebHostEnvironment env)
         {
             mEnv = env;
             PrepareList();
@@ -74,29 +74,11 @@ namespace VyrokovaLogikaPraceWeb.Pages
 
         private void PrintTree(Node tree)
         {
-            htmlTree.Add("<li id='node_" + tree.id + "'>");
-            string op = string.Empty;
+            htmlTree.Add("<li>");
 
-            op = TreeHelper.GetOP(tree);
-            int position;
-            if(tree is NegationOperatorNode || tree is DoubleNegationOperatorNode || tree is ValueNode)
-              position = tree.Value.IndexOf(op);
-            else
-            {
+            string op = TreeHelper.GetOP(tree);
 
-                if (tree.Value[0] == '(')
-                {
-                    position = tree.Left.Value.Length + 2;
-                    var firstPart = tree.Value.Substring(0, position);
-                    var secondPart = tree.Value.Substring(position+1);
-                    var temp = firstPart + op + secondPart;
-                    if (temp != tree.Value) position = position-2;
-                }
-
-                else position = tree.Left.Value.Length;
-            }
-            //we store tree value and tree op to be able to switch between full form and syntax form
-            htmlTree.Add("<span class='tf-nc' onclick='toggleNode(" + tree.id + ", \"" + tree.Value + "\", \"" + op + "\", " + position + ")'>" + op + "</span>");
+            htmlTree.Add("<span class='tf-nc'>" + op + " = #</span>");
 
 
             if (tree.Left != null)
@@ -115,7 +97,7 @@ namespace VyrokovaLogikaPraceWeb.Pages
             htmlTree.Add("</li>");
         }
 
-        
+
 
         public string? GetFormula()
         {
@@ -125,14 +107,14 @@ namespace VyrokovaLogikaPraceWeb.Pages
             if (selectFromSelectList == "" && selectFromInput == "")
             {
                 Valid = false;
-                ErrorMessage = "Nevybral jsi Å¾Ã¡dnou formuli!";
+                ErrorMessage = "Nevybral jsi žádnou formuli!";
                 return null;
             }
             //if user user userInput
             if (selectFromInput != "")
             {
                 Converter.ConvertSentence(ref selectFromInput);
-                ListItems.Add(new SelectListItem(selectFromInput,selectFromInput));
+                ListItems.Add(new SelectListItem(selectFromInput, selectFromInput));
                 var selected = ListItems.Where(x => x.Value == selectFromInput).First();
                 selected.Selected = true;
                 return selectFromInput;
