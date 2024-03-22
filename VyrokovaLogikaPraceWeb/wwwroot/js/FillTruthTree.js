@@ -17,6 +17,74 @@ function doesTreeContainsHash() {
     return containsHash;
 }
 
+function handleButtonDrawTree() {
+    // Get the value of UserInput
+    var userInputValue = document.getElementById('UserInput').value.trim();
+    var formulaValue;
+    // Check if UserInput is empty
+    if (userInputValue === '') {
+        // If UserInput is empty, get the selected value from the dropdown list (formula)
+        var formulaDropdown = document.getElementById('formula');
+        var selectedFormula = formulaDropdown.options[formulaDropdown.selectedIndex].value;
+        formulaValue = selectedFormula.trim();
+    } else {
+        // If UserInput is not empty, use its value
+         formulaValue = userInputValue;
+    }
+
+    $.ajax({
+        url: '?handler=DrawTree',
+        beforeSend: function (xhr) {
+            xhr.setRequestHeader("XSRF-TOKEN",
+                $('input:hidden[name="__RequestVerificationToken"]').val());
+        },
+        type: 'POST',
+        contentType: 'application/json',
+        dataType: "json",
+        data: JSON.stringify(formulaValue),
+        success: function (data) {
+            if (data.errors.length === 0) {
+                // If there are no errors, display the converted tree
+                document.getElementById('treeDiv').innerHTML = data.convertedTree;
+
+                // Display the formula
+                document.getElementById('formule').innerHTML = 'Synktaktick\u00FD strom formule <span style="color: red;">' + data.formula + '</span>.';
+
+                var buttonsDiv = document.getElementById('buttons');
+                buttonsDiv.innerHTML = '';
+
+                // Create and append the "Oznaè spor" button
+                var contradictionButton = document.createElement('button');
+                contradictionButton.id = 'contradictionButton';
+                contradictionButton.className = 'btn btn-primary flex-fill mb-2 mr-1';
+                contradictionButton.textContent = 'Ozna\u010d spor';
+                buttonsDiv.appendChild(contradictionButton);
+
+                // Create and append the "Ovìø strom" button
+                var checkTreeButton = document.createElement('button');
+                checkTreeButton.id = 'checkTree';
+                checkTreeButton.className = 'btn btn-primary flex-fill mb-2 mr-1';
+                checkTreeButton.textContent = 'Ov\u011b\u0159 strom';
+                buttonsDiv.appendChild(checkTreeButton);
+
+            } else {
+                // If there are errors, display them
+                var errorList = '';
+                data.Errors.forEach(function (error) {
+                    errorList += '<li>' + error + '</li>';
+                });
+
+                document.getElementById('errors').innerHTML = '<div class="alert alert-danger"><h4 class="alert-heading">Nesprávná formule:</h4><ul>' + errorList + '</ul></div>';
+            }
+            attachEventHandlers(); // Call attachEventHandlers inside success callback
+        },
+        error: function (error) {
+            console.error('Error:', error);
+            // Handle the error
+        }
+    });
+}
+
 function isContradictionMarked() {
     var spans = document.querySelectorAll('.tf-nc');
     var contradictionMarked = true;
@@ -67,6 +135,30 @@ function handleButtonOverStrom() {
                 document.getElementById('treeDiv').innerHTML = data.convertedTree;
                 //Put formula to the element with id 'formula'
                 document.getElementById('message').innerHTML = data.message;
+                var errors = data.errors;
+
+                // Get the div element where you want to display the alerts
+                var errorsDiv = document.getElementById('errors');
+
+                // Clear any existing content in the errors div
+                errorsDiv.innerHTML = '';
+
+                // Iterate over the errors list
+                errors.forEach(function (error) {
+                    // Create a new div element for the alert
+                    var alertDiv = document.createElement('div');
+                    alertDiv.classList.add('alert', 'alert-info', 'alert-dismissible', 'fade', 'show');
+                    alertDiv.setAttribute('role', 'alert');
+
+                    // Create a text node with the error message
+                    var errorMessage = document.createTextNode(error);
+
+                    // Append the error message to the alert div
+                    alertDiv.appendChild(errorMessage);
+
+                    // Append the alert div to the errors div
+                    errorsDiv.appendChild(alertDiv);
+                });
                 attachEventHandlers();
             },
             error: function (error) {
@@ -137,7 +229,18 @@ function attachEventHandlers() {
         }
     });
 
-    document.getElementById('checkTree').addEventListener('click', handleButtonOverStrom);
+
+    var checkTreeButton = document.getElementById('checkTree');
+
+    // If the element exists, attach the event listener
+    if (checkTreeButton) {
+        checkTreeButton.addEventListener('click', handleButtonOverStrom);
+    }
+    $('#formulaForm').submit(function (event) {
+        // Prevent the default form submission
+        event.preventDefault();
+    });
+    document.getElementById('drawTree').addEventListener('click', handleButtonDrawTree);
 }
 
 $(document).ready(attachEventHandlers)

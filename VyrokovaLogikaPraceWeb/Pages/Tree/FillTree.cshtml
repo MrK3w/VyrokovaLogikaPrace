@@ -13,7 +13,7 @@
         <div class="text-center">
             <h3 class="display-7">Vytvoř pravdivostní strom</h3>
 
-            <form method="post" asp-action="Index" asp-controller="Home" id="TheForm" class="d-flex flex-column">
+            <form method="post" asp-action="Index" asp-controller="Home" id="formulaForm" class="d-flex flex-column">
                 <div class="d-flex">
                     @Html.DropDownList("formula", Model.ListItems, new { @class = "form-control custom-font", @style = "height: 66.67%;" })
                     @Html.TextBox("UserInput", Model.YourFormula, new { @maxlength = "64", @class = "form-control ml-2 custom-font", @style = "height: 66.67%;" })
@@ -21,38 +21,20 @@
 
                     <div class="btn-toolbar ml-2 flex-fill" role="toolbar" aria-label="Toolbar with button groups">
                         <div class="btn-group flex-fill" role="group" aria-label="First group">
-                            <input type='submit' class="btn btn-primary flex-fill mb-2 mr-1" value='Vykresli syntaktický strom' name='submit' asp-page-handler="DrawTree" />
+                            <button id="drawTree" class="btn btn-primary flex-fill mb-2 mr-1"> Vykresli strom</button>
                         </div>
 
                     </div>
                 </div>
             </form>
 
-            @if (Model.Valid)
-            {
-                @if (Model.ConvertedTree != null)
-                {
-                    <p>Synktaktický strom formule <span style="color: red;"> @Model.Formula</span>.</p>
-                    <div id='treeDiv'>
-                        @Html.Raw(Model.ConvertedTree)
-                    </div>
-                    <div id='message'> </div>
-                    <button id="contradictionButton" class="btn btn-primary flex-fill mb-2 mr-1"> Označ spor</button>
-                    <button id="checkTree" class="btn btn-primary flex-fill mb-2 mr-1"> Ověř strom</button>
-                }
-            }
-            else
-            {
-                <div class="alert alert-danger">
-                    <h4 class="alert-heading">Nesprávná formule:</h4>
-                    <ul>
-                        @foreach (var error in Model.Errors)
-                        {
-                            <li>@error</li>
-                        }
-                    </ul>
-                </div>
-            }
+                <div id='formule'></div>
+                <div id='treeDiv'> </div>
+                <div id='message'> </div>
+                <div id='errors'> </div>
+                <div id='buttons'></div>
+                <div id='Errors'></div>
+              
         </div>
     </div>
 </body>

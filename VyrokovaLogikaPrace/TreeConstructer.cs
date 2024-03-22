@@ -241,7 +241,7 @@ namespace VyrokovaLogikaPrace
         private List<string> StripTree()
         {
             //replace all occurences of spans with item (easier to iterate it in CreateTree method 
-            mHtmlTree = mHtmlTree.Replace("<span class=\"tf-nc\">", "<item>").Replace("</span>", "</item>").Replace("<span class=\"tf-nc\" style=\"border-color: blue;\">", "<item>").Replace("<span class=\"tf-nc\" style=\"\">","<item>");
+            mHtmlTree = mHtmlTree.Replace("<span class=\"tf-nc\">", "<item>").Replace("</span>", "</item>").Replace("<span class=\"tf-nc\" style=\"border-color: blue;\">", "<item>").Replace("<span class=\"tf-nc\" style=\"\">","<item>").Replace("<span class=\"tf-nc\" style=\"color: red\">", "<item>");
             //split by this delimeter
             //we will strip tree with this delimetrs to create list
             string[] delimiters = { "<li>", "</li>", "<item>", "</item>", "<ul>", "</ul>" };

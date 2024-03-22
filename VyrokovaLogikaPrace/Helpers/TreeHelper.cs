@@ -40,7 +40,7 @@ namespace VyrokovaLogikaPrace
                 case DoubleNegationOperatorNode _:
                     return "dvojitá negace";
                 case ConjunctionOperatorNode _:
-                    return "implikace";
+                    return "konjunkce";
                 case DisjunctionOperatorNode _:
                     return "disjunkce";
                 case EqualityOperatorNode _:
@@ -51,6 +51,70 @@ namespace VyrokovaLogikaPrace
                     return ((ValueNode)tree).Value;
                 default:
                     return string.Empty;
+            }
+        }
+
+        public static bool GoodCombination(Node tree, int leftTruth, int rightTruth = -1)
+        {
+            switch (tree)
+            {
+                case NegationOperatorNode _:
+                    if (tree.TruthValue != leftTruth) return true;
+                    else return false;
+                case DoubleNegationOperatorNode _:
+                    if (tree.TruthValue == leftTruth) return true;
+                    else return false;
+                case ConjunctionOperatorNode _:
+                   if(tree.TruthValue == 0)
+                   {
+                        if (leftTruth != 1 && rightTruth != 1)
+                        {
+                            return true;
+                        }
+                        else return false;
+                   }
+                   else
+                   {
+                        if (leftTruth == 1 && rightTruth == 1) return true;
+                        else return false;
+                   }
+                case DisjunctionOperatorNode _:
+                    if(tree.TruthValue == 0)
+                    {
+                        if (leftTruth == 0 && rightTruth == 0) return true;
+                        else return false;
+                    }
+                    else
+                    {
+                        if (leftTruth != 1 && rightTruth != 1) return true;
+                        else return false;
+                    }
+                case EqualityOperatorNode _:
+                    if(tree.TruthValue == 0)
+                    {
+                        if ((leftTruth == 0 && rightTruth == 1) || (leftTruth == 1 && rightTruth == 0)) return true;
+                        else return false;
+                    }
+                    else
+                    {
+                        if ((leftTruth == 1 && rightTruth == 1) || (leftTruth == 0 && rightTruth == 0)) return true;
+                        else return false;
+                    }
+                case ImplicationOperatorNode _:
+                   if(tree.TruthValue == 0)
+                   {
+                        if (leftTruth == 1 && rightTruth == 0) return true;
+                        else return false;
+                   }
+                   else
+                   {
+                        if (leftTruth == 1 && rightTruth == 0) return false;
+                        else return true;
+                   }
+                case ValueNode _:
+                    return true;
+                default:
+                    return false;
             }
         }
 

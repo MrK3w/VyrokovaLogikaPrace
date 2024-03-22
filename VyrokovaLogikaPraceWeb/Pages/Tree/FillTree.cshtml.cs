@@ -16,7 +16,6 @@ namespace VyrokovaLogikaPraceWeb.Pages
         private string selectFromInput;
         public string ErrorMessage;
         public string Formula;
-        public List<string> Errors { get; private set; } = new();
         public string ConvertedTree { get; set; }
 
         public List<SelectListItem> ListItems { get; set; } = new List<SelectListItem>();
@@ -24,6 +23,7 @@ namespace VyrokovaLogikaPraceWeb.Pages
 
         public string YourFormula { get; set; } = "";
         public string Input { get; set; } = "";
+        public List<string> Errors { get; set; } = new List<string>();
 
         public FillTreeModel(IWebHostEnvironment env)
         {
@@ -36,10 +36,10 @@ namespace VyrokovaLogikaPraceWeb.Pages
             ListItems = FormulaHelper.InitializeAllFormulas(mEnv);
         }
 
-        public IActionResult OnPostDrawTree()
+        public IActionResult OnPostDrawTree([FromBody] string formula)
         {
             //get formula from inputs
-            Formula = GetFormula()!;
+            Formula = formula;
             Converter.ConvertSentence(ref Formula);
             //if it not valid save user input to YourFormula and return page
             if (!Valid)
@@ -62,21 +62,34 @@ namespace VyrokovaLogikaPraceWeb.Pages
             else
             {
                 Errors = engine.Errors;
-                Valid = false;
             }
-            return Page();
+            var responseData = new
+            {
+                formula = Formula,
+                errors = Errors,
+                convertedTree = ConvertedTree
+            };
+            return new JsonResult(responseData);
         }
 
+        //TODO check if there are two values in one node (contraaiction in node) and check if contradiction is not in leafs
         public IActionResult OnPostCheckTree([FromBody] string text)
         {
             TreeConstructer constructer = new TreeConstructer(text);
             var fillTree = constructer.ProcessTree(true);
+            TreeVerifier verifier = new TreeVerifier(fillTree);
+            fillTree = verifier.tree;
+            Errors = verifier.Errors;
+            string msg;
+            if (Errors.Count == 0) msg = "Strom je v poøádku, chyby nenalezeny.";
+            else msg = "Ve stromu jsou chyby.";
             string div = "<div class='tf-tree tf-gap-sm'>".Replace("'", "\"");
             htmlTree.Clear();
             PrintTree(fillTree);
             var responseData = new
             {
-                message = "Tree is builded correctly.",
+                errors = Errors,
+                message = msg,
                 convertedTree = div + string.Join("", htmlTree.ToArray()) + "</div>",
             };
             return new JsonResult(responseData);
@@ -110,15 +123,29 @@ namespace VyrokovaLogikaPraceWeb.Pages
         private void PrintTree(Node tree)
         {
             htmlTree.Add("<li>");
-
+          
             string op = TreeHelper.GetOP(tree);
             if (tree.TruthValue2 == -1)
             {
-                htmlTree.Add("<span class='tf-nc'>" + op + " = " + tree.TruthValue + "</span>");
+                if (tree.Red)
+                {
+                    htmlTree.Add("<span class='tf-nc' style = 'color: red'>" + op + " = " + tree.TruthValue + "</span>");
+                }
+                else
+                {
+                    htmlTree.Add("<span class='tf-nc'>" + op + " = " + tree.TruthValue + "</span>");
+                }
             }
             else
             {
-                htmlTree.Add("<span class='tf-nc'>" + op + " = " + tree.TruthValue +"/"+tree.TruthValue2+"</span>");
+                if (tree.Red)
+                {
+                    htmlTree.Add("<span class='tf-nc' style = 'color: red'>" + op + " = " + tree.TruthValue + "/" + tree.TruthValue2 + "</span>");
+                }
+                else
+                {
+                    htmlTree.Add("<span class='tf-nc'>" + op + " = " + tree.TruthValue + "/" + tree.TruthValue2 + "</span>");
+                }
             }
 
             if (tree.Left != null)
@@ -135,42 +162,6 @@ namespace VyrokovaLogikaPraceWeb.Pages
             }
 
             htmlTree.Add("</li>");
-        }
-
-        public string? GetFormula()
-        {
-            selectFromSelectList = Request.Form["formula"];
-            selectFromInput = Request.Form["UserInput"];
-            //if user didn't use any of inputs invalidate request and throw errorMessage that user didn't choose formula
-            if (selectFromSelectList == "" && selectFromInput == "")
-            {
-                Valid = false;
-                ErrorMessage = "Nevybral jsi žádnou formuli!";
-                return null;
-            }
-            //if user user userInput
-            if (selectFromInput != "")
-            {
-                Converter.ConvertSentence(ref selectFromInput);
-                ListItems.Add(new SelectListItem(selectFromInput, selectFromInput));
-                var selected = ListItems.Where(x => x.Value == selectFromInput).First();
-                selected.Selected = true;
-                return selectFromInput;
-            }
-            //if user used formula from listItem
-            else if (selectFromSelectList != "")
-            {
-                foreach (var item in ListItems)
-                {
-                    item.Selected = false;
-                    if (selectFromSelectList == item.Value)
-                    {
-                        item.Selected = true;
-                    }
-                }
-                return selectFromSelectList;
-            }
-            return null;
         }
     }
 }
