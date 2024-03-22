@@ -33,7 +33,10 @@
                 @if (Model.ConvertedTree != null)
                 {
                     <p>Synktaktický strom formule <span style="color: red;"> @Model.Formula</span>.</p>
-                    @Html.Raw(Model.ConvertedTree)
+                    <div id='treeDiv'>
+                        @Html.Raw(Model.ConvertedTree)
+                    </div>
+                    <div id='message'> </div>
                     <button id="contradictionButton" class="btn btn-primary flex-fill mb-2 mr-1"> Označ spor</button>
                     <button id="checkTree" class="btn btn-primary flex-fill mb-2 mr-1"> Ověř strom</button>
                 }

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using VyrokovaLogikaPrace.Enums;
 
@@ -30,14 +31,21 @@ namespace VyrokovaLogikaPrace
         }
 
         //create tree from html code
-        public Node ProcessTree()
+        public Node ProcessTree(bool fillTreeOption = false)
         {
             //get list of tags in tree
             var strippedTags = StripTree();
             //create tree from this list of tags
-            CreateTree(strippedTags);
-            //get full formula logic
-            FillFormula(tree);
+            if (!fillTreeOption)
+            {
+                CreateTree(strippedTags);
+                //get full formula logic
+                FillFormula(tree);
+            }
+            else
+            {
+                CreateTreeWithTruthValues(strippedTags);
+            }
             return tree;
         }        
 
@@ -61,13 +69,8 @@ namespace VyrokovaLogikaPrace
                     tree.Value = TreeHelper.GetOP(tree) + (char)Signs.Lbracket + tree.Left.Value + (char)Signs.Rbracket;
                 }
             }
-            else
-            {
-                
-            }
             return;
         }
-
         private void CreateTree(List<string> strippedTags)
         {
             //if next item in list is item(value of node) set to true
@@ -125,6 +128,101 @@ namespace VyrokovaLogikaPrace
                 {
                     if(tree.Parent != null)
                     tree = tree.Parent;
+                }
+                //this let us know that there will be some child nodes, so we will add to left side of tree
+                else if (tag == "<ul>")
+                {
+                    side = Side.left;
+                }
+                //let know that there will be a item
+                else if (tag == "<item>")
+                {
+                    itIsItem = true;
+                    continue;
+                }
+            }
+        }
+
+        private void CreateTreeWithTruthValues(List<string> strippedTags)
+        {
+            //if next item in list is item(value of node) set to true
+            bool itIsItem = false;
+            //if we have inside <ul> already <li> set to true, to let it now that it will be right side
+            bool ThereWasLi = false;
+            //iteration of each tag in list
+            foreach (string tag in strippedTags)
+            {
+                if (tag == "</li>")
+                {
+                    ThereWasLi = true;
+                    continue;
+                }
+                //if it item we need to get this values
+                if (itIsItem)
+                {
+                    var val = tag.Replace("?", "").Replace(" ", "");
+                    var values = val.Split('=','/');
+                    //if we din't have tree, we will create new one
+                    if (tree == null)
+                    {
+                        tree = TreeHelper.GetNode(values[0], GetNextId());
+                        tree.TruthValue = int.Parse(values[1]);
+                        if(values.Length == 3)
+                        {
+                            tree.TruthValue2 = int.Parse(values[2]);
+                            tree.Contradiction = true;
+                        }
+                    }
+                    //if it will be left side getNode from tag value
+                    else if (side == Side.left)
+                    {
+                        //we will create tree left node 
+                        tree.Left = TreeHelper.GetNode(values[0], GetNextId());
+                        tree.Left.TruthValue = int.Parse(values[1]);
+                        if (values.Length == 3)
+                        {
+                            tree.Left.TruthValue2 = int.Parse(values[2]);
+                            tree.Left.Contradiction = true;
+                        }
+                        //set his parent to current tree
+                        tree.Left.Parent = tree;
+                        //and move to left node
+                        tree = tree.Left;
+                    }
+                    //if it will be right side similar as above
+                    else if (side == Side.right)
+                    {
+                        //we will create tree left node 
+                        tree.Right = TreeHelper.GetNode(values[0], GetNextId());
+                        tree.Right.TruthValue = int.Parse(values[1]);
+                        if (values.Length == 3)
+                        {
+                            tree.Right.TruthValue2 = int.Parse(values[2]);
+                            tree.Right.Contradiction = true;
+                        }
+                        //set his parent to current tree
+                        tree.Right.Parent = tree;
+                        //and move to left node
+                        tree = tree.Right;
+                    }
+                    itIsItem = false;
+                    continue;
+                }
+
+                //if there is </item> we will just skip this(information that items ends here)
+                else if (tag == "</item>") continue;
+                //if <li> and it second time inside <ul>
+                else if (tag == "<li>" && ThereWasLi)
+                {
+                    tree = tree.Parent;
+                    side = Side.right;
+                    ThereWasLi = false;
+                }
+                //finish on child nodes, we need to return to parent
+                else if (tag == "</ul>")
+                {
+                    if (tree.Parent != null)
+                        tree = tree.Parent;
                 }
                 //this let us know that there will be some child nodes, so we will add to left side of tree
                 else if (tag == "<ul>")

@@ -20,6 +20,7 @@ namespace VyrokovaLogikaPrace
         public bool IsLeaf { get; set; } // Indicates whether this node is a leaf (value) node
         public bool WillBeChanged { get; set; } = false;
 
+        public bool Contradiction { get; set; } = false;
         public List<(int, int)> UsedCombinations { get; set; }
         public bool isFinal {get;set;}
         public Node(string value, int id)

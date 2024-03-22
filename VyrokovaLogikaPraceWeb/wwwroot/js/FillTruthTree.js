@@ -17,6 +17,23 @@ function doesTreeContainsHash() {
     return containsHash;
 }
 
+function isContradictionMarked() {
+    var spans = document.querySelectorAll('.tf-nc');
+    var contradictionMarked = true;
+
+    for (var i = 0; i < spans.length; i++) {
+        var span = spans[i];
+        // Check if the inner text of the span contains "#"
+        if (span.innerText.includes("0/1") && !(span.innerText.includes("?"))) {
+            alert("Strom nem\u00e1 spr\u00e1vn\u011B ozna\u010den\u00fd spor");
+
+            contradictionMarked = false;
+            break;
+        }
+    }
+    return contradictionMarked;
+}
+
 //Send tree to verification
 function handleButtonOverStrom() {
     var elements = document.querySelectorAll(".tf-tree.tf-gap-sm");
@@ -29,7 +46,12 @@ function handleButtonOverStrom() {
         alert("Strom nebyl vytvoøen");
         return;
     }
-    if (!doesTreeContainsHash()) {
+    if (doesTreeContainsHash()) {
+        return;
+    }
+    if (!isContradictionMarked()) {
+        return;
+    }
         $.ajax({
             url: '?handler=CheckTree',
             beforeSend: function (xhr) {
@@ -42,78 +64,80 @@ function handleButtonOverStrom() {
             data: JSON.stringify(innerHTMLContent),
             success: function (data) {
                 console.log('Success:', data);
-
-
+                document.getElementById('treeDiv').innerHTML = data.convertedTree;
+                //Put formula to the element with id 'formula'
+                document.getElementById('message').innerHTML = data.message;
+                attachEventHandlers();
             },
             error: function (error) {
                 console.error('Error:', error);
                 // Handle the error
             }
-        });
-    }
+        }); 
 }
 
-$(document).ready(function () {
-        // Attach a click event handler to the .tf-nc span element
-        $(".tf-nc").on("click", function () {
-            // Get the current span element
-            var spanElement = $(this);
+function attachEventHandlers() {
+    // Attach a click event handler to the .tf-nc span element
+    $(".tf-nc").on("click", function () {
+        // Get the current span element
+        var spanElement = $(this);
 
-            // Get the current content of the span element
-            var currentContent = spanElement.text();
+        // Get the current content of the span element
+        var currentContent = spanElement.text();
 
-            var indexOfEqual = currentContent.indexOf('=');
+        var indexOfEqual = currentContent.indexOf('=');
 
-            // Extract the content after '=' character
-            var contentAfterEqual = currentContent.substring(indexOfEqual + 1).trim();
-            var contradictionSymbol = "";
-            if (contentAfterEqual.includes('?')) contradictionSymbol = " ?"
-            var newContent;
-            //replace 1 to 0 and otherwise
-            if (!contradiction) {
-                // If content after '=' is '#', replace it with '1'
-                if (contentAfterEqual === '#' + contradictionSymbol) {
-                    newContent = currentContent.substring(0, indexOfEqual + 1) + ' 1' + contradictionSymbol;
-                } else {
-                    // Otherwise, toggle between '0', '1', and '0/1'
-                    if (contentAfterEqual === '0' + contradictionSymbol) {
-                        newContent = currentContent.substring(0, indexOfEqual + 1) + ' 1' + contradictionSymbol;
-                    } else if (contentAfterEqual === '1' + contradictionSymbol) {
-                        newContent = currentContent.substring(0, indexOfEqual + 1) + ' 0/1' + contradictionSymbol;
-                    } else if (contentAfterEqual === '0/1' + contradictionSymbol) {
-                        newContent = currentContent.substring(0, indexOfEqual + 1) + ' 0' + contradictionSymbol;
-                    }
-                }
-                spanElement.text(newContent);
-
-            }
-            //if we want to add x for contradiction
-            else {
-               
-                    var hasX = currentContent.indexOf("?") !== -1;
-
-                    var newContent = hasX ? currentContent.replace(" ?", "") : currentContent + " ?";
-                    spanElement.text(newContent);
-                
-            }
-            // Modify the content of the span element
-
-        });
-
-        // Attach a click event handler to the #xButton element
-        $("#contradictionButton").on("click", function () {
-            // Get the current value of the hiddenNumber input element
-            contradiction = !contradiction;
-            // Check if contradiction is true
-            if (contradiction) {
-                // Change the button color to green
-                $("#contradictionButton").css("background-color", "green");
+        // Extract the content after '=' character
+        var contentAfterEqual = currentContent.substring(indexOfEqual + 1).trim();
+        var contradictionSymbol = "";
+        if (contentAfterEqual.includes('?')) contradictionSymbol = " ?"
+        var newContent;
+        //replace 1 to 0 and otherwise
+        if (!contradiction) {
+            // If content after '=' is '#', replace it with '1'
+            if (contentAfterEqual === '#' + contradictionSymbol) {
+                newContent = currentContent.substring(0, indexOfEqual + 1) + ' 1' + contradictionSymbol;
             } else {
-                // Change the button color to default color
-                $("#contradictionButton").css("background-color", ""); // or you can set it to the default color you want
+                // Otherwise, toggle between '0', '1', and '0/1'
+                if (contentAfterEqual === '0' + contradictionSymbol) {
+                    newContent = currentContent.substring(0, indexOfEqual + 1) + ' 1' + contradictionSymbol;
+                } else if (contentAfterEqual === '1' + contradictionSymbol) {
+                    newContent = currentContent.substring(0, indexOfEqual + 1) + ' 0/1' + contradictionSymbol;
+                } else if (contentAfterEqual === '0/1' + contradictionSymbol) {
+                    newContent = currentContent.substring(0, indexOfEqual + 1) + ' 0' + contradictionSymbol;
+                }
             }
-        });
+            spanElement.text(newContent);
+
+        }
+        //if we want to add x for contradiction
+        else {
+
+            var hasX = currentContent.indexOf("?") !== -1;
+
+            var newContent = hasX ? currentContent.replace(" ?", "") : currentContent + " ?";
+            spanElement.text(newContent);
+
+        }
+        // Modify the content of the span element
+
+    });
+
+    // Attach a click event handler to the #xButton element
+    $("#contradictionButton").on("click", function () {
+        // Get the current value of the hiddenNumber input element
+        contradiction = !contradiction;
+        // Check if contradiction is true
+        if (contradiction) {
+            // Change the button color to green
+            $("#contradictionButton").css("background-color", "green");
+        } else {
+            // Change the button color to default color
+            $("#contradictionButton").css("background-color", ""); // or you can set it to the default color you want
+        }
+    });
 
     document.getElementById('checkTree').addEventListener('click', handleButtonOverStrom);
+}
 
-});
+$(document).ready(attachEventHandlers)

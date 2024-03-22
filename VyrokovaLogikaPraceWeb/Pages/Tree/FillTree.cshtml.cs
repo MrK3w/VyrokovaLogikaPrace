@@ -54,7 +54,7 @@ namespace VyrokovaLogikaPraceWeb.Pages
             Engine engine = new Engine(Formula);
             if (engine.CreateTree())
             {
-                PrintTree(engine.pSyntaxTree);
+                PrintEmptyTree(engine.pSyntaxTree);
                 string div = "<div class='tf-tree tf-gap-sm'>".Replace("'", "\"");
                 ConvertedTree = div + string.Join("", htmlTree.ToArray()) + "</div>";
             }
@@ -70,24 +70,19 @@ namespace VyrokovaLogikaPraceWeb.Pages
         public IActionResult OnPostCheckTree([FromBody] string text)
         {
             TreeConstructer constructer = new TreeConstructer(text);
-            constructer.ProcessTree();
+            var fillTree = constructer.ProcessTree(true);
             string div = "<div class='tf-tree tf-gap-sm'>".Replace("'", "\"");
-
+            htmlTree.Clear();
+            PrintTree(fillTree);
             var responseData = new
             {
-                message = "Formula is " + constructer.Formula,
-                convertedTree = div + string.Join("", text.ToArray()) + "</div>",
-                formula = constructer.Formula
+                message = "Tree is builded correctly.",
+                convertedTree = div + string.Join("", htmlTree.ToArray()) + "</div>",
             };
             return new JsonResult(responseData);
         }
 
-        public IActionResult OnPostCreateTree()
-        {
-            return Page();
-        }
-
-        private void PrintTree(Node tree)
+        private void PrintEmptyTree(Node tree)
         {
             htmlTree.Add("<li>");
 
@@ -95,6 +90,36 @@ namespace VyrokovaLogikaPraceWeb.Pages
 
             htmlTree.Add("<span class='tf-nc'>" + op + " = #</span>");
 
+
+            if (tree.Left != null)
+            {
+                htmlTree.Add("<ul>");
+                PrintEmptyTree(tree.Left);
+
+                if (tree.Right != null)
+                {
+                    PrintEmptyTree(tree.Right);
+                }
+
+                htmlTree.Add("</ul>");
+            }
+
+            htmlTree.Add("</li>");
+        }
+
+        private void PrintTree(Node tree)
+        {
+            htmlTree.Add("<li>");
+
+            string op = TreeHelper.GetOP(tree);
+            if (tree.TruthValue2 == -1)
+            {
+                htmlTree.Add("<span class='tf-nc'>" + op + " = " + tree.TruthValue + "</span>");
+            }
+            else
+            {
+                htmlTree.Add("<span class='tf-nc'>" + op + " = " + tree.TruthValue +"/"+tree.TruthValue2+"</span>");
+            }
 
             if (tree.Left != null)
             {
@@ -111,8 +136,6 @@ namespace VyrokovaLogikaPraceWeb.Pages
 
             htmlTree.Add("</li>");
         }
-
-
 
         public string? GetFormula()
         {
