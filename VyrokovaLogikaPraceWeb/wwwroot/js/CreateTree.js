@@ -172,6 +172,7 @@ function handleButtonVytvorFormuliClick() {
         return;
     }
 
+
     //check if each node is filled with valid content
     if (isContentPresent()) {
         alert("Některá z nod je nevyplněná!");

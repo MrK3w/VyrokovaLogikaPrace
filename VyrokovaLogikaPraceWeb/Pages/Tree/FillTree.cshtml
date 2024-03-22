@@ -11,7 +11,7 @@
 <body>
     <div class="col-md-10">
         <div class="text-center">
-            <h3 class="display-7">Vytvoř pravidvostní strom</h3>
+            <h3 class="display-7">Vytvoř pravdivostní strom</h3>
 
             <form method="post" asp-action="Index" asp-controller="Home" id="TheForm" class="d-flex flex-column">
                 <div class="d-flex">
@@ -34,6 +34,8 @@
                 {
                     <p>Synktaktický strom formule <span style="color: red;"> @Model.Formula</span>.</p>
                     @Html.Raw(Model.ConvertedTree)
+                    <button id="contradictionButton" class="btn btn-primary flex-fill mb-2 mr-1"> Označ spor</button>
+                    <button id="checkTree" class="btn btn-primary flex-fill mb-2 mr-1"> Ověř strom</button>
                 }
             }
             else

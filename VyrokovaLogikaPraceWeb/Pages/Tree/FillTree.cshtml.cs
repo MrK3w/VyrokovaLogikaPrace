@@ -67,6 +67,21 @@ namespace VyrokovaLogikaPraceWeb.Pages
             return Page();
         }
 
+        public IActionResult OnPostCheckTree([FromBody] string text)
+        {
+            TreeConstructer constructer = new TreeConstructer(text);
+            constructer.ProcessTree();
+            string div = "<div class='tf-tree tf-gap-sm'>".Replace("'", "\"");
+
+            var responseData = new
+            {
+                message = "Formula is " + constructer.Formula,
+                convertedTree = div + string.Join("", text.ToArray()) + "</div>",
+                formula = constructer.Formula
+            };
+            return new JsonResult(responseData);
+        }
+
         public IActionResult OnPostCreateTree()
         {
             return Page();

@@ -14,9 +14,10 @@
     <div class="col-md-10">
         <div class="text-center">
             <h3 class="display-7">Úprava formulí programu</h3>
-            <p> Zde přidej novou formuli pro procvičování. </p>
+
             <form method="post" asp-controller="AddFormula" id="TheForm" class="d-flex flex-column">
                 @Html.AntiForgeryToken()
+                <h5> Zde přidej novou formuli pro procvičování. </h5>
                 <div class="form-group mt-4">
                     <div class="row">
                         <div class="col-md-12">
@@ -38,7 +39,7 @@
                         </div>
                     </div>
                     <div class="row">
-                        <p> Zde odeber formuli pro procvičování. </p>
+                        <h5> Zde odeber formuli pro procvičování. </h5>
                         <div class="col-md-8">
                             @Html.DropDownList(
                             "MyFormulas",
