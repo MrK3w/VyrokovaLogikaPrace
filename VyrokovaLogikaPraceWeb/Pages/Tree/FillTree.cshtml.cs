@@ -11,9 +11,6 @@ namespace VyrokovaLogikaPraceWeb.Pages
         public bool Valid { get; private set; } = true;
 
         private readonly List<string> htmlTree = new();
-
-        private string selectFromSelectList;
-        private string selectFromInput;
         public string ErrorMessage;
         public string Formula;
         public string ConvertedTree { get; set; }

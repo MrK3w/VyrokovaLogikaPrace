@@ -67,11 +67,11 @@ namespace VyrokovaLogikaPrace
                 case ConjunctionOperatorNode _:
                    if(tree.TruthValue == 0)
                    {
-                        if (leftTruth != 1 && rightTruth != 1)
+                        if (leftTruth == 1 && rightTruth == 1)
                         {
-                            return true;
+                            return false;
                         }
-                        else return false;
+                        else return true;
                    }
                    else
                    {
@@ -86,8 +86,8 @@ namespace VyrokovaLogikaPrace
                     }
                     else
                     {
-                        if (leftTruth != 1 && rightTruth != 1) return true;
-                        else return false;
+                        if (leftTruth != 1 && rightTruth != 1) return false;
+                        else return true;
                     }
                 case EqualityOperatorNode _:
                     if(tree.TruthValue == 0)
