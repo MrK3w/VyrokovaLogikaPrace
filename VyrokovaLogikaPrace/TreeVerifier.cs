@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -22,6 +24,123 @@ namespace VyrokovaLogikaPrace
             {
                 MarkWrongLiterals(tree);
             }
+            CheckContradictionInTree(tree);
+        }
+
+        private void CheckContradictionInTree(Node tree)
+        {
+            if (!tree.IsLeaf)
+            {
+                if (tree.Contradiction == true)
+                {
+                    if (tree.Left != null && tree.Right != null)
+                    {
+                        if (!TreeHelper.GoodCombination(tree, tree.Left.TruthValue, tree.Right.TruthValue))
+                        {
+                            tree.Red = true;
+                            Errors.Add("Pokud máme operátor " + TreeHelper.GetOperatorName(tree) + " ,který má pravdivostní hodnotu " + tree.TruthValue + " tak potomci nemohou mít uzly nemohou mít hodnotu " + tree.Left.TruthValue + " a " + tree.Right.TruthValue + ".");
+                        }
+                        else
+                        {
+                            //If it is from left side
+                            if(tree.id == tree.Parent.Left.id)
+                            {
+                                if (tree.TruthValue == 1)
+                                {
+                                    if (!TreeHelper.GoodCombination(tree.Parent, 0, tree.Parent.Right.TruthValue))
+                                    {
+                                        tree.Red = true;
+                                        Errors.Add("Pokud máme operátor " + TreeHelper.GetOperatorName(tree.Parent) + " ,který má pravdivostní hodnotu " + tree.Parent.TruthValue + " tak potomci nemohou mít uzly nemohou mít hodnotu " + 0 + " a " + tree.Parent.Right.TruthValue + ".");
+                                    }
+                                }
+                                else if(tree.TruthValue == 0)
+                                {
+                                    if (!TreeHelper.GoodCombination(tree.Parent, 1, tree.Parent.Right.TruthValue))
+                                    {
+                                        tree.Red = true;
+                                        Errors.Add("Pokud máme operátor " + TreeHelper.GetOperatorName(tree.Parent) + " ,který má pravdivostní hodnotu " + tree.Parent.TruthValue + " tak potomci nemohou mít uzly nemohou mít hodnotu " + 1 + " a " + tree.Parent.Right.TruthValue + ".");
+                                    }
+                                }
+                            }
+                            else if(tree.id == tree.Parent.Right.id)
+                            {
+                                if (tree.TruthValue == 1)
+                                {
+                                    if (!TreeHelper.GoodCombination(tree.Parent, tree.Parent.Left.TruthValue, 0))
+                                    {
+                                        tree.Red = true;
+                                        Errors.Add("Pokud máme operátor " + TreeHelper.GetOperatorName(tree.Parent) + " ,který má pravdivostní hodnotu " + tree.Parent.TruthValue + " tak potomci nemohou mít uzly nemohou mít hodnotu " + tree.Parent.Left.TruthValue + " a " + 0 + ".");
+                                    }
+                                }
+                                else if (tree.TruthValue == 0)
+                                {
+                                    if (!TreeHelper.GoodCombination(tree.Parent, tree.Parent.Left.TruthValue, 1))
+                                    {
+                                        tree.Red = true;
+                                        Errors.Add("Pokud máme operátor " + TreeHelper.GetOperatorName(tree.Parent) + " ,který má pravdivostní hodnotu " + tree.Parent.TruthValue + " tak potomci nemohou mít uzly nemohou mít hodnotu " + tree.Parent.Left.TruthValue + " a " + 1 + ".");
+                                    }
+                                }
+                            }
+
+                        }
+                        
+                       
+                    }
+                    else if (tree.Left != null)
+                    {
+                        if (!TreeHelper.GoodCombination(tree, tree.Left.TruthValue))
+                        {
+                          
+                                tree.Red = true;
+                                Errors.Add("Pokud máme operátor " + TreeHelper.GetOperatorName(tree) + " ,který má pravdivostní hodnotu " + tree.TruthValue + " tak potomek nemůže mít hodnotu " + tree.Left.TruthValue);
+                        }
+                        else
+                        {
+                            //If it is from left side
+                            if (tree.id == tree.Parent.Left.id)
+                            {
+                                if (tree.TruthValue == 1)
+                                {
+                                    if (!TreeHelper.GoodCombination(tree.Parent, 0, tree.Parent.Right.TruthValue))
+                                    {
+                                        tree.Red = true;
+                                        Errors.Add("Pokud máme operátor " + TreeHelper.GetOperatorName(tree.Parent) + " ,který má pravdivostní hodnotu " + tree.Parent.TruthValue + " tak potomci nemohou mít uzly nemohou mít hodnotu " + 0 + " a " + tree.Parent.Right.TruthValue + ".");
+                                    }
+                                }
+                                else if (tree.TruthValue == 0)
+                                {
+                                    if (!TreeHelper.GoodCombination(tree.Parent, 1, tree.Parent.Right.TruthValue))
+                                    {
+                                        tree.Red = true;
+                                        Errors.Add("Pokud máme operátor " + TreeHelper.GetOperatorName(tree.Parent) + " ,který má pravdivostní hodnotu " + tree.Parent.TruthValue + " tak potomci nemohou mít uzly nemohou mít hodnotu " + 1 + " a " + tree.Parent.Right.TruthValue + ".");
+                                    }
+                                }
+                            }
+                            else if (tree.id == tree.Parent.Right.id)
+                            {
+                                if (tree.TruthValue == 1)
+                                {
+                                    if (!TreeHelper.GoodCombination(tree.Parent, tree.Parent.Left.TruthValue, 0))
+                                    {
+                                        tree.Red = true;
+                                        Errors.Add("Pokud máme operátor " + TreeHelper.GetOperatorName(tree.Parent) + " ,který má pravdivostní hodnotu " + tree.Parent.TruthValue + " tak potomci nemohou mít uzly nemohou mít hodnotu " + tree.Parent.Left.TruthValue + " a " + 0 + ".");
+                                    }
+                                }
+                                else if (tree.TruthValue == 0)
+                                {
+                                    if (!TreeHelper.GoodCombination(tree.Parent, tree.Parent.Left.TruthValue, 1))
+                                    {
+                                        tree.Red = true;
+                                        Errors.Add("Pokud máme operátor " + TreeHelper.GetOperatorName(tree.Parent) + " ,který má pravdivostní hodnotu " + tree.Parent.TruthValue + " tak potomci nemohou mít uzly nemohou mít hodnotu " + tree.Parent.Left.TruthValue + " a " + 1 + ".");
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            if (tree.Left != null) CheckContradictionInTree(tree.Left);
+            if (tree.Right != null) CheckContradictionInTree(tree.Right);
         }
 
         private void MarkWrongLiterals(Node tree)
@@ -67,16 +186,22 @@ namespace VyrokovaLogikaPrace
             {
                if(!TreeHelper.GoodCombination(tree,tree.Left.TruthValue, tree.Right.TruthValue))
                {
-                    tree.Red = true;
-                    Errors.Add("Pokud máme operátor " + TreeHelper.GetOperatorName(tree) + " ,který má pravdivostní hodnotu " + tree.TruthValue + " tak potomci nemohou mít uzly nemohou mít hodnotu " + tree.Left.TruthValue + " a " + tree.Right.TruthValue + ".");
+                    if (!(tree.Contradiction == true || tree.Left.Contradiction == true || tree.Right.Contradiction == true))
+                    {
+                        tree.Red = true;
+                        Errors.Add("Pokud máme operátor " + TreeHelper.GetOperatorName(tree) + " ,který má pravdivostní hodnotu " + tree.TruthValue + " tak potomci nemohou mít uzly nemohou mít hodnotu " + tree.Left.TruthValue + " a " + tree.Right.TruthValue + ".");
+                    }
                }
             }
             else if (tree.Left != null)
             {
                 if(!TreeHelper.GoodCombination(tree,tree.Left.TruthValue))
                 {
-                    tree.Red = true;
-                    Errors.Add("Pokud máme operátor " + TreeHelper.GetOperatorName(tree) + " ,který má pravdivostní hodnotu " + tree.TruthValue + " tak potomek nemůže mít hodnotu " + tree.Left.TruthValue);
+                    if (!(tree.Contradiction == true || tree.Left.Contradiction == true))
+                    {
+                        tree.Red = true;
+                        Errors.Add("Pokud máme operátor " + TreeHelper.GetOperatorName(tree) + " ,který má pravdivostní hodnotu " + tree.TruthValue + " tak potomek nemůže mít hodnotu " + tree.Left.TruthValue);
+                    }
                 }
             }
             if (tree.Left != null) VerifyCombinations(tree.Left);

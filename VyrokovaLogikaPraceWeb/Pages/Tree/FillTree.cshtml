@@ -12,7 +12,7 @@
     <div class="col-md-10">
         <div class="text-center">
             <h3 class="display-7">Vytvoř pravdivostní strom</h3>
-
+            <p>Pokud je v uzlu spor, tak vždy jako pravdivostní hodnotu uvádějte tu, kterou má uzel pro své potomky.</p>
             <form method="post" asp-action="Index" asp-controller="Home" id="formulaForm" class="d-flex flex-column">
                 <div class="d-flex">
                     @Html.DropDownList("formula", Model.ListItems, new { @class = "form-control custom-font", @style = "height: 66.67%;" })

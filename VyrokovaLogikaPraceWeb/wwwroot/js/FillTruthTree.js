@@ -131,6 +131,19 @@ function handleButtonOverStrom() {
             dataType: "json",
             data: JSON.stringify(innerHTMLContent),
             success: function (data) {
+                // Attach a click event handler to the #xButton element
+                $("#contradictionButton").on("click", function () {
+                    // Get the current value of the hiddenNumber input element
+                    contradiction = !contradiction;
+                    // Check if contradiction is true
+                    if (contradiction) {
+                        // Change the button color to green
+                        $("#contradictionButton").css("background-color", "green");
+                    } else {
+                        // Change the button color to default color
+                        $("#contradictionButton").css("background-color", ""); // or you can set it to the default color you want
+                    }
+                });
                 console.log('Success:', data);
                 document.getElementById('treeDiv').innerHTML = data.convertedTree;
                 //Put formula to the element with id 'formula'
@@ -186,7 +199,8 @@ function MarkAllLiterals(valueBeforeEquals) {
     });
 }
 
-function attachEventHandlers() {
+function attachEventHandlers()
+{
     // Attach a click event handler to the .tf-nc span element
     $(".tf-nc").on("click", function () {
         // Get the current span element
@@ -212,8 +226,6 @@ function attachEventHandlers() {
                 if (contentAfterEqual === '0' + contradictionSymbol) {
                     newContent = currentContent.substring(0, indexOfEqual + 1) + ' 1' + contradictionSymbol;
                 } else if (contentAfterEqual === '1' + contradictionSymbol) {
-                    newContent = currentContent.substring(0, indexOfEqual + 1) + ' 0/1' + contradictionSymbol;
-                } else if (contentAfterEqual === '0/1' + contradictionSymbol) {
                     newContent = currentContent.substring(0, indexOfEqual + 1) + ' 0' + contradictionSymbol;
                 }
             }
@@ -222,6 +234,11 @@ function attachEventHandlers() {
         }
         //if we want to add ? for contradiction
         else {
+            var isFirstSpan = spanElement.is($(".tf-nc").first());
+            if (isFirstSpan) {
+                alert("V prvním uzlu nelze hledat spor");
+                return; // Stop execution for the first span
+            }
             var parts = currentContent.split('=');
 
             // Get the value before '=' character
@@ -237,10 +254,7 @@ function attachEventHandlers() {
                 var newContent = hasX ? currentContent.replace(" ?", "") : currentContent + " ?";
                 spanElement.text(newContent);
             }
-        
-
         }
-        // Modify the content of the span element
 
     });
 
