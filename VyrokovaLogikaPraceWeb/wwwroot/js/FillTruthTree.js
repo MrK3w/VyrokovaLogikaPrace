@@ -168,6 +168,24 @@ function handleButtonOverStrom() {
         }); 
 }
 
+function MarkAllLiterals(valueBeforeEquals) {
+    $(".tf-tree .tf-nc").each(function () {
+        var spanElement = $(this);
+        var currentContent = spanElement.text().trim();
+        var parts = currentContent.split('=');
+
+        // Get the value before '=' character
+        var valueBeforeEqualsInSpan = parts[0].trim();
+
+        // Check if the value before '=' matches the specified value
+        if (valueBeforeEqualsInSpan === valueBeforeEquals) {
+            var hasX = currentContent.indexOf("?") !== -1;
+            var newContent = hasX ? currentContent.replace(" ?", "") : currentContent + " ?";
+            spanElement.text(newContent);
+        }
+    });
+}
+
 function attachEventHandlers() {
     // Attach a click event handler to the .tf-nc span element
     $(".tf-nc").on("click", function () {
@@ -202,13 +220,24 @@ function attachEventHandlers() {
             spanElement.text(newContent);
 
         }
-        //if we want to add x for contradiction
+        //if we want to add ? for contradiction
         else {
+            var parts = currentContent.split('=');
 
-            var hasX = currentContent.indexOf("?") !== -1;
+            // Get the value before '=' character
+            var valueBeforeEquals = parts[0].trim(); // Trim removes any leading/trailing spaces
 
-            var newContent = hasX ? currentContent.replace(" ?", "") : currentContent + " ?";
-            spanElement.text(newContent);
+            var isLiteral = /^[a-zA-Z]+$/.test(valueBeforeEquals);
+            if (isLiteral) {
+                MarkAllLiterals(valueBeforeEquals);
+            }
+            else {
+                var hasX = currentContent.indexOf("?") !== -1;
+
+                var newContent = hasX ? currentContent.replace(" ?", "") : currentContent + " ?";
+                spanElement.text(newContent);
+            }
+        
 
         }
         // Modify the content of the span element

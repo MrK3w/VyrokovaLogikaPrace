@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Xml.Schema;
 using VyrokovaLogikaPrace.Enums;
 
 namespace VyrokovaLogikaPrace
@@ -160,6 +161,8 @@ namespace VyrokovaLogikaPrace
                 //if it item we need to get this values
                 if (itIsItem)
                 {
+                    var contradiction = false;
+                    if (tag.Contains("?")) contradiction = true;
                     var val = tag.Replace("?", "").Replace(" ", "");
                     var values = val.Split('=','/');
                     //if we din't have tree, we will create new one
@@ -167,6 +170,7 @@ namespace VyrokovaLogikaPrace
                     {
                         tree = TreeHelper.GetNode(values[0], GetNextId());
                         tree.TruthValue = int.Parse(values[1]);
+                        tree.Contradiction = contradiction;
                         if(values.Length == 3)
                         {
                             tree.TruthValue2 = int.Parse(values[2]);
@@ -179,6 +183,7 @@ namespace VyrokovaLogikaPrace
                         //we will create tree left node 
                         tree.Left = TreeHelper.GetNode(values[0], GetNextId());
                         tree.Left.TruthValue = int.Parse(values[1]);
+                        tree.Left.Contradiction = contradiction;
                         if (values.Length == 3)
                         {
                             tree.Left.TruthValue2 = int.Parse(values[2]);
@@ -195,6 +200,7 @@ namespace VyrokovaLogikaPrace
                         //we will create tree left node 
                         tree.Right = TreeHelper.GetNode(values[0], GetNextId());
                         tree.Right.TruthValue = int.Parse(values[1]);
+                        tree.Right.Contradiction = true;
                         if (values.Length == 3)
                         {
                             tree.Right.TruthValue2 = int.Parse(values[2]);
