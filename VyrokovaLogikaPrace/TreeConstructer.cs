@@ -200,7 +200,7 @@ namespace VyrokovaLogikaPrace
                         //we will create tree left node 
                         tree.Right = TreeHelper.GetNode(values[0], GetNextId());
                         tree.Right.TruthValue = int.Parse(values[1]);
-                        tree.Right.Contradiction = true;
+                        tree.Right.Contradiction = contradiction;
                         if (values.Length == 3)
                         {
                             tree.Right.TruthValue2 = int.Parse(values[2]);

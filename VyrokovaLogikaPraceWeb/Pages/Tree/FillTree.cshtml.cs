@@ -1,4 +1,4 @@
-using Microsoft.AspNetCore.Mvc;
+ï»¿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using VyrokovaLogikaPrace;
@@ -78,7 +78,7 @@ namespace VyrokovaLogikaPraceWeb.Pages
             fillTree = verifier.tree;
             Errors = verifier.Errors;
             string msg;
-            if (Errors.Count == 0) msg = "Strom je v poøádku, chyby nenalezeny.";
+            if (Errors.Count == 0) msg = "Strom je v poÅ™Ã¡dku, chyby nenalezeny.";
             else msg = "Ve stromu jsou chyby.";
             string div = "<div class='tf-tree tf-gap-sm'>".Replace("'", "\"");
             htmlTree.Clear();
@@ -120,28 +120,32 @@ namespace VyrokovaLogikaPraceWeb.Pages
         private void PrintTree(Node tree)
         {
             htmlTree.Add("<li>");
-          
+            string contradiction = "";
+            if(tree.Contradiction)
+            {
+                contradiction = " ?";
+            }
             string op = TreeHelper.GetOP(tree);
             if (tree.TruthValue2 == -1)
             {
                 if (tree.Red)
                 {
-                    htmlTree.Add("<span class='tf-nc' style = 'color: red'>" + op + " = " + tree.TruthValue + "</span>");
+                    htmlTree.Add("<span class='tf-nc' style = 'color: red'>" + op + " = " + tree.TruthValue + contradiction + "</span>");
                 }
                 else
                 {
-                    htmlTree.Add("<span class='tf-nc'>" + op + " = " + tree.TruthValue + "</span>");
+                    htmlTree.Add("<span class='tf-nc'>" + op + " = " + tree.TruthValue + contradiction + "</span>");
                 }
             }
             else
             {
                 if (tree.Red)
                 {
-                    htmlTree.Add("<span class='tf-nc' style = 'color: red'>" + op + " = " + tree.TruthValue + "/" + tree.TruthValue2 + "</span>");
+                    htmlTree.Add("<span class='tf-nc' style = 'color: red'>" + op + " = " + tree.TruthValue + "/" + tree.TruthValue2 + contradiction + "</span>");
                 }
                 else
                 {
-                    htmlTree.Add("<span class='tf-nc'>" + op + " = " + tree.TruthValue + "/" + tree.TruthValue2 + "</span>");
+                    htmlTree.Add("<span class='tf-nc'>" + op + " = " + tree.TruthValue + "/" + tree.TruthValue2 + contradiction + "</span>");
                 }
             }
 
