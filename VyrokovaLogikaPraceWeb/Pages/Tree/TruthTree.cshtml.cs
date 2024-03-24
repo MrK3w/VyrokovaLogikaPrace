@@ -241,7 +241,7 @@ namespace VyrokovaLogikaPraceWeb.Pages
 
             if (tree.Red)
             {
-                if(tree.TruthValue == -1)
+                if (tree.TruthValue == -1)
                 {
                     if (tree.TruthValue2 == -1)
                     {
@@ -252,18 +252,47 @@ namespace VyrokovaLogikaPraceWeb.Pages
                         htmlTree.Add("<span class='tf-nc' onclick='toggleNode(" + tree.id + ", \"" + tree.Value + "\", \"" + op + "\",\"" + "\",)' style='color: red'>" + op + "/" + "</span>");
                     }
                 }
-                else 
-                { 
+                else
+                {
                     if (tree.TruthValue2 == -1)
                     {
                         htmlTree.Add("<span class='tf-nc' onclick='toggleNode(" + tree.id + ", \"" + tree.Value + "\", \"" + op + "\",\"" + tree.TruthValue + "\",)' style='color: red'>" + op + "= " + tree.TruthValue + "</span>");
                     }
                     else
                     {
-                        htmlTree.Add("<span class='tf-nc' onclick='toggleNode(" + tree.id + ", \"" + tree.Value + "\", \"" + op + "\",\"" + tree.TruthValue + "\",)' style='color: red'>" + op + "= " + tree.TruthValue + "/" + tree.TruthValue2+"</span>");
+                        htmlTree.Add("<span class='tf-nc' onclick='toggleNode(" + tree.id + ", \"" + tree.Value + "\", \"" + op + "\",\"" + tree.TruthValue + "\",)' style='color: red'>" + op + "= " + tree.TruthValue + "/" + tree.TruthValue2 + "</span>");
                     }
                 }
             }
+
+            else if (tree.Blue)
+            {
+                if (tree.TruthValue == -1)
+                {
+                    if (tree.TruthValue2 == -1)
+                    {
+                        htmlTree.Add("<span class='tf-nc' onclick='toggleNode(" + tree.id + ", \"" + tree.Value + "\", \"" + op + "\",\"" + "\",)' style='color: blue'>" + op + "</span>");
+                    }
+                    else
+                    {
+                        htmlTree.Add("<span class='tf-nc' onclick='toggleNode(" + tree.id + ", \"" + tree.Value + "\", \"" + op + "\",\"" + "\",)' style='color: blue'>" + op + "/" + "</span>");
+                    }
+                }
+                else
+                {
+                    if (tree.TruthValue2 == -1)
+                    {
+                        htmlTree.Add("<span class='tf-nc' onclick='toggleNode(" + tree.id + ", \"" + tree.Value + "\", \"" + op + "\",\"" + tree.TruthValue + "\",)' style='color: blue'>" + op + "= " + tree.TruthValue + "</span>");
+                    }
+                    else
+                    {
+                        htmlTree.Add("<span class='tf-nc' onclick='toggleNode(" + tree.id + ", \"" + tree.Value + "\", \"" + op + "\",\"" + tree.TruthValue + "\",)' style='color: blue'>" + op + "= " + tree.TruthValue + "/" + tree.TruthValue2 + "</span>");
+                    }
+                }
+            }
+
+           
+           
             else
             {
                 if (tree.TruthValue == -1)

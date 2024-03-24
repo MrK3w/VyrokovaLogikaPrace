@@ -50,27 +50,8 @@
                         <div class="alert alert-info" role="alert", id="Steps">
                             @Html.Raw(@Model.Steps[0])
                         </div>
-                        <button id="prevBtn" class="btn btn-primary flex-fill mb-2 mr-1" onclick="showPreviousTree()" disabled>Previous Step</button>
-                        <button id="nextBtn" class="btn btn-primary flex-fill mb-2 mr-1" onclick="showNextTree()">Next Step</button>
-
-
-
-                        <div class="table-container">
-                            <table>
-                                <tr>
-                                    <th>Hodnota</th>
-                                    <th>Literál</th>
-                                </tr>
-                                @foreach (var node in Model.DistinctNodes)
-                                {
-                                    <tr>
-                                        <td>@node.Item1</td>
-                                        <td>@node.Item2</td>
-                                    </tr>
-                                }
-                            </table>
-                        </div>
-                        <div> <p> @Model.Message</p> </div>
+                        <button id="prevBtn" class="btn btn-primary flex-fill mb-2 mr-1" onclick="showPreviousTree()" disabled>Další krok</button>
+                        <button id="nextBtn" class="btn btn-primary flex-fill mb-2 mr-1" onclick="showNextTree()">Předchozí krok</button>
                     }
                     else
                     {

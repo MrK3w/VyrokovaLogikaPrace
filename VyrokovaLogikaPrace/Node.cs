@@ -13,6 +13,8 @@ namespace VyrokovaLogikaPrace
         public int ParentId { get; set; }
         public bool IsRoot => Parent == null; //if it is root value is true, otherwise it is false
         public bool Red { get; set; } = false;
+
+        public bool Blue { get; set; } = false;
         public int TruthValue { get; set; } = -1;
 
         public int TruthValue2 { get; set; } = -1;
@@ -96,6 +98,7 @@ namespace VyrokovaLogikaPrace
                              .GetConstructor(new Type[] { typeof(int) })
                              .Invoke(new object[] { original.id }) as Node;
             newNode.Value = original.Value;
+            newNode.Blue = original.Blue;
             newNode.TruthValue = original.TruthValue;
             newNode.isFinal = original.isFinal;
             newNode.IsLeaf = original.IsLeaf;
