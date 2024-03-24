@@ -7,6 +7,7 @@
     <title>My Page</title>
     <link rel="stylesheet" href="https://unpkg.com/treeflex/dist/css/treeflex.css">
         <script src="~/js/TruthTree.js"></script>
+    <link rel="stylesheet" href="~/css/buttons.css">
 </head>
 <body>
     <div class="col-md-10">
@@ -46,12 +47,25 @@
                         
                         <div id="treeContainer">
                             @Html.Raw(@Model.ConvertedTrees[0])
+                        </div> 
+
+            <div class="row">
+                            <div class="col-md-6">
+                                <button id="nextBtn" class="btn btn-primary flex-fill mb-2 mr-1 custom-btn" onclick="showNextTree()">Další krok</button>
+                            </div>
+
+                            <div class="col-md-6">
+                                <button id="lastBtn" class="btn btn-primary flex-fill mb-2 mr-1 custom-btn" onclick="showLastTree()">Poslední krok</button>
+                            </div>
                         </div>
-                        <div class="alert alert-info" role="alert", id="Steps">
-                            @Html.Raw(@Model.Steps[0])
+                        <div class="row">
+                            <div class="col-md-6">
+                                <button id="firstBtn" class="btn btn-primary flex-fill mb-2 mr-1 custom-btn" onclick="showFirstTree()">První krok</button>
+                            </div>
+                            <div class="col-md-6">
+                                <button id="prevBtn" class="btn btn-primary flex-fill mb-2 mr-1 custom-btn" onclick="showPreviousTree()" disabled>Předchozí krok</button>
+                            </div>
                         </div>
-                        <button id="prevBtn" class="btn btn-primary flex-fill mb-2 mr-1" onclick="showPreviousTree()" disabled>Další krok</button>
-                        <button id="nextBtn" class="btn btn-primary flex-fill mb-2 mr-1" onclick="showNextTree()">Předchozí krok</button>
                     }
                     else
                     {

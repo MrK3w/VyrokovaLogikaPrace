@@ -45,6 +45,31 @@ function showPreviousTree() {
     updateButtonState();
 }
 
+function showFirstTree() {
+    var convertedTreesJson = document.getElementById('convertedTreesJson').value;
+    var convertedStepsJson = document.getElementById('convertedStepsJson').value;
+    // Parse the JSON data into a JavaScript object
+    convertedTrees = JSON.parse(convertedTreesJson);
+    steps = JSON.parse(convertedStepsJson);
+    currentIndex = 0; // Set to the first step
+    updateTreeContainer();
+    updateButtonState();
+}
+
+function showLastTree() {
+    var convertedTreesJson = document.getElementById('convertedTreesJson').value;
+    var convertedStepsJson = document.getElementById('convertedStepsJson').value;
+    // Parse the JSON data into a JavaScript object
+    convertedTrees = JSON.parse(convertedTreesJson);
+    steps = JSON.parse(convertedStepsJson);
+    if (convertedTrees && convertedTrees.length > 0) {
+        currentIndex = convertedTrees.length - 1; // Set to the last step
+        updateTreeContainer();
+        updateButtonState();
+    }
+}
+
+
 function updateTreeContainer() {
     var treeContainer = document.getElementById('treeContainer');
     treeContainer.innerHTML = convertedTrees[currentIndex];
@@ -53,6 +78,7 @@ function updateTreeContainer() {
 }
 
 function updateButtonState() {
+    console.log(currentIndex + " " + convertedTrees.length);
     var prevButton = document.getElementById('prevBtn');
     var nextButton = document.getElementById('nextBtn');
     prevButton.disabled = currentIndex === 0;

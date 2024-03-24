@@ -15,10 +15,10 @@ namespace VyrokovaLogikaPrace
         bool contradiction;
         public List<Node> moreOptions = new List<Node>();
         private bool assignedLiteral = false;
-
+        List<Node> tempTreeByLiteral = new List<Node>();
         public List<string> steps { get; set; } = new List<string>();
         public List<Node> trees { get; set; } = new List<Node>();
-
+        public List<string> triedToAssignLiterals = new List<string>();
         public TreeProofAdvanced(Node tree, int truthValue = 0)
         {
             Node tempTree = new Node(0);
@@ -48,84 +48,89 @@ namespace VyrokovaLogikaPrace
             {
                 tree.TruthValue = truthValue;
             }
-            if (tree.Left != null)
+            if (triedToAssignLiterals.Count == 0)
             {
-                bool wasSomethingChanged = false;
-                var values = TreeHelper.GetValuesOfBothSides(truthValue, tree);
-                var value = values[0];
-                if (tree.UsedCombinations != null && tree.UsedCombinations.Count > 1)
-                {
-                    value = tree.UsedCombinations[tree.UsedCombinations.Count - 1];
-                    tree.UsedCombinations.RemoveAt(tree.UsedCombinations.Count - 1);
-                    if (tree.UsedCombinations.Count > 1)
-                    {
-                        Node tr = new Node(0);
-                        tr = Node.DeepCopy(GetToRoot(tree));
-                        moreOptions.Add(tr);
-
-                    }
-                }
-                if (values.Count > 1 && tree.UsedCombinations == null)
-                {
-                    Node tr = new Node(0);
-                    tree.UsedCombinations = new List<(int, int)>();
-                    tree.UsedCombinations = values;
-                    tr = Node.DeepCopy(GetToRoot(tree));
-                    moreOptions.Add(tr);
-                }
-
                 if (tree.Left != null)
                 {
-                    if (tree.Left.TruthValue == -1)
+                    bool wasSomethingChanged = false;
+                    var values = TreeHelper.GetValuesOfBothSides(truthValue, tree);
+                    var value = values[0];
+                    if (tree.UsedCombinations != null && tree.UsedCombinations.Count > 1)
                     {
-                        tree.Left.TruthValue = value.Item1;
-                        RemoveBlue((GetToRoot(tree)));
-                        tree.Left.Blue = true;
-                        wasSomethingChanged = true;
+                        value = tree.UsedCombinations[tree.UsedCombinations.Count - 1];
+                        tree.UsedCombinations.RemoveAt(tree.UsedCombinations.Count - 1);
+                        if (tree.UsedCombinations.Count > 1)
+                        {
+                            Node tr = new Node(0);
+                            tr = Node.DeepCopy(GetToRoot(tree));
+                            moreOptions.Add(tr);
+
+                        }
+                    }
+                    if (values.Count > 1 && tree.UsedCombinations == null)
+                    {
+                        Node tr = new Node(0);
+                        tree.UsedCombinations = new List<(int, int)>();
+                        tree.UsedCombinations = values;
+                        tr = Node.DeepCopy(GetToRoot(tree));
+                        moreOptions.Add(tr);
+                    }
+
+                    if (tree.Left != null)
+                    {
+                        if (tree.Left.TruthValue == -1)
+                        {
+                            tree.Left.TruthValue = value.Item1;
+                            RemoveBlue((GetToRoot(tree)));
+                            tree.Left.Blue = true;
+                            wasSomethingChanged = true;
+                        }
+                        if (tree.Left.IsLeaf) nodes[tree.Left.Value] = tree.Left.TruthValue;
                     }
                     if (tree.Left.IsLeaf) nodes[tree.Left.Value] = tree.Left.TruthValue;
-                }
-                if (tree.Left.IsLeaf) nodes[tree.Left.Value] = tree.Left.TruthValue;
 
-                if (tree.Right != null)
-                {
-                    if (tree.Right.TruthValue == -1)
-                    {
-                        tree.Right.TruthValue = value.Item2;
-                        tree.Right.Blue = true;
-                        wasSomethingChanged = true;
-                    }
-                    if (tree.Right.IsLeaf) nodes[tree.Right.Value] = tree.Right.TruthValue;
-                }
-                if (wasSomethingChanged)
-                {
-                    Node tempTree = new Node(0);
-                    tempTree = Node.DeepCopy(GetToRoot(tree));
-                    trees.Add(tempTree);
-                    if (values.Count == 1)
-                    {
-                        steps.Add("Přidáme na levou stranu " + tree.Left.TruthValue);
-                    }
-                    else
-                    {
-                        steps.Add("Zkusíme přidat jako jednu z možností na levou stranu " + tree.Left.TruthValue);
-                    }
                     if (tree.Right != null)
                     {
-                        steps[steps.Count - 1] += " a na pravou stranu " + tree.Right.TruthValue;
+                        if (tree.Right.TruthValue == -1)
+                        {
+                            tree.Right.TruthValue = value.Item2;
+                            tree.Right.Blue = true;
+                            wasSomethingChanged = true;
+                        }
+                        if (tree.Right.IsLeaf) nodes[tree.Right.Value] = tree.Right.TruthValue;
                     }
-                    steps[steps.Count - 1] += " protože operátor " + TreeHelper.GetOperatorName(tree) + " má pravdivostní hodnotu " + tree.TruthValue;
+                    if (wasSomethingChanged)
+                    {
+                        Node tempTree = new Node(0);
+                        tempTree = Node.DeepCopy(GetToRoot(tree));
+                        trees.Add(tempTree);
+                        if (values.Count == 1)
+                        {
+                            steps.Add("Přidáme na levou stranu " + tree.Left.TruthValue);
+                        }
+                        else
+                        {
+                            steps.Add("Zkusíme přidat jako jednu z možností na levou stranu " + tree.Left.TruthValue);
+                        }
+                        if (tree.Right != null)
+                        {
+                            steps[steps.Count - 1] += " a na pravou stranu " + tree.Right.TruthValue;
+                        }
+                        steps[steps.Count - 1] += " protože operátor " + TreeHelper.GetOperatorName(tree) + " má pravdivostní hodnotu " + tree.TruthValue;
+                    }
+                    ProcessTree(tree.Left, value.Item1);
                 }
-                ProcessTree(tree.Left, value.Item1);
             }
             if (tree.IsRoot)
             {
                 treeIsCompleted = false;
                 while (!treeIsCompleted)
                 {
-                    FillSameLiteralsWithSameTruthValue(tree);
-                    FillTruthTree(tree);
-                    treeIsCompleted = true;
+                    if (triedToAssignLiterals.Count == 0)
+                    {
+                        FillSameLiteralsWithSameTruthValue(tree);
+                        FillTruthTree(tree);
+                    }
                     IsTreeCompleted(GetToRoot(tree));
 
                     if (!treeIsCompleted)
@@ -192,6 +197,24 @@ namespace VyrokovaLogikaPrace
                     }
                     trees.Add(CounterModel);
                 }
+                if(triedToAssignLiterals.Count != 0)
+                {
+                    
+                    contradiction = false;
+                    if (tempTreeByLiteral.Count != 0)
+                    {
+                        var t = tempTreeByLiteral[tempTreeByLiteral.Count - 1];
+                        tempTreeByLiteral.RemoveAt(tempTreeByLiteral.Count - 1);
+                        Node newTree = new Node(0);
+                        RemoveBlue(t);
+                        newTree = Node.DeepCopy(t);
+                        trees.Add(newTree);
+                        nodes.Remove(triedToAssignLiterals[triedToAssignLiterals.Count - 1]);
+                        steps.Add("Vratíme se do bodu kde jsme zkoušeli dosazovat do " + triedToAssignLiterals[triedToAssignLiterals.Count - 1]);
+                        ProcessTree(GetToRoot(t), GetToRoot(t).TruthValue);
+                        return;
+                    }
+                }
                 if (moreOptions.Count != 0)
                 {
                     nodes = new Dictionary<string, int>();
@@ -215,14 +238,57 @@ namespace VyrokovaLogikaPrace
                 {
                     if(assignedLiteral == false)
                     {
-                        tree.TruthValue = 0;
-                        RemoveBlue((GetToRoot(tree)));
-                        tree.Blue = true;
-                        Node tempTree = new Node(0);
-                        tempTree = Node.DeepCopy(GetToRoot(tree));
-                        trees.Add(tempTree);
-                        steps.Add("Můžeme zkusit dosadit do uzlu " +tree.Value + " hodnotu 0");
-                        assignedLiteral = true;
+                        if (triedToAssignLiterals.Count != 0)
+                        {
+                            if (triedToAssignLiterals[triedToAssignLiterals.Count - 1] == tree.Value)
+                            {
+                                tree.TruthValue = 1;
+                                RemoveBlue((GetToRoot(tree)));
+                                tree.Blue = true;
+                                Node tempTree = new Node(0);
+                                tempTree = Node.DeepCopy(GetToRoot(tree));
+                                trees.Add(tempTree);
+
+                                steps.Add("Dosadíme do uzlu " + tree.Value + " hodnotu 1");
+                                assignedLiteral = true;
+                                triedToAssignLiterals.Remove(tree.Value);
+                            }
+                            else
+                            {
+                                var temporary = new Node(0);
+                                temporary = Node.DeepCopy(GetToRoot(tree));
+                                tempTreeByLiteral.Add(temporary);
+
+                                tree.TruthValue = 0;
+                                RemoveBlue((GetToRoot(tree)));
+                                tree.Blue = true;
+                                Node tempTree = new Node(0);
+                                tempTree = Node.DeepCopy(GetToRoot(tree));
+                                trees.Add(tempTree);
+
+                                steps.Add("Můžeme zkusit dosadit do uzlu " + tree.Value + " hodnotu 0");
+                                assignedLiteral = true;
+                                triedToAssignLiterals.Add(tree.Value);
+                            }
+                        }
+
+                        else
+                        {
+                                var temporary = new Node(0);
+                                temporary = Node.DeepCopy(GetToRoot(tree));
+                                tempTreeByLiteral.Add(temporary);
+
+                                tree.TruthValue = 0;
+                                RemoveBlue((GetToRoot(tree)));
+                                tree.Blue = true;
+                                Node tempTree = new Node(0);
+                                tempTree = Node.DeepCopy(GetToRoot(tree));
+                                trees.Add(tempTree);
+
+                                steps.Add("Můžeme zkusit dosadit do uzlu " + tree.Value + " hodnotu 0");
+                                assignedLiteral = true;
+                                triedToAssignLiterals.Add(tree.Value);
+                        }
                     }
                 }
             }
@@ -525,10 +591,25 @@ namespace VyrokovaLogikaPrace
                         if((tree.Left.TruthValue == 1 && tree.Right.TruthValue == 1) || (tree.Left.TruthValue == 0 && tree.Right.TruthValue == 0))
                         {
                             tree.TruthValue = 1;
+
+                            steps.Add("Pokud operátor uzlu je ekvivalence a levý a pravý uzel mají stejnou pravdivostní hodnotu můžeme do uzlu dosadit 1");
+                            RemoveBlue((GetToRoot(tree)));
+                            tree.Blue = true;
+                            tree.TruthValue = 1;
+                            Node tempTree = new Node(0);
+                            tempTree = Node.DeepCopy(GetToRoot(tree));
+                            trees.Add(tempTree);
+
                         }
                         else if ((tree.Left.TruthValue == 1 && tree.Right.TruthValue == 0) || (tree.Left.TruthValue == 0 && tree.Right.TruthValue == 1))
                         {
+                            steps.Add("Pokud operátor uzlu je ekvivalence a levý a pravý uzel mají jimou pravdivostní hodnotu můžeme do uzlu dosadit 0");
+                            RemoveBlue((GetToRoot(tree)));
+                            tree.Blue = true;
                             tree.TruthValue = 0;
+                            Node tempTree = new Node(0);
+                            tempTree = Node.DeepCopy(GetToRoot(tree));
+                            trees.Add(tempTree);
                         }
                     }
                 }
