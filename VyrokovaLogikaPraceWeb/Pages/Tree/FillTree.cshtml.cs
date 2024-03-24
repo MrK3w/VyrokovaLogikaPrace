@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using NuGet.Common;
 using VyrokovaLogikaPrace;
 using VyrokovaLogikaPraceWeb.Helpers;
 
@@ -70,16 +71,46 @@ namespace VyrokovaLogikaPraceWeb.Pages
         }
 
         //TODO check if there are two values in one node (contraaiction in node) and check if contradiction is not in leafs
-        public IActionResult OnPostCheckTree([FromBody] string text)
+        public IActionResult OnPostCheckTree([FromBody] TreeCheckRequest request)
         {
-            TreeConstructer constructer = new TreeConstructer(text);
+            string treeContent = request.TreeContent;
+            string selectedValue = request.SelectedValue;
+            TreeConstructer constructer = new TreeConstructer(treeContent);
             var fillTree = constructer.ProcessTree(true);
             TreeVerifier verifier = new TreeVerifier(fillTree);
             fillTree = verifier.tree;
             Errors = verifier.Errors;
-            string msg;
-            if (Errors.Count == 0) msg = "Strom je v pořádku, chyby nenalezeny.";
-            else msg = "Ve stromu jsou chyby.";
+            string msg = "";
+            string formulaType = "";
+            if (Errors.Count == 0)
+            {
+                TreeProof treeProof = new TreeProof();
+                var trees = treeProof.ProcessTree(fillTree, 0);
+                ContradictionHelper contradictionHelper = new ContradictionHelper();
+                if (contradictionHelper.FindContradictionInLeafs(trees))
+                {
+                    formulaType = "tautology";
+                }
+                else
+                {
+                    trees = treeProof.ProcessTree(fillTree, 1);
+                    contradictionHelper = new ContradictionHelper();
+                    if (contradictionHelper.FindContradictionInLeafs(trees))
+                    {
+                        formulaType = "contradiction";
+                    }
+                    else
+                    {
+                        formulaType = "satisfiable";
+                    }
+                }
+                msg = GetMessage(selectedValue, formulaType, fillTree.TruthValue);
+            }
+            if (msg == "")
+            {
+                if (Errors.Count == 0) msg = "Strom je v pořádku, chyby nenalezeny.";
+                else msg = "Ve stromu jsou chyby.";
+            }
             string div = "<div class='tf-tree tf-gap-sm'>".Replace("'", "\"");
             htmlTree.Clear();
             PrintTree(fillTree);
@@ -90,6 +121,59 @@ namespace VyrokovaLogikaPraceWeb.Pages
                 convertedTree = div + string.Join("", htmlTree.ToArray()) + "</div>",
             };
             return new JsonResult(responseData);
+        }
+
+        private string GetMessage(string selectedValue, string formulaType, int truthValue)
+        {
+            var msg = "";
+            if (selectedValue == "tautology")
+            {
+                if(truthValue == 0)
+                {
+                    if(formulaType == "tautology")
+                    {
+                        msg = "Opravdu se jedná o tautologii";
+                    }
+                    else
+                    {
+                        msg = "Nejedná se u tautologii";
+                    }
+                }
+                else
+                {
+                    msg = "Kořen stromu nesmí začínat 1 pokud se snažíme dokázat tautologii";
+                }
+            }
+            else if (selectedValue == "contradiction")
+            {
+                if (truthValue == 1)
+                {
+                    if (formulaType == "contradiction")
+                    {
+                        msg = "Opravdu se jedná o kontradikci";
+                    }
+                    else
+                    {
+                        msg = "Nejedná se u kontradikci";
+                    }
+                }
+                else
+                {
+                    msg = "Kořen stromu nesmí začínat 0 pokud se snažíme dokázat kontradikci";
+                }
+            }
+            else if (selectedValue == "satisfiable")
+            {
+                if (formulaType == "satisfiable")
+                {
+                    msg = "Opravdu se jedná o splnitelnou formuli";
+                }
+                else
+                {
+                    msg = "Formule je buď tautologií nebo kontradikci";
+                }
+            }
+            return msg;
         }
 
         private void PrintEmptyTree(Node tree)
@@ -164,5 +248,11 @@ namespace VyrokovaLogikaPraceWeb.Pages
 
             htmlTree.Add("</li>");
         }
+    }
+
+    public class TreeCheckRequest
+    {
+        public string TreeContent { get; set; }
+        public string SelectedValue { get; set; }
     }
 }

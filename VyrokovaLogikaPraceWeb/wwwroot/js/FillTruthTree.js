@@ -51,7 +51,9 @@ function handleButtonDrawTree() {
                 document.getElementById('formule').innerHTML = 'Synktaktick\u00FD strom formule <span style="color: red;">' + data.formula + '</span>.';
 
                 var buttonsDiv = document.getElementById('buttons');
+                var selectListDiv = document.getElementById('selectListGroup');
                 buttonsDiv.innerHTML = '';
+                selectListDiv.innerHTML = '';
 
                 // Create and append the "Oznaè spor" button
                 var contradictionButton = document.createElement('button');
@@ -66,6 +68,26 @@ function handleButtonDrawTree() {
                 checkTreeButton.className = 'btn btn-primary flex-fill mb-2 mr-1';
                 checkTreeButton.textContent = 'Ov\u011b\u0159 strom';
                 buttonsDiv.appendChild(checkTreeButton);
+                // Create select element
+                // Create select element
+                var selectList = document.createElement('select');
+                selectList.id = 'mySelect';
+                selectList.className = 'form-control mr-2'; // Add Bootstrap form-control class for styling
+
+                // Create options
+                var options = ['formule je tautologi\u00ED', 'formule je kontradikc\u00ED', 'formule je splniteln\u00E1']; // Using Unicode escape sequence for 'í'
+
+                // Add options to select
+                for (var i = 0; i < options.length; i++) {
+                    var option = document.createElement('option');
+                    option.value = options[i];
+                    option.text = options[i];
+                    selectList.appendChild(option);
+                }
+
+                // Append select list to buttonsDiv
+                selectListDiv.appendChild(selectList);
+
 
             } else {
                 // If there are errors, display them
@@ -106,6 +128,22 @@ function isContradictionMarked() {
 function handleButtonOverStrom() {
     var elements = document.querySelectorAll(".tf-tree.tf-gap-sm");
     var innerHTMLContent;
+    var selectedValue;
+    var selectedOption = document.getElementById('mySelect').value;
+    switch (selectedOption) {
+        case 'formule je tautologi\u00ED':
+            selectedValue = 'tautology';
+            break;
+        case 'formule je kontradikc\u00ED':
+            selectedValue = 'contradiction';
+            break;
+        case 'formule je splniteln\u00E1':
+            selectedValue = 'satisfiable';
+            break;
+        default:
+            selectedValue = ''; // Handle default case if needed
+            break;
+    }
     if (elements.length > 0) {
         // Element exists, you can proceed with accessing its innerHTML
         innerHTMLContent = elements[0].innerHTML;
@@ -120,6 +158,13 @@ function handleButtonOverStrom() {
     if (!isContradictionMarked()) {
         return;
     }
+
+    // Prepare data object to send in the AJAX request
+    var requestData = {
+        treeContent: innerHTMLContent,
+        selectedValue: selectedValue
+    };
+
         $.ajax({
             url: '?handler=CheckTree',
             beforeSend: function (xhr) {
@@ -129,7 +174,7 @@ function handleButtonOverStrom() {
             type: 'POST',
             contentType: 'application/json',
             dataType: "json",
-            data: JSON.stringify(innerHTMLContent),
+            data: JSON.stringify(requestData),
             success: function (data) {
                 // Attach a click event handler to the #xButton element
                 $("#contradictionButton").on("click", function () {

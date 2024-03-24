@@ -14,12 +14,17 @@ namespace VyrokovaLogikaPrace
         public List<string> Errors = new List<string>();
         public Dictionary<string,int> literalsTruthValues = new Dictionary<string,int>();
         public List<string> wronglyAssignedLiterals= new List<string>();
-
+        public List<string> suspiciousLiterals = new List<string>();
         public TreeVerifier(Node tree)
         {
             this.tree = tree;
             VerifyCombinations(tree);
             VerifyLiteralsValues(tree);
+            foreach (var suspiciousLiteral in suspiciousLiterals)
+            {
+                Errors.Add("Literál " + suspiciousLiteral + " je označen, že obsahuje spor ,ale neobsahuje");
+                wronglyAssignedLiterals.Add(suspiciousLiteral);
+            }
             if(wronglyAssignedLiterals.Count > 0)
             {
                 MarkWrongLiterals(tree);
@@ -170,7 +175,24 @@ namespace VyrokovaLogikaPrace
                         if (!tree.Contradiction)
                         {
                             Errors.Add("Literál " + tree.Value + " není označen jako spor, a přesto se neshodují pravdivostní hodnoty literálu");
-                            if (!wronglyAssignedLiterals.Contains(tree.Value)) wronglyAssignedLiterals.Add(tree.Value);
+                            if (!wronglyAssignedLiterals.Contains(tree.Value))
+                            {
+                                wronglyAssignedLiterals.Add(tree.Value);
+                            }
+                        }
+                        if(suspiciousLiterals.Contains(tree.Value))
+                        {
+                            suspiciousLiterals.Remove(tree.Value);
+                        }
+                    }
+                    else if(literalsTruthValues[tree.Value] == tree.TruthValue)
+                    {
+                        if (tree.Contradiction)
+                        {
+                            if (!suspiciousLiterals.Contains(tree.Value))
+                            {
+                                suspiciousLiterals.Add(tree.Value);
+                            }
                         }
                     }
                 }
