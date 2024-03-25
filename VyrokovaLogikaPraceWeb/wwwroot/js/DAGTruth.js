@@ -1,6 +1,10 @@
 ﻿// Map to store unique labels and their corresponding IDs
 const labelIdMap = new Map();
 var finished = true;
+var globalCounter = 0;
+var nodesGlobalData;
+var lengthOfList = 0;
+var steps;
 
 function handleButtonDrawDAGButton(tautology) {
     CallAjaxToGetPaths(tautology);
@@ -27,9 +31,17 @@ function CallAjaxToGetPaths(tautology) {
         data: JSON.stringify(requestData),
         success: function (data) {
             var parsedOutput = JSON.parse(data);
-            parsedOutput.sort((a, b) => b.Id - a.Id);
+            parsedOutput.VisNodes.sort((a, b) => b.Id - a.Id);
             document.getElementById("zmeny").innerHTML = "";
-            createGraph(parsedOutput);
+         
+            globalCounter = 0;
+            nodesGlobalData = parsedOutput.VisNodes;
+            lengthOfList = nodesGlobalData.length - 1;
+            steps = parsedOutput.Steps;
+            createButtons();
+            attachEventHandlers();
+            drawGraph();
+            updateStepInfo();
         },
         error: function (error) {
             console.error('Error:', error);
@@ -48,6 +60,10 @@ function sleep(milliseconds) {
     return new Promise(resolve => setTimeout(resolve, milliseconds));
 }
 
+async function drawGraph() {
+     createGraph(nodesGlobalData[globalCounter]);
+}
+
 //function to draw graph
 async function createGraph(nodesData) {
     //if it is not first run we will not change from tree
@@ -57,22 +73,62 @@ async function createGraph(nodesData) {
     // Iterate through nodesData to create nodes and edges
     for (let i = 0; i < nodesData.length; i++) {
         //if node does not have parentId then it is root
-        if (nodesData[i].Contradiction == false) {
-            if (nodesData[i].ParentId === 0) {
-                nodes.add({ id: nodesData[i].Id, label: nodesData[i].Operator + " = " + nodesData[i].TruthValue, title: nodesData[i].Label, parentId: nodesData[i].ParentId, truthValue: nodesData[i].TruthValue, color: { background: '#FFD700' } });
+        if (nodesData[i].TruthValue != -1) {
+            if (nodesData[i].Contradiction == false && nodesData[i].IsChanged == true) {
+                if (nodesData[i].ParentId === 0) {
+                    nodes.add({ id: nodesData[i].Id, label: nodesData[i].Operator + " = " + nodesData[i].TruthValue, title: nodesData[i].Label, parentId: nodesData[i].ParentId, truthValue: nodesData[i].TruthValue, color: { background: '#90EE90' } });
+                }
+                else {
+                    nodes.add({ id: nodesData[i].Id, label: nodesData[i].Operator + " = " + nodesData[i].TruthValue, title: nodesData[i].Label, parentId: nodesData[i].ParentId, truthValue: nodesData[i].TruthValue, color: { background: '#90EE90' } });
+                    edges.add({ from: nodesData[i].Id, to: nodesData[i].ParentId, arrows: 'to', color: getEdgeColor(nodesData, nodesData[i].ParentId, nodesData[i].Label) });
+                }
+            }
+            else if (nodesData[i].Contradiction == true) {
+                if (nodesData[i].ParentId === 0) {
+                    nodes.add({ id: nodesData[i].Id, label: nodesData[i].Operator + " = 0/1", title: nodesData[i].Label, parentId: nodesData[i].ParentId, truthValue: nodesData[i].TruthValue, color: { background: '#DF2C14' } });
+                }
+                else {
+                    nodes.add({ id: nodesData[i].Id, label: nodesData[i].Operator + " = 0/1", title: nodesData[i].Label, parentId: nodesData[i].ParentId, truthValue: nodesData[i].TruthValue, color: { background: '#DF2C14' } });
+                    edges.add({ from: nodesData[i].Id, to: nodesData[i].ParentId, arrows: 'to', color: getEdgeColor(nodesData, nodesData[i].ParentId, nodesData[i].Label) });
+                } 
             }
             else {
-                nodes.add({ id: nodesData[i].Id, label: nodesData[i].Operator + " = " + nodesData[i].TruthValue, title: nodesData[i].Label, parentId: nodesData[i].ParentId, truthValue: nodesData[i].TruthValue });
-                edges.add({ from: nodesData[i].Id, to: nodesData[i].ParentId, arrows: 'to', color: getEdgeColor(nodesData, nodesData[i].ParentId, nodesData[i].Label) });
+                if (nodesData[i].ParentId === 0) {
+                    nodes.add({ id: nodesData[i].Id, label: nodesData[i].Operator + " = " + nodesData[i].TruthValue, title: nodesData[i].Label, parentId: nodesData[i].ParentId, truthValue: nodesData[i].TruthValue, color: { background: '#FFD700' } });
+                }
+                else {
+                    nodes.add({ id: nodesData[i].Id, label: nodesData[i].Operator + " = " + nodesData[i].TruthValue, title: nodesData[i].Label, parentId: nodesData[i].ParentId, truthValue: nodesData[i].TruthValue });
+                    edges.add({ from: nodesData[i].Id, to: nodesData[i].ParentId, arrows: 'to', color: getEdgeColor(nodesData, nodesData[i].ParentId, nodesData[i].Label) });
+                }
             }
         }
         else {
-            if (nodesData[i].ParentId === 0) {
-                nodes.add({ id: nodesData[i].Id, label: nodesData[i].Operator + " = 0/1" , title: nodesData[i].Label, parentId: nodesData[i].ParentId, truthValue: nodesData[i].TruthValue, color: { background: '#DF2C14' } });
+            if (nodesData[i].Contradiction == false && nodesData[i].IsChanged == true) {
+                if (nodesData[i].ParentId === 0) {
+                    nodes.add({ id: nodesData[i].Id, label: nodesData[i].Operator + " = " + nodesData[i].TruthValue, title: nodesData[i].Label, parentId: nodesData[i].ParentId, truthValue: nodesData[i].TruthValue, color: { background: '#90EE90' } });
+                }
+                else {
+                    nodes.add({ id: nodesData[i].Id, label: nodesData[i].Operator + " = " + nodesData[i].TruthValue, title: nodesData[i].Label, parentId: nodesData[i].ParentId, truthValue: nodesData[i].TruthValue, color: { background: '#90EE90' } });
+                    edges.add({ from: nodesData[i].Id, to: nodesData[i].ParentId, arrows: 'to', color: getEdgeColor(nodesData, nodesData[i].ParentId, nodesData[i].Label) });
+                }
+            }
+            else if (nodesData[i].Contradiction == true) {
+                if (nodesData[i].ParentId === 0) {
+                    nodes.add({ id: nodesData[i].Id, label: nodesData[i].Operator, title: nodesData[i].Label, parentId: nodesData[i].ParentId, truthValue: nodesData[i].TruthValue, color: { background: '#DF2C14' } });
+                }
+                else {
+                    nodes.add({ id: nodesData[i].Id, label: nodesData[i].Operator, title: nodesData[i].Label, parentId: nodesData[i].ParentId, truthValue: nodesData[i].TruthValue, color: { background: '#DF2C14' } });
+                    edges.add({ from: nodesData[i].Id, to: nodesData[i].ParentId, arrows: 'to', color: getEdgeColor(nodesData, nodesData[i].ParentId, nodesData[i].Label) });
+                }
             }
             else {
-                nodes.add({ id: nodesData[i].Id, label: nodesData[i].Operator + " = 0/1", title: nodesData[i].Label, parentId: nodesData[i].ParentId, truthValue: nodesData[i].TruthValue, color: { background: '#DF2C14' } });
-                edges.add({ from: nodesData[i].Id, to: nodesData[i].ParentId, arrows: 'to', color: getEdgeColor(nodesData, nodesData[i].ParentId, nodesData[i].Label) });
+                if (nodesData[i].ParentId === 0) {
+                    nodes.add({ id: nodesData[i].Id, label: nodesData[i].Operator, title: nodesData[i].Label, parentId: nodesData[i].ParentId, truthValue: nodesData[i].TruthValue, color: { background: '#FFD700' } });
+                }
+                else {
+                    nodes.add({ id: nodesData[i].Id, label: nodesData[i].Operator, title: nodesData[i].Label, parentId: nodesData[i].ParentId, truthValue: nodesData[i].TruthValue });
+                    edges.add({ from: nodesData[i].Id, to: nodesData[i].ParentId, arrows: 'to', color: getEdgeColor(nodesData, nodesData[i].ParentId, nodesData[i].Label) });
+                }
             }
         }
     }
@@ -223,8 +279,6 @@ function modifyNodes(nodesData) {
         if (labelToIdMap[label] !== undefined) {
             changeTitles.push(label); // Push label to changeTitles array
 
-            // If you need to set finished to false, uncomment the following line
-            // finished = false;
         } else {
             // If label doesn't exist, store the current ID for future reference
             labelToIdMap[label] = nodeData.id;
@@ -233,7 +287,61 @@ function modifyNodes(nodesData) {
 
     return changeTitles; // Return changeTitles array
 }
-$(document).ready(function () {
+
+function updateStepInfo() {
+    var stepInfo = steps[globalCounter]; // Assuming steps is an array of step information
+    var stepsDiv = document.getElementById("Steps");
+
+    // Clear previous step info
+    stepsDiv.innerHTML = "";
+
+    // Create Bootstrap info alert element
+    var stepAlert = document.createElement("div");
+    stepAlert.classList.add("alert", "alert-info");
+    stepAlert.setAttribute("role", "alert");
+    stepAlert.innerText = stepInfo; // Set the step information as inner text
+
+    // Append the alert element to the Steps div
+    stepsDiv.appendChild(stepAlert);
+}
+
+function handleButtonNextStep() {
+    if (globalCounter < lengthOfList) {
+        globalCounter = globalCounter + 1;
+        drawGraph();
+        updateStepInfo();
+    }
+    else alert("Toto je poslední krok");
+}
+
+function handleButtonPreviousStep() {
+    if (globalCounter > 0) {
+        globalCounter = globalCounter - 1;
+        drawGraph();
+        updateStepInfo();
+    }
+    else alert("Toto je první krok");
+}
+
+function createButtons() {
+    var buttonsDiv = document.getElementById('buttons');
+    buttonsDiv.innerHTML = '';
+    // Create and append the "Označ spor" button
+
+    var previousStepButton = document.createElement('button');
+    previousStepButton.id = 'previousStepButton';
+    previousStepButton.className = 'btn btn-primary flex-fill mb-2 mr-1';
+    previousStepButton.textContent = 'předchozí krok';
+    buttonsDiv.appendChild(previousStepButton);
+
+    var nextStepButton = document.createElement('button');
+    nextStepButton.id = 'nextStepButton';
+    nextStepButton.className = 'btn btn-primary flex-fill mb-2 mr-1';
+    nextStepButton.textContent = 'další krok';
+    buttonsDiv.appendChild(nextStepButton);
+}
+
+function attachEventHandlers() {
     //button for 'Vykresli DAG'
     document.getElementById('drawDAGButtonTautotology').addEventListener('click', function () {
         handleButtonDrawDAGButton(true);
@@ -243,8 +351,23 @@ $(document).ready(function () {
         handleButtonDrawDAGButton(false);
     });
 
+    var nextStepButton = document.getElementById('nextStepButton');
+
+    // If the element exists, attach the event listener
+    if (nextStepButton) {
+        nextStepButton.addEventListener('click', handleButtonNextStep);
+    }
+
+    var previousStepButton = document.getElementById('previousStepButton');
+
+    if (previousStepButton) {
+        previousStepButton.addEventListener('click', handleButtonPreviousStep)
+    }
+
     $('#DAGS').submit(function (event) {
         // Prevent the default form submission
         event.preventDefault();
     });
-})
+}
+
+$(document).ready(attachEventHandlers)

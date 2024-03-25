@@ -14,5 +14,6 @@ namespace VyrokovaLogikaPrace
         public int TruthValue { get; set; }
         public string Operator { get; set; }
         public bool Contradiction { get; set; }
+        public bool IsChanged { get; set; }
     }
 }

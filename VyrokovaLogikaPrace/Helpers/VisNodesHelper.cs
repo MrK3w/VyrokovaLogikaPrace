@@ -52,7 +52,8 @@ namespace VyrokovaLogikaPrace
                     ParentId = node.Parent != null ? node.Parent.id : 0,
                     Operator = TreeHelper.GetOP(node),
                     TruthValue = node.TruthValue,
-                    Contradiction = node.Red
+                    Contradiction = node.Red,
+                    IsChanged = node.Blue
                 });
             }
             // Recursively traverse the left and right children

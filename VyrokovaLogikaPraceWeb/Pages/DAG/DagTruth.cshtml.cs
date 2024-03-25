@@ -24,7 +24,9 @@ namespace VyrokovaLogikaPraceWeb.Pages
         public string YourFormula { get; set; } = "";
         public string Input { get; set; } = "";
 
-        List<VisNode> visNodes = new List<VisNode>();
+        List<string> Steps { get; set; } = new List<string>();
+
+        List<List<VisNode>> visNodes = new List<List<VisNode>>();
 
         public DagTruthModel(IWebHostEnvironment env)
         {
@@ -52,23 +54,55 @@ namespace VyrokovaLogikaPraceWeb.Pages
                 return Page();
             }
             Engine engine = new Engine(Formula);
-            Node tree = new Node(0);
+            List<Node> tree = new List<Node>();
             if (engine.CreateTree())
             {
                 if (tautology)
                 {
                     TreeProofAdvanced adv = new TreeProofAdvanced(engine.pSyntaxTree, 0);
-                    tree = adv.trees[adv.trees.Count - 1];
+                    tree = adv.trees;
+                    Steps = adv.steps;
                 }
                 else
                 {
                     TreeProofAdvanced adv = new TreeProofAdvanced(engine.pSyntaxTree, 1);
-                    tree = adv.trees[adv.trees.Count - 1];
+                    tree = adv.trees;
+                    Steps = adv.steps;
                 }
             }
-            VisNodesHelper helper = new VisNodesHelper(tree, true);
-            visNodes = helper.CreateVisNodes();
-            var jsonString = JsonSerializer.Serialize(visNodes);
+            foreach (var treee in tree)
+            {
+                VisNodesHelper helper = new VisNodesHelper(treee, true);
+                visNodes.Add(helper.CreateVisNodes());
+            }
+            List<int> stepsToRemove = new List<int>();
+            int i = 0;
+            foreach (var step in Steps)
+            {
+
+                if (step.StartsWith("Pøidáme do uzlu"))
+                {
+                    stepsToRemove.Add(i);
+                }
+                i++;
+            }
+
+
+
+            // Remove items from VisNodes and Steps based on indexes stored in indexesToRemove
+            foreach (int indexToRemove in stepsToRemove.OrderByDescending(x => x))
+            {
+                visNodes.RemoveAt(indexToRemove);
+                Steps.RemoveAt(indexToRemove);
+            }
+
+
+            var response = new
+            {
+                VisNodes = visNodes,
+                Steps = Steps
+            };
+            var jsonString = JsonSerializer.Serialize(response);
             return new JsonResult(jsonString);
         }
     }
