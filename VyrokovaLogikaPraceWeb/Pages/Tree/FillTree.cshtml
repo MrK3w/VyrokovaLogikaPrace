@@ -16,8 +16,6 @@
             <form method="post" asp-action="Index" asp-controller="Home" id="formulaForm" class="d-flex flex-column">
                 <div class="d-flex">
                     @Html.DropDownList("formula", Model.ListItems, new { @class = "form-control custom-font", @style = "height: 66.67%;" })
-                    @Html.TextBox("UserInput", Model.YourFormula, new { @maxlength = "64", @class = "form-control ml-2 custom-font", @style = "height: 66.67%;" })
-
 
                     <div class="btn-toolbar ml-2 flex-fill" role="toolbar" aria-label="Toolbar with button groups">
                         <div class="btn-group flex-fill" role="group" aria-label="First group">

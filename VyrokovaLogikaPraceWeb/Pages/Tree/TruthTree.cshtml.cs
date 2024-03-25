@@ -14,8 +14,6 @@ namespace VyrokovaLogikaPraceWeb.Pages
         private  List<string> htmlTree = new();
         //formula selected from select list
         private string selectFromSelectList;
-        //formula selected from user Input
-        private string selectFromInput;
         //string for showing error message, why tree did not compile
         public string ErrorMessage;
         //Formula
@@ -245,22 +243,22 @@ namespace VyrokovaLogikaPraceWeb.Pages
                 {
                     if (tree.TruthValue2 == -1)
                     {
-                        htmlTree.Add("<span class='tf-nc' onclick='toggleNode(" + tree.id + ", \"" + tree.Value + "\", \"" + op + "\",\"" + "\",)' style='color: red'>" + op + "</span>");
+                        htmlTree.Add("<span class='tf-nc' style='color: red'>" + op + "</span>");
                     }
                     else
                     {
-                        htmlTree.Add("<span class='tf-nc' onclick='toggleNode(" + tree.id + ", \"" + tree.Value + "\", \"" + op + "\",\"" + "\",)' style='color: red'>" + op + "/" + "</span>");
+                        htmlTree.Add("<span class='tf-nc' style='color: red'>" + op + "/" + "</span>");
                     }
                 }
                 else
                 {
                     if (tree.TruthValue2 == -1)
                     {
-                        htmlTree.Add("<span class='tf-nc' onclick='toggleNode(" + tree.id + ", \"" + tree.Value + "\", \"" + op + "\",\"" + tree.TruthValue + "\",)' style='color: red'>" + op + "= " + tree.TruthValue + "</span>");
+                        htmlTree.Add("<span class='tf-nc' style='color: red'>" + op + "= " + tree.TruthValue + "</span>");
                     }
                     else
                     {
-                        htmlTree.Add("<span class='tf-nc' onclick='toggleNode(" + tree.id + ", \"" + tree.Value + "\", \"" + op + "\",\"" + tree.TruthValue + "\",)' style='color: red'>" + op + "= " + tree.TruthValue + "/" + tree.TruthValue2 + "</span>");
+                        htmlTree.Add("<span class='tf-nc' style='color: red'>" + op + "= " + tree.TruthValue + "/" + tree.TruthValue2 + "</span>");
                     }
                 }
             }
@@ -271,22 +269,22 @@ namespace VyrokovaLogikaPraceWeb.Pages
                 {
                     if (tree.TruthValue2 == -1)
                     {
-                        htmlTree.Add("<span class='tf-nc' onclick='toggleNode(" + tree.id + ", \"" + tree.Value + "\", \"" + op + "\",\"" + "\",)' style='color: blue'>" + op + "</span>");
+                        htmlTree.Add("<span class='tf-nc' style='color: blue'>" + op + "</span>");
                     }
                     else
                     {
-                        htmlTree.Add("<span class='tf-nc' onclick='toggleNode(" + tree.id + ", \"" + tree.Value + "\", \"" + op + "\",\"" + "\",)' style='color: blue'>" + op + "/" + "</span>");
+                        htmlTree.Add("<span class='tf-nc' style='color: blue'>" + op + "/" + "</span>");
                     }
                 }
                 else
                 {
                     if (tree.TruthValue2 == -1)
                     {
-                        htmlTree.Add("<span class='tf-nc' onclick='toggleNode(" + tree.id + ", \"" + tree.Value + "\", \"" + op + "\",\"" + tree.TruthValue + "\",)' style='color: blue'>" + op + "= " + tree.TruthValue + "</span>");
+                        htmlTree.Add("<span class='tf-nc' style='color: blue'>" + op + "= " + tree.TruthValue + "</span>");
                     }
                     else
                     {
-                        htmlTree.Add("<span class='tf-nc' onclick='toggleNode(" + tree.id + ", \"" + tree.Value + "\", \"" + op + "\",\"" + tree.TruthValue + "\",)' style='color: blue'>" + op + "= " + tree.TruthValue + "/" + tree.TruthValue2 + "</span>");
+                        htmlTree.Add("<span class='tf-nc' style='color: blue'>" + op + "= " + tree.TruthValue + "/" + tree.TruthValue2 + "</span>");
                     }
                 }
             }
@@ -299,22 +297,22 @@ namespace VyrokovaLogikaPraceWeb.Pages
                 {
                     if (tree.TruthValue2 == -1)
                     {
-                        htmlTree.Add("<span class='tf-nc' onclick='toggleNode(" + tree.id + ", \"" + tree.Value + "\", \"" + op + "\",\"" + "\",)' style='color: black'>" + op + "</span>");
+                        htmlTree.Add("<span class='tf-nc' style='color: black'>" + op + "</span>");
                     }
                     else
                     {
-                        htmlTree.Add("<span class='tf-nc' onclick='toggleNode(" + tree.id + ", \"" + tree.Value + "\", \"" + op + "\",\"" + "\",)' style='color: black'>" + op + "/" + "</span>");
+                        htmlTree.Add("<span class='tf-nc' style='color: black'>" + op + "/" + "</span>");
                     }
                 }
                 else
                 {
                     if (tree.TruthValue2 == -1)
                     {
-                        htmlTree.Add("<span class='tf-nc' onclick='toggleNode(" + tree.id + ", \"" + tree.Value + "\", \"" + op + "\",\"" + tree.TruthValue + "\",)' style='color: black'>" + op + "= " + tree.TruthValue + "</span>");
+                        htmlTree.Add("<span class='tf-nc' style='color: black'>" + op + "= " + tree.TruthValue + "</span>");
                     }
                     else
                     {
-                        htmlTree.Add("<span class='tf-nc' onclick='toggleNode(" + tree.id + ", \"" + tree.Value + "\", \"" + op + "\",\"" + tree.TruthValue + "\",)' style='color: black'>" + op + "= " + tree.TruthValue + "/" + tree.TruthValue2 + "</span>");
+                        htmlTree.Add("<span class='tf-nc' style='color: black'>" + op + "= " + tree.TruthValue + "/" + tree.TruthValue2 + "</span>");
                     }
                 }
             }
@@ -338,22 +336,12 @@ namespace VyrokovaLogikaPraceWeb.Pages
         public string? GetFormula()
         {
             selectFromSelectList = Request.Form["formula"];
-            selectFromInput = Request.Form["UserInput"];
             //if user didn't use any of inputs invalidate request and throw errorMessage that user didn't choose formula
-            if (selectFromSelectList == "" && selectFromInput == "")
+            if (selectFromSelectList == "")
             {
                 Valid = false;
                 ErrorMessage = "Nevybral jsi žádnou formuli!";
                 return null;
-            }
-            //if user used userInput
-            if (selectFromInput != "")
-            {
-                Converter.ConvertSentence(ref selectFromInput);
-                ListItems.Add(new SelectListItem(selectFromInput, selectFromInput));
-                var selected = ListItems.Where(x => x.Value == selectFromInput).First();
-                selected.Selected = true;
-                return selectFromInput;
             }
             //if user used formula from listItem
             else if (selectFromSelectList != "")

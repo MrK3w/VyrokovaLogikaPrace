@@ -1,7 +1,6 @@
 ﻿// Map to store unique labels and their corresponding IDs
 const labelIdMap = new Map();
 var finished = true;
-var timer = 1000;
 
 function handleButtonDrawGraphButton() {
     CallAjaxToGetPaths(false);
@@ -139,50 +138,43 @@ function getEdgeColorModified(nodesData, parentId, label) {
     return edgeColor;
 }
 
-
-
-
 async function updateNodes(data, network) {
-    await sleep(timer);
     var dataFromGraph = data.nodes.get();
     var changeTitle = modifyNodes(dataFromGraph);
-    if (finished) {
-        if (document.getElementById("zmeny").innerHTML === '') {
-            // The div is empty
-            var newAlertDiv = document.createElement("div");
-            newAlertDiv.className = "alert alert-primary";
-            newAlertDiv.textContent = "Žádné možné změny z grafu!" + changeTitle;
-
-            // Append new alert div to the "zmeny" div
-            document.getElementById("zmeny").appendChild(newAlertDiv);
-        }
-        return;
-    } 
-    var nodesToUpdate = dataFromGraph.filter(function (node) {
-        return node.title === changeTitle;
+    var nodesToUpdateFull = dataFromGraph.filter(function (node) {
+        return changeTitle.includes(node.title);
     });
 
-    // Update color for filtered nodes
-    nodesToUpdate.forEach(function (node) {
-        data.nodes.update({ id: node.id, color: { background: 'green' } });
-    });
     console.log(data.nodes.get());
     network.setData(data);
 
-    await sleep(timer);
-    var i = 1;
-    nodesToUpdate.slice(1).forEach(function (node) {
-        i = i++;
-        data.edges.add({ from: nodesToUpdate[0].id, to: node.parentId, arrows: 'to', color: getEdgeColorModified(dataFromGraph, nodesToUpdate[i].parentId, nodesToUpdate[i].label) });
-        dataFromGraph.forEach(function (allNodes) {
-            if (allNodes.parentId == node.id) {
-                allNodes.parentId = nodesToUpdate[0].id;
-                data.edges.add({ from: allNodes.id, to: nodesToUpdate[0].id, arrows: 'to', color: getEdgeColorModified(dataFromGraph, nodesToUpdate[i].parentId, nodesToUpdate[i].label) });
-            }
-        })
-        data.nodes.remove({ id: node.id });
+    // Group nodes by their title property
+    var groupedNodes = {};
+    nodesToUpdateFull.forEach(function (node) {
+        if (!groupedNodes[node.title]) {
+            groupedNodes[node.title] = [];
+        }
+        groupedNodes[node.title].push(node);
     });
-    data.nodes.update({ id: nodesToUpdate[0].id, color: { background: '#97c2fc' } });
+
+    // Iterate over each group of nodes
+    for (var title in groupedNodes) {
+        if (groupedNodes.hasOwnProperty(title)) {
+            var nodesToUpdate = groupedNodes[title];
+            var i = 0; // Initialize i here
+            nodesToUpdate.slice(1).forEach(function (node) {
+                i++; // Increment i for each iteration
+                data.edges.add({ from: nodesToUpdate[0].id, to: node.parentId, arrows: 'to', color: getEdgeColorModified(dataFromGraph, node.parentId, node.label) });
+                dataFromGraph.forEach(function (allNodes) {
+                    if (allNodes.parentId == node.id) {
+                        allNodes.parentId = nodesToUpdate[0].id;
+                        data.edges.add({ from: allNodes.id, to: nodesToUpdate[0].id, arrows: 'to', color: getEdgeColorModified(dataFromGraph, node.parentId, node.label) });
+                    }
+                });
+                data.nodes.remove({ id: node.id });
+            });
+        }
+    }
     var positions = network.getPositions();
     network.setData(data);
     network.once("stabilizationIterationsDone", function () {
@@ -194,7 +186,6 @@ async function updateNodes(data, network) {
             }
         }
     });
-    updateNodes(data, network);
 }
 
 function drawOnCanvasLabels(ctx, container) {
@@ -212,39 +203,32 @@ function drawOnCanvasLabels(ctx, container) {
     ctx.fillStyle = "orange";
     ctx.fillRect(195 - centerX, 133 - centerY, 10, 10); // Sample color indicator
     ctx.fillText("Pravá strana", 100 - centerX, 140 - centerY); // Adjust position as needed
-        // Add more color descriptions as needed
+    // Add more color descriptions as needed
 }
 
 function modifyNodes(nodesData) {
     const labelToIdMap = {};
-    var changeTitle = "";
+    var changeTitles = []; // Change changeTitle to changeTitles to store multiple titles
     finished = true;
+
     // Iterate through nodesData and update the IDs based on label
     for (const nodeData of nodesData) {
         const label = nodeData.title;
+
         //if we already have label stored in map we will do operation
         if (labelToIdMap[label] !== undefined) {
-            changeTitle = label;
-            finished = false;
+            changeTitles.push(label); // Push label to changeTitles array
 
-            //we will create div to show what we changed
-            var newAlertDiv = document.createElement("div");
-            newAlertDiv.className = "alert alert-primary";
-            newAlertDiv.textContent = "Spojena noda " + changeTitle;
-
-            // Append new alert div to the "zmeny" div
-            document.getElementById("zmeny").appendChild(newAlertDiv);
-
-            return changeTitle;
+            // If you need to set finished to false, uncomment the following line
+            // finished = false;
         } else {
             // If label doesn't exist, store the current ID for future reference
             labelToIdMap[label] = nodeData.id;
         }
     }
-    
-    return changeTitle;
-}
 
+    return changeTitles; // Return changeTitles array
+}
 $(document).ready(function () {
     //button for 'Vykresli DAG'
     document.getElementById('drawGraphButton').addEventListener('click', handleButtonDrawGraphButton);

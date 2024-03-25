@@ -16,8 +16,6 @@
             <form method="post" asp-action="Index" asp-controller="Home" id="TheForm" class="d-flex flex-column">
                 <div class="d-flex">
                     @Html.DropDownList("formula", Model.ListItems, new { @class = "form-control custom-font", @style = "height: 66.67%;" })
-                    @Html.TextBox("UserInput", Model.YourFormula, new { @maxlength = "100", @class = "form-control ml-2 custom-font", @style = "height: 66.67%;" })
-
 
                     <div class="btn-toolbar ml-2 flex-fill" role="toolbar" aria-label="Toolbar with button groups">
                         <div class="btn-group flex-fill" role="group" aria-label="First group">
@@ -47,15 +45,18 @@
                         
                         <div id="treeContainer">
                             @Html.Raw(@Model.ConvertedTrees[0])
-                        </div> 
+                        </div>
+                        <div class="alert alert-info" role="alert" , id="Steps">
+                            @Html.Raw(@Model.Steps[0])
+                        </div>
 
-            <div class="row">
+
+                        <div class="row">
                             <div class="col-md-6">
                                 <button id="nextBtn" class="btn btn-primary flex-fill mb-2 mr-1 custom-btn" onclick="showNextTree()">Další krok</button>
                             </div>
-
                             <div class="col-md-6">
-                                <button id="lastBtn" class="btn btn-primary flex-fill mb-2 mr-1 custom-btn" onclick="showLastTree()">Poslední krok</button>
+                                <button id="prevBtn" class="btn btn-primary flex-fill mb-2 mr-1 custom-btn" onclick="showPreviousTree()">Předchozí krok</button>
                             </div>
                         </div>
                         <div class="row">
@@ -63,7 +64,7 @@
                                 <button id="firstBtn" class="btn btn-primary flex-fill mb-2 mr-1 custom-btn" onclick="showFirstTree()">První krok</button>
                             </div>
                             <div class="col-md-6">
-                                <button id="prevBtn" class="btn btn-primary flex-fill mb-2 mr-1 custom-btn" onclick="showPreviousTree()" disabled>Předchozí krok</button>
+                                <button id="lastBtn" class="btn btn-primary flex-fill mb-2 mr-1 custom-btn" onclick="showLastTree()">Poslední krok</button>
                             </div>
                         </div>
                     }

@@ -18,19 +18,10 @@ function doesTreeContainsHash() {
 }
 
 function handleButtonDrawTree() {
-    // Get the value of UserInput
-    var userInputValue = document.getElementById('UserInput').value.trim();
     var formulaValue;
-    // Check if UserInput is empty
-    if (userInputValue === '') {
-        // If UserInput is empty, get the selected value from the dropdown list (formula)
-        var formulaDropdown = document.getElementById('formula');
-        var selectedFormula = formulaDropdown.options[formulaDropdown.selectedIndex].value;
-        formulaValue = selectedFormula.trim();
-    } else {
-        // If UserInput is not empty, use its value
-         formulaValue = userInputValue;
-    }
+    var formulaDropdown = document.getElementById('formula');
+    var selectedFormula = formulaDropdown.options[formulaDropdown.selectedIndex].value;
+    formulaValue = selectedFormula.trim();
 
     $.ajax({
         url: '?handler=DrawTree',

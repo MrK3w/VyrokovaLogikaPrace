@@ -13,7 +13,7 @@ namespace VyrokovaLogikaPraceWeb.Pages
         private readonly List<string> htmlTree = new();
 
         private string selectFromSelectList;
-        private string selectFromInput;
+
         public string ErrorMessage;
         public string Formula;
         public List<string> Errors { get; private set; } = new();
@@ -120,22 +120,12 @@ namespace VyrokovaLogikaPraceWeb.Pages
         public string? GetFormula()
         {
             selectFromSelectList = Request.Form["formula"];
-            selectFromInput = Request.Form["UserInput"];
             //if user didn't use any of inputs invalidate request and throw errorMessage that user didn't choose formula
-            if (selectFromSelectList == "" && selectFromInput == "")
+            if (selectFromSelectList == "")
             {
                 Valid = false;
                 ErrorMessage = "Nevybral jsi žádnou formuli!";
                 return null;
-            }
-            //if user user userInput
-            if (selectFromInput != "")
-            {
-                Converter.ConvertSentence(ref selectFromInput);
-                ListItems.Add(new SelectListItem(selectFromInput,selectFromInput));
-                var selected = ListItems.Where(x => x.Value == selectFromInput).First();
-                selected.Selected = true;
-                return selectFromInput;
             }
             //if user used formula from listItem
             else if (selectFromSelectList != "")

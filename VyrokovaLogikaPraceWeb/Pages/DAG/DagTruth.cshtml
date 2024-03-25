@@ -1,0 +1,39 @@
+﻿@page
+@model VyrokovaLogikaPraceWeb.Pages.DrawDAGModel
+@{
+}
+
+<head>
+    <title>My Page</title>
+    <script src="https://unpkg.com/vis-data/peer/umd/vis-data.min.js"></script>
+    <script src="https://unpkg.com/vis-network/peer/umd/vis-network.min.js"></script>
+    <link rel="stylesheet" href="https://unpkg.com/vis-network/standalone/umd/vis-network.min.css" />
+    <link rel="stylesheet" href="~/css/Graph.css" />
+    <script src="~/js/InputValueTransform.js"></script>
+    <script type="module" src="~/js/DAGTruth.js"></script>
+
+</head>
+<body>
+    <div class="col-md-9">
+        <div class="text-center">
+            <h3 class="display-7">Grafy s pravdivostní hodnotou</h3>
+            <form method="post" asp-action="Index" asp-controller="Home" id="DAGForm" class="d-flex flex-column">
+                <div class="d-flex">
+                    @Html.DropDownList("formula", Model.ListItems, new { @class = "form-control custom-font", @style = "height: 66.67%;" })
+
+                    <div class="btn-toolbar ml-2 flex-fill" role="toolbar" aria-label="Toolbar with button groups">
+                        <div class="btn-group flex-fill" role="group" aria-label="First group">
+                            <input type='submit' class="btn btn-primary flex-fill mb-2 mr-1" value='Vykresli strom' id="drawGraphButton" />
+                            <input type='submit' class="btn btn-primary flex-fill mb-2 mr-1" value='Vykresli DAG' id="drawDAGButton" />
+                        </div>
+
+                    </div>
+                </div>
+            </form>
+            <div id="treeVisualization">
+            </div>
+
+        </div>
+    </div>
+    <div class="col-md-1" id="zmeny"></div>
+</body>
