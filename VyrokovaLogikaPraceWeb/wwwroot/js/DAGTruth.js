@@ -2,34 +2,21 @@
 const labelIdMap = new Map();
 var finished = true;
 
-function handleButtonDrawGraphButton() {
-    CallAjaxToGetPaths(false);
+function handleButtonDrawDAGButton(tautology) {
+    CallAjaxToGetPaths(tautology);
 }
 
-function handleButtonDrawDAGButton() {
-    CallAjaxToGetPaths(true);
-}
+function CallAjaxToGetPaths(tautology) {
 
-function CallAjaxToGetPaths(isDag) {
-    var dataToSend = $('#formula').val();
-    dataToSend = transformInputValue(dataToSend);
+    var formula = transformInputValue($('#formula').val());
 
-    if ($('#formula option[value="' + dataToSend + '"]').length === 0) {
-        // Create a new option element
-        var newOption = $('<option>', {
-            value: dataToSend,
-            text: dataToSend
-        });
-
-        // Append the new option to the dropdown list
-        $('#formula').append(newOption);
-
-        // Optionally, you can set the selected value to the newly added option
-        $('#formula').val(dataToSend);
-    }
+    var requestData = {
+        formula: formula,
+        tautology: tautology // Include the boolean value
+    };
 
     $.ajax({
-        url: '?handler=DrawDAG',
+        url: '?handler=TruthDAG',
         beforeSend: function (xhr) {
             xhr.setRequestHeader("XSRF-TOKEN",
                 $('input:hidden[name="__RequestVerificationToken"]').val());
@@ -37,16 +24,22 @@ function CallAjaxToGetPaths(isDag) {
         type: 'POST',
         contentType: 'application/json',
         dataType: "json",
-        data: JSON.stringify(dataToSend),
-        success: function (output) {
-            var parsedOutput = JSON.parse(output);
+        data: JSON.stringify(requestData),
+        success: function (data) {
+            var parsedOutput = JSON.parse(data);
             parsedOutput.sort((a, b) => b.Id - a.Id);
             document.getElementById("zmeny").innerHTML = "";
-            createGraph(isDag, parsedOutput);
+            createGraph(parsedOutput);
         },
         error: function (error) {
             console.error('Error:', error);
-            // Handle the error
+
+            // Log specific error properties
+            console.log('Status:', error.status); // HTTP status code
+            console.log('Status Text:', error.statusText); // Textual description of the HTTP status
+            console.log('Response Text:', error.responseText); // Response body
+            console.log('Ready State:', error.readyState); // Ready state of the request
+    // You can log more properties if needed
         }
     });
 }
@@ -56,7 +49,7 @@ function sleep(milliseconds) {
 }
 
 //function to draw graph
-async function createGraph(isDag, nodesData) {
+async function createGraph(nodesData) {
     //if it is not first run we will not change from tree
     const nodes = new vis.DataSet();
     const edges = new vis.DataSet();
@@ -64,12 +57,23 @@ async function createGraph(isDag, nodesData) {
     // Iterate through nodesData to create nodes and edges
     for (let i = 0; i < nodesData.length; i++) {
         //if node does not have parentId then it is root
-        if (nodesData[i].ParentId === 0) {
-            nodes.add({ id: nodesData[i].Id, label: nodesData[i].Operator, title: nodesData[i].Label, parentId: nodesData[i].ParentId, color: { background: '#FFD700' } });
+        if (nodesData[i].Contradiction == false) {
+            if (nodesData[i].ParentId === 0) {
+                nodes.add({ id: nodesData[i].Id, label: nodesData[i].Operator + " = " + nodesData[i].TruthValue, title: nodesData[i].Label, parentId: nodesData[i].ParentId, truthValue: nodesData[i].TruthValue, color: { background: '#FFD700' } });
+            }
+            else {
+                nodes.add({ id: nodesData[i].Id, label: nodesData[i].Operator + " = " + nodesData[i].TruthValue, title: nodesData[i].Label, parentId: nodesData[i].ParentId, truthValue: nodesData[i].TruthValue });
+                edges.add({ from: nodesData[i].Id, to: nodesData[i].ParentId, arrows: 'to', color: getEdgeColor(nodesData, nodesData[i].ParentId, nodesData[i].Label) });
+            }
         }
         else {
-            nodes.add({ id: nodesData[i].Id, label: nodesData[i].Operator, title: nodesData[i].Label, parentId: nodesData[i].ParentId });
-            edges.add({ from: nodesData[i].Id, to: nodesData[i].ParentId, arrows: 'to', color: getEdgeColor(nodesData, nodesData[i].ParentId, nodesData[i].Label) });
+            if (nodesData[i].ParentId === 0) {
+                nodes.add({ id: nodesData[i].Id, label: nodesData[i].Operator + " = 0/1" , title: nodesData[i].Label, parentId: nodesData[i].ParentId, truthValue: nodesData[i].TruthValue, color: { background: '#DF2C14' } });
+            }
+            else {
+                nodes.add({ id: nodesData[i].Id, label: nodesData[i].Operator + " = 0/1", title: nodesData[i].Label, parentId: nodesData[i].ParentId, truthValue: nodesData[i].TruthValue, color: { background: '#DF2C14' } });
+                edges.add({ from: nodesData[i].Id, to: nodesData[i].ParentId, arrows: 'to', color: getEdgeColor(nodesData, nodesData[i].ParentId, nodesData[i].Label) });
+            }
         }
     }
 
@@ -97,7 +101,7 @@ async function createGraph(isDag, nodesData) {
     network.on("afterDrawing", function (ctx) {
         drawOnCanvasLabels(ctx, container); // Call drawOnCanvasLabels and pass ctx
     });
-    if (isDag) updateNodes(data, network);
+    updateNodes(data, network);
 }
 
 function getEdgeColor(nodesData, parentId, label) {
@@ -231,9 +235,15 @@ function modifyNodes(nodesData) {
 }
 $(document).ready(function () {
     //button for 'Vykresli DAG'
-    document.getElementById('drawGraphButton').addEventListener('click', handleButtonDrawGraphButton);
-    document.getElementById('drawDAGButton').addEventListener('click', handleButtonDrawDAGButton);
-    $('#DAGForm').submit(function (event) {
+    document.getElementById('drawDAGButtonTautotology').addEventListener('click', function () {
+        handleButtonDrawDAGButton(true);
+    });
+
+    document.getElementById('drawDAGButtonContradiction').addEventListener('click', function () {
+        handleButtonDrawDAGButton(false);
+    });
+
+    $('#DAGS').submit(function (event) {
         // Prevent the default form submission
         event.preventDefault();
     });

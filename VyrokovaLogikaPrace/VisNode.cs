@@ -11,7 +11,8 @@ namespace VyrokovaLogikaPrace
         public int Id { get; set; }
         public string Label { get; set; }
         public int ParentId { get; set; }
-
+        public int TruthValue { get; set; }
         public string Operator { get; set; }
+        public bool Contradiction { get; set; }
     }
 }

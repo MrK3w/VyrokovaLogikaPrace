@@ -325,19 +325,6 @@ namespace VyrokovaLogikaPrace
             }
             if (tree is ImplicationOperatorNode)
             {
-                if (tree.Left.TruthValue != -1 && tree.Right.TruthValue != -1)
-                {
-                    if (tree.TruthValue == -1)
-                    {
-                        tree.TruthValue = 0;
-                        RemoveBlue((GetToRoot(tree)));
-                        tree.Blue = true;
-                        Node tempTree = new Node(0);
-                        tempTree = Node.DeepCopy(GetToRoot(tree));
-                        trees.Add(tempTree);
-                        steps.Add("Pokud operátor uzlu je implikace a levý uzel je 1 a zároveň pravý uzel je 0 můžeme dosadit do uzlu 0");
-                    }
-                }
                 if (tree.Left.TruthValue == 1 && tree.Right.TruthValue == 1)
                 {
                     if (tree.TruthValue == -1)
@@ -383,8 +370,23 @@ namespace VyrokovaLogikaPrace
                     }
                 }
 
-             
-                if(tree.TruthValue == -1 && tree.Left.TruthValue == 0 && tree.Right.TruthValue == 1)
+                if (tree.Left.TruthValue == 1 && tree.Right.TruthValue == 0)
+                {
+                    if (tree.TruthValue == -1)
+                    {
+                        tree.TruthValue = 0;
+                        RemoveBlue((GetToRoot(tree)));
+                        tree.Blue = true;
+                        Node tempTree = new Node(0);
+                        tempTree = Node.DeepCopy(GetToRoot(tree));
+                        trees.Add(tempTree);
+                        steps.Add("Pokud operátor uzlu je implikace a levý uzel je 1 a zároveň pravý uzel je 0 můžeme dosadit do uzlu 0");
+
+                    }
+                }
+
+
+                if (tree.TruthValue == -1 && tree.Left.TruthValue == 0 && tree.Right.TruthValue == 1)
                 {
                     tree.TruthValue = 1;
                     RemoveBlue((GetToRoot(tree)));

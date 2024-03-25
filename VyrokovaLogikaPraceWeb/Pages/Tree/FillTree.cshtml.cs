@@ -69,8 +69,6 @@ namespace VyrokovaLogikaPraceWeb.Pages
             };
             return new JsonResult(responseData);
         }
-
-        //TODO check if there are two values in one node (contraaiction in node) and check if contradiction is not in leafs
         public IActionResult OnPostCheckTree([FromBody] TreeCheckRequest request)
         {
             string treeContent = request.TreeContent;

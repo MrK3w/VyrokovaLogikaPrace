@@ -10,11 +10,11 @@ namespace VyrokovaLogikaPrace
     {
         Node mTree;
         List<VisNode> visNodesList { get; set; }
-
-        public VisNodesHelper(Node tree)
+        bool mTruthValues;
+        public VisNodesHelper(Node tree, bool truthValues = false)
         {
             mTree = tree;
-            
+            mTruthValues = truthValues;
         }
 
         public List<VisNode> CreateVisNodes()
@@ -31,15 +31,30 @@ namespace VyrokovaLogikaPrace
             if (node == null)
                 return;
 
-            // Create a new VisNode and add it to the list
-            visNodesList.Add(new VisNode
+            if (!mTruthValues)
             {
-                Id = node.id,
-                Label = node.Value,
-                ParentId = node.Parent != null ? node.Parent.id : 0,
-                Operator = TreeHelper.GetOP(node)
-            });
-
+                // Create a new VisNode and add it to the list
+                visNodesList.Add(new VisNode
+                {
+                    Id = node.id,
+                    Label = node.Value,
+                    ParentId = node.Parent != null ? node.Parent.id : 0,
+                    Operator = TreeHelper.GetOP(node)
+                });
+            }
+            else
+            {
+                // Create a new VisNode and add it to the list
+                visNodesList.Add(new VisNode
+                {
+                    Id = node.id,
+                    Label = node.Value,
+                    ParentId = node.Parent != null ? node.Parent.id : 0,
+                    Operator = TreeHelper.GetOP(node),
+                    TruthValue = node.TruthValue,
+                    Contradiction = node.Red
+                });
+            }
             // Recursively traverse the left and right children
             TraverseTreeToCreateVisNodes(node.Left);
             TraverseTreeToCreateVisNodes(node.Right);
