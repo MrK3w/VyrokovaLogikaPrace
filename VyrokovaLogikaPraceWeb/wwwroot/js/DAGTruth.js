@@ -56,16 +56,12 @@ function CallAjaxToGetPaths(tautology) {
     });
 }
 
-function sleep(milliseconds) {
-    return new Promise(resolve => setTimeout(resolve, milliseconds));
-}
-
-async function drawGraph() {
+function drawGraph() {
      createGraph(nodesGlobalData[globalCounter]);
 }
 
 //function to draw graph
-async function createGraph(nodesData) {
+function createGraph(nodesData) {
     //if it is not first run we will not change from tree
     const nodes = new vis.DataSet();
     const edges = new vis.DataSet();
@@ -198,7 +194,7 @@ function getEdgeColorModified(nodesData, parentId, label) {
     return edgeColor;
 }
 
-async function updateNodes(data, network) {
+function updateNodes(data, network) {
     var dataFromGraph = data.nodes.get();
     var changeTitle = modifyNodes(dataFromGraph);
     var nodesToUpdateFull = dataFromGraph.filter(function (node) {

@@ -15,20 +15,6 @@ function CallAjaxToGetPaths(isDag) {
     var dataToSend = $('#formula').val();
     dataToSend = transformInputValue(dataToSend);
 
-    if ($('#formula option[value="' + dataToSend + '"]').length === 0) {
-        // Create a new option element
-        var newOption = $('<option>', {
-            value: dataToSend,
-            text: dataToSend
-        });
-
-        // Append the new option to the dropdown list
-        $('#formula').append(newOption);
-
-        // Optionally, you can set the selected value to the newly added option
-        $('#formula').val(dataToSend);
-    }
-
     $.ajax({
         url: '?handler=DrawDAG',
         beforeSend: function (xhr) {
