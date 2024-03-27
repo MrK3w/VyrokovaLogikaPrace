@@ -91,5 +91,14 @@
   },
   {
     "Formula": "x≡(¬x⇒(y⇒¬x))"
+  },
+  {
+    "Formula": "(y∧x)"
+  },
+  {
+    "Formula": "x"
+  },
+  {
+    "Formula": "((((¬y⇒y)≡y)∧y)⇒z)"
   }
 ]

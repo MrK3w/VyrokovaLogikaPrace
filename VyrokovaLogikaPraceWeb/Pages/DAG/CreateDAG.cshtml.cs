@@ -29,38 +29,30 @@ namespace VyrokovaLogikaPraceWeb.Pages
         public CreateDAGModel(IWebHostEnvironment env)
         {
             mEnv = env;
-            PrepareList();
         }
 
-        private void PrepareList()
+        public IActionResult OnPostSaveFormula([FromBody] string formula)
         {
-            ListItems = FormulaHelper.InitializeAllFormulas(mEnv);
-        }
-        public IActionResult OnPostDrawDag([FromBody] string text)
-        {
-            Formula = text;
-            if (Formula == null) return Page();
-            Converter.ConvertSentence(ref Formula);
-            //if it not valid save user input to YourFormula and return page
-            if (!Valid)
+            Errors = new List<string>();
+            Engine engine = new Engine(formula);
+            //check if there are some errors in the formula
+            if (engine.ParseAndCheckErrors())
             {
-                if (Formula != null)
-                {
-                    YourFormula = Formula;
-                }
-                return Page();
+                //save formula to JSON
+                FormulaHelper.SaveFormulaList(mEnv, formula);
+                //get updated list of formula;
+                Errors = FormulaHelper.Errors;
             }
-            //otherwise prepare engine with sentence we got
-            Engine engine = new Engine(Formula);
+            else
+            {
+                Errors = engine.Errors;
+            }
 
-            visNodes = new List<VisNode>();
-            if (engine.CreateTree())
+            var responseData = new
             {
-                VisNodesHelper helper = new VisNodesHelper(engine.pSyntaxTree);
-                visNodes = helper.CreateVisNodes();
-            }
-            var jsonString = JsonSerializer.Serialize(visNodes);
-            return new JsonResult(jsonString);
+                errors = Errors,
+            };
+            return new JsonResult(responseData);
         }
     }
 }

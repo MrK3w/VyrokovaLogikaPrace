@@ -5,6 +5,8 @@ var globalInput;
 var globalEdge;
 var clickedSecondNode = false;
 var clickedEdge = false;
+var newButton = null;
+var formula = null;
 
 function handleButtonDrawDAGButton() {
     createGraph();
@@ -68,15 +70,21 @@ function createGraph()
 function addNewNode(newNodeId, newNodeLabel, newNodeTitle, color) {
     const x = Math.random() * 100; // Adjust 1000 to the width of your container
     const y = Math.random() * 100; // Adjust 1000 to the height of your container
+    var nodes = data.nodes.get();
+    var id;
+    if (nodes.length == 0) {
+        id = 0;
+    }
+    else id = -1;
     const newNode = {
         id: newNodeId,
         label: newNodeLabel,
         title: newNodeTitle,
         color: { background: color },
-        parentId: 0,
+        parentId: id,
         x: x,
         y: y,
-        side: 'nevim'
+        side: 'undefined'
     };
     // Add the new node to the DataSet
     data.nodes.add(newNode);
@@ -90,6 +98,12 @@ function addNewEdge(nodeId, parentId, color) {
         color: { color: color } // Example color, customize as needed
     };
     const existingNode = data.nodes.get(nodeId);
+    if (existingNode.parentId != 0 || existingNode.parentId != -1) {
+        existingNode.parentId2 = existingNode.parentId;
+    }
+    else {
+        existingNode.parentId2 = existingNode.parentId;
+    }
     existingNode.parentId = parentId;
     data.nodes.update(existingNode);
     console.log(data.nodes.get());
@@ -152,16 +166,78 @@ function getFormulaFromNodes() {
     }
     var divElement = document.getElementById("zmeny");
 
+    // Assuming data.nodes is an array of nodes
+    for (var i = 0; i < nodes.length; i++) {
+        if (nodes[i].parentId === 0) {
+            formula = nodes[i].title;
+            break; // Exit loop once the first matching node is found
+        }
+    }
+
     // Check if the <div> element exists
     if (divElement) {
         // Construct the text to be displayed
-        var newText = "Formule je " + data.nodes.get(1).title;
+        var newText = "Formule je " +formula;
 
         // Update the content of the <div> element
+        if (newButton == null) {
+            newButton = $('<input type="submit" class="btn btn-primary flex-fill mb-2" value="Ulož formuli" id="saveFormula"/>');
+            $('#buttonContainer').append(newButton);
+        }
+
+        // Add any additional logic or event handlers for the new button if needed
+        $('#saveFormula').on('click', handleButtonUlozFormuli);
         divElement.textContent = newText;
+        divElement.appendChild(newButton);
     } else {
         console.error("Element with ID 'zmeny' not found.");
     }
+}
+
+//remove node/s after clickng on Odstran button
+function handleButtonUlozFormuli() {
+    $.ajax({
+        url: '?handler=SaveFormula',
+        beforeSend: function (xhr) {
+            xhr.setRequestHeader("XSRF-TOKEN",
+                $('input:hidden[name="__RequestVerificationToken"]').val());
+        },
+        type: 'POST',
+        contentType: 'application/json',
+        dataType: "json",
+        data: JSON.stringify(formula),
+        success: function (data) {
+            console.log('Success:', data);
+
+            // Clear any existing messages
+            $('#message').empty();
+            if (data.errors.length === 0) {
+                // If no errors, display "Formula saved" message
+                $('#message').html('<div class="alert alert-success">Formule uložena</div>');
+
+            }
+            else {
+                // If there are errors, display the error messages
+                var errorHtml = '<div class="alert alert-danger">' +
+                    '<h4 class="alert-heading">Nesprávná formule:</h4>' +
+                    '<ul>';
+
+                $.each(data.errors, function (index, error) {
+                    errorHtml += '<li>' + error + '</li>';
+                });
+
+                errorHtml += '</ul></div>';
+
+                $('#message').html(errorHtml);
+            }
+            $('#saveFormula').remove();
+            newButton = null;
+        },
+        error: function (error) {
+            console.error('Error:', error);
+            // Handle the error
+        }
+    });
 }
 
 function removeTitles() {
@@ -175,8 +251,19 @@ function removeTitles() {
     }
 }
 
+
+
 function getNodesByParentId(nodes, parentId) {
-    return nodes.filter(node => node.parentId === parentId);
+    // Filter nodes based on parentId
+    let filteredNodes = nodes.filter(node => node.parentId === parentId);
+
+    // If no nodes are found, try filtering again with a different condition
+    const secondaryFilteredNodes = nodes.filter(node => node.parentId2 === parentId);
+    
+    // Concatenate the secondary filtered nodes with the initial filtered nodes
+    filteredNodes = filteredNodes.concat(secondaryFilteredNodes);
+
+    return filteredNodes;
 }
 
 function getSide(edges, nodesWithParentId) {
@@ -222,10 +309,10 @@ function modifyNodes(node, nodesWithParentId) {
     }
     else {
         if (isAlphabet(nodesWithParentId[0].label)) {
-            node.title = node.label + nodesWithParentId[0].label;
+            node.title = node.label + nodesWithParentId[0].title;
         }
         else {
-            node.title =  node.label + '(' + nodesWithParentId[0].label + ')';
+            node.title =  node.label + '(' + nodesWithParentId[0].title + ')';
         }
     }
     const existingNode = data.nodes.get(node.id);
@@ -253,6 +340,11 @@ async function handleButtonPridejVetev(color) {
                 resolve(params.nodes[0]);
             });
         });
+        if (nodeId == undefined) {
+            alert("Pro přidání větve je třeba kliknout na uzel!")
+            return;
+        }
+        clickedSecondNode = false;
         if (nodeId == globalInput.id) {
             alert("Uzel nemůže navázat sám na sebe!");
             return;
@@ -273,7 +365,7 @@ async function handleButtonPridejVetev(color) {
         }
 
         addNewEdge(globalInput.id, nodeId, color);
-        clickedSecondNode = false;
+
     }
 }
 
@@ -297,13 +389,38 @@ function handleButtonPridejNodu() {
 }
 
 function handleButtonOdstranNoduClick() {
+    var id = globalInput.id;
+    console.log(edges);
+    var edges = data.edges.get();
+    console.log(edges);
     if (globalInput) {
-        data.nodes.remove({ id: globalInput.id });
+        data.nodes.remove({ id: id });
+
+        for (let i = 0; i < edges.length; i++) {
+            if (edges[i].from == id || edges[i].to == id) {
+                data.edges.remove({ id: edges[i].id });
+            }
+        }
     }
+    console.log(edges);
 }
 
 function handleButtonOdstranVetevClick() {
     data.edges.remove(globalEdge);
+    var nodes = data.nodes.get();
+
+
+
+    for (let i = 0; i < nodes.length; i++) {
+        if (nodes[i].parentId == globalEdge.from || nodes[i].parentId == globalEdge.to || nodes[i].parentId2 == globalEdge.from || nodes[i].parentId2 == globalEdge.to) {
+            const existingNode = data.nodes.get(nodes[i].id);
+            existingNode.parentId = -1;
+            existingNode.parentId2 = -1;
+            data.nodes.update(existingNode);
+        }
+
+
+    }
 }
 
 function handleButtonZmenaTextuClick() {
