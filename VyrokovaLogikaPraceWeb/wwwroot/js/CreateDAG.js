@@ -2,6 +2,9 @@
 var network;
 var data;
 var globalInput;
+var globalEdge;
+var clickedSecondNode = false;
+var clickedEdge = false;
 
 function handleButtonDrawDAGButton() {
     createGraph();
@@ -18,7 +21,6 @@ function createGraph()
     const nodes = new vis.DataSet();
     const edges = new vis.DataSet();
 
-    nodes.add({ id: 1, label: '▭', title: '▭', parentId: 0, color: { background: '#FFD700' } });
     // Update the vis.js network
     const container = document.getElementById('treeVisualization');
     data = { nodes, edges };
@@ -49,35 +51,39 @@ function createGraph()
     });
 
     network.on("click", function (params) {
-        var nodeId = params.nodes[0];
-        if (nodeId !== undefined) {
-            handleNodeClick(nodeId);
+        if (!(params.nodes[0] === undefined) && !clickedSecondNode) {
+                var nodeId = params.nodes[0];
+                if (nodeId !== undefined) {
+                    handleNodeClick(nodeId);
+                }
+        }
+        else if (!(params.edges[0] === undefined))
+        {
+            var edgeId = params.edges[0];
+            handleEdgeClick(edgeId);
         }
     });
 }
 
-function addNewNodeAndEdge(newNodeId, newNodeLabel, newNodeTitle, parentId, color) {
-    // Assuming 'nodes' and 'edges' are accessible in this context, e.g., declared globally or passed to this function.
-    // Create the new node data
+function addNewNode(newNodeId, newNodeLabel, newNodeTitle, color) {
     const newNode = {
         id: newNodeId,
         label: newNodeLabel,
         title: newNodeTitle,
-        parentId: parentId,
+        color: { background: color }
     };
     // Add the new node to the DataSet
     data.nodes.add(newNode);
+}
 
-    // If parentId is provided, create and add an edge from the new node to the parent node
-    if (parentId !== undefined) {
-        const newEdge = {
-            from: newNodeId,
-            to: parentId,
-            arrows: 'to',
-            color: { color: color } // Example color, customize as needed
-        };
-        data.edges.add(newEdge);
-    }
+function addNewEdge(NodeId, parentId, color) {
+    const newEdge = {
+        from: NodeId,
+        to: parentId,
+        arrows: 'to',
+        color: { color: color } // Example color, customize as needed
+    };
+    data.edges.add(newEdge);
 }
 
 function drawOnCanvasLabels(ctx, container)
@@ -99,64 +105,112 @@ function drawOnCanvasLabels(ctx, container)
     // Add more color descriptions as needed
 }
 
+
 function handleButtonVytvorFormuliClick() {
+
+    var nodes = data.nodes.get();
+    var edges = data.edges.get();
+    for (const node of nodes) {
+        // Check if the node's label matches the specified label
+        if (node.label === '▭') {
+            alert("Nejsou vyplněné všechny uzly");
+            return;
+        }
+    }
+
+    getFormulaFromNodes();
+}
+
+function getFormulaFromNodes() {
+
+    /*  while (!haveAllNodesFilledTitle(nodes)) {*/
+    var nodes = data.nodes.get();
+    var edges = data.edges.get();
+    console.log(nodes);
+    console.log(edges);
+        for (let i = 0; i < nodes.length; i++) {
+            if (nodes[i].title == '▭') {
+                var nodesWithParentId = getNodesByParentId(nodes, nodes[i].id)
+                if (haveChildNodesFilledTitle(nodesWithParentId))
+                {
+                    var neededEdges = getEdges(edges, nodesWithParentId);
+                    modifyNodes(nodes, nodes[i], nodesWithParentId, neededEdges);
+                }
+            }
+        }
+    /*}*/
+}
+
+function getNodesByParentId(nodes, parentId) {
+    return nodes.filter(node => node.parentId === parentId);
+}
+
+function getEdges(edges, nodesWithParentId) {
+    console.log("STOP");
+}
+
+function haveAllNodesFilledTitle(nodes) {
+    for (let i = 0; i < nodes.length; i++) {
+        if (nodes[i].title == '▭') return false;
+    }
+    return true;
+}
+
+function haveChildNodesFilledTitle(nodes) {
+    for (let i = 0; i < nodes.length; i++)
+    {
+        if (nodes[i].title == '▭') return false;
+    }
+    return true;
+}
+
+function modifyNodes(nodes, node, nodesWithParentId, edges) {
 
 }
 
-function handleButtonPridejNoduClick(color) {
+async function handleButtonPridejVetev(color) {
 
     if (globalInput) {
+        clickedSecondNode = true;
         // Get all existing node IDs
-        var nodeIds = data.nodes.getIds();
+        // Wait for user click
+        const nodeId = await new Promise(resolve => {
+            network.once("click", function (params) {
+                resolve(params.nodes[0]);
+            });
+        });
+        addNewEdge(globalInput.id, nodeId, color);
+        clickedSecondNode = false;
+    }
+}
 
-        // Find the largest ID among existing nodes
+function handleButtonPridejNodu() {
+    var newId;
+    var color;
+    var nodeIds = data.nodes.getIds();
+    if (nodeIds.length == 0) {
+        newId = 1;
+        color = '#FFD700';
+    }
+    // Find the largest ID among existing nodes
+    else {
         var largestNodeId = Math.max(...nodeIds);
 
         // Calculate the new ID by adding 1 to the largest ID
-        var newId = largestNodeId + 1;
-       
-        addNewNodeAndEdge(newId, '▭', '▭',globalInput.id,color)
+        newId = largestNodeId + 1;
+        color = '#97c2fc';
     }
-    
+    addNewNode(newId, '▭', '▭', color)
 }
 
 function handleButtonOdstranNoduClick() {
     if (globalInput) {
-        // Get the ID of the node to be removed
-        var nodeIdToRemove = globalInput.id;
-
-        // Remove all edges connected to the node being deleted
-        var connectedEdges = data.edges.get({
-            filter: function (edge) {
-                return edge.from === nodeIdToRemove || edge.to === nodeIdToRemove;
-            }
-        });
-        connectedEdges.forEach(function (edge) {
-            data.edges.remove({ id: edge.id });
-        });
-
-        // Remove the node itself
-        data.nodes.remove({ id: nodeIdToRemove });
-
-        // Get IDs of all remaining nodes
-        var remainingNodeIds = data.nodes.getIds();
-
-        // Iterate through all nodes
-        remainingNodeIds.forEach(function (nodeId) {
-            // Check if the node has any edges connected
-            var connectedEdges = data.edges.get({
-                filter: function (edge) {
-                    return edge.from === nodeId || edge.to === nodeId;
-                }
-            });
-
-            // If the node has no connected edges, remove it
-            if (connectedEdges.length === 0) {
-                if(globalInput.parentId != 1)
-                data.nodes.remove({ id: nodeId });
-            }
-        });
+        data.nodes.remove({ id: globalInput.id });
     }
+}
+
+function handleButtonOdstranVetevClick() {
+    data.edges.remove(globalEdge);
 }
 
 function handleButtonZmenaTextuClick() {
@@ -172,8 +226,13 @@ function handleButtonZmenaTextuClick() {
                 globalInput.text(inputValue);
                 return;
             }
-            console.log(globalInput.nodeId);
-            data.nodes.update({id: globalInput.id,label: inputValue});
+            if (/^[a-zA-Z]+$/.test(inputValue)) {
+                // Update label based on spot condition
+                data.nodes.update({ id: globalInput.id, label: inputValue, title: inputValue });
+            } else {
+                // Update label without condition
+                data.nodes.update({ id: globalInput.id, label: inputValue, title: '▭' });
+            }
         }
     } else {
         alert("Nespravný vstup. Zadej pouze literál nebo logickou spojku!");
@@ -181,12 +240,16 @@ function handleButtonZmenaTextuClick() {
 }
 
 function handleNodeClick(nodeId) {
-    globalInput = data.nodes.get(nodeId);
-    console.log(nodeId);
+     globalInput = data.nodes.get(nodeId);
+}
+
+function handleEdgeClick(edgeId) {
+    globalEdge = data.edges.get(edgeId);
 }
 
 $(document).ready(function() {
     //button for 'Vykresli DAG'
+    createGraph();
     document.getElementById('drawDAGButton').addEventListener('click', handleButtonDrawDAGButton);
     $('#DAGForm').submit(function(event) {
         // Prevent the default form submission
@@ -204,12 +267,18 @@ $(document).ready(function() {
     //button for 'Odstra nodu'
     document.getElementById('odstranNoduButton').addEventListener('click', handleButtonOdstranNoduClick);
 
-    document.getElementById('pridejLevouNoduButton').addEventListener('click', function () {
-        handleButtonPridejNoduClick('blue');
+    document.getElementById('odstranVetevButton').addEventListener('click', handleButtonOdstranVetevClick);
+
+    document.getElementById('pridejLevouVetevButton').addEventListener('click', function () {
+        handleButtonPridejVetev('blue');
     });
 
-    document.getElementById('pridejPravouNoduButton').addEventListener('click', function () {
-        handleButtonPridejNoduClick('orange');
+    document.getElementById('pridejPravouVetevButton').addEventListener('click', function () {
+        handleButtonPridejVetev('orange');
+    });
+
+    document.getElementById('PridejNoduButton').addEventListener('click', function () {
+        handleButtonPridejNodu();
     });
 
     document.getElementById('vytvorFormuliButton').addEventListener('click', handleButtonVytvorFormuliClick);
