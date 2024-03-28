@@ -96,9 +96,12 @@
     "Formula": "(y∧x)"
   },
   {
-    "Formula": "x"
+    "Formula": "((((¬y⇒y)≡y)∧y)⇒z)"
   },
   {
-    "Formula": "((((¬y⇒y)≡y)∧y)⇒z)"
+    "Formula": "(((x∨y)≡(x∨y))≡((x∧y)≡(x∧y)))"
+  },
+  {
+    "Formula": "((x∨y)≡¬x)"
   }
 ]

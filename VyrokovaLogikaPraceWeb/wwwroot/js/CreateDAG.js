@@ -5,7 +5,6 @@ var globalInput;
 var globalEdge;
 var clickedSecondNode = false;
 var clickedEdge = false;
-var newButton = null;
 var formula = null;
 
 function handleButtonDrawDAGButton() {
@@ -133,7 +132,6 @@ function drawOnCanvasLabels(ctx, container)
 function handleButtonVytvorFormuliClick() {
 
     var nodes = data.nodes.get();
-    var edges = data.edges.get();
     for (const node of nodes) {
         // Check if the node's label matches the specified label
         if (node.label === '▭') {
@@ -145,7 +143,10 @@ function handleButtonVytvorFormuliClick() {
     getFormulaFromNodes();
 }
 
+//TODO we cannot add edge to literal
 function getFormulaFromNodes() {
+    var binaryOperators = ['∧', '∨', '≡', '⇒'];
+    var unaryOperators = ['¬', '¬¬'];
     var nodes = data.nodes.get();
     var edges = data.edges.get();
     removeTitles();
@@ -153,9 +154,27 @@ function getFormulaFromNodes() {
 
     console.log(nodes);
     console.log(edges);
+        if (isThereAnyEmptyNode()) {
+            alert("Některý uzel nemá větev!");
+            return;
+        }
         for (let i = 0; i < nodes.length; i++) {
             if (nodes[i].title == '▭') {
                 var nodesWithParentId = getNodesByParentId(nodes, nodes[i].id)
+                if (binaryOperators.includes(nodes[i].label)) {
+
+
+                if (nodesWithParentId.length < 2) {
+                    alert("Uzlu s operátorem " + nodes[i].label + " chybí potomek");
+                    return;
+                    }
+                }
+                else if (unaryOperators.includes(nodes[i].label)) {
+                    if (nodesWithParentId.length == 0) {
+                        alert("Uzlu s operátorem " + nodes[i].label + " chybí potomek");
+                        return;
+                    }
+                }
                 if (haveChildNodesFilledTitle(nodesWithParentId))
                 {
                     getSide(edges, nodesWithParentId);
@@ -164,7 +183,7 @@ function getFormulaFromNodes() {
             }
         }
     }
-    var divElement = document.getElementById("zmeny");
+    var divElement = document.getElementById("content");
 
     // Assuming data.nodes is an array of nodes
     for (var i = 0; i < nodes.length; i++) {
@@ -174,24 +193,43 @@ function getFormulaFromNodes() {
         }
     }
 
-    // Check if the <div> element exists
     if (divElement) {
         // Construct the text to be displayed
-        var newText = "Formule je " +formula;
+        var newText = "Formule je " + formula;
 
-        // Update the content of the <div> element
-        if (newButton == null) {
-            newButton = $('<input type="submit" class="btn btn-primary flex-fill mb-2" value="Ulož formuli" id="saveFormula"/>');
-            $('#buttonContainer').append(newButton);
-        }
+        // Create a div to hold the text and button
+        var containerDiv = document.createElement('div');
+        containerDiv.classList.add('alert', 'alert-info', 'd-flex', 'justify-content-between', 'align-items-center', 'mb-2');
 
-        // Add any additional logic or event handlers for the new button if needed
-        $('#saveFormula').on('click', handleButtonUlozFormuli);
-        divElement.textContent = newText;
-        divElement.appendChild(newButton);
+        // Set the text content
+        containerDiv.textContent = newText;
+
+        var newButton = document.createElement('input');
+        newButton.type = "submit";
+        newButton.classList.add('btn', 'btn-primary');
+        newButton.value = "Ulož formuli";
+        newButton.id = "saveFormula";
+
+        // Bind click event directly to the button
+        newButton.addEventListener('click', handleButtonUlozFormuli);
+
+        // Append the button to the container div
+        containerDiv.appendChild(newButton);
+
+        // Append the container div to the content div
+        divElement.appendChild(containerDiv);
     } else {
-        console.error("Element with ID 'zmeny' not found.");
+        console.error("Element with ID 'content' not found.");
     }
+}
+
+function isThereAnyEmptyNode() {
+    var nodes = data.nodes.get();
+    for (let i = 0; i < nodes.length; i++)
+    {
+        if (nodes[i].parentId == -1) return true;
+    }
+    return false;
 }
 
 //remove node/s after clickng on Odstran button
@@ -208,30 +246,23 @@ function handleButtonUlozFormuli() {
         data: JSON.stringify(formula),
         success: function (data) {
             console.log('Success:', data);
-
-            // Clear any existing messages
-            $('#message').empty();
             if (data.errors.length === 0) {
                 // If no errors, display "Formula saved" message
-                $('#message').html('<div class="alert alert-success">Formule uložena</div>');
+                alert("Formule uložena");
 
             }
             else {
-                // If there are errors, display the error messages
-                var errorHtml = '<div class="alert alert-danger">' +
-                    '<h4 class="alert-heading">Nesprávná formule:</h4>' +
-                    '<ul>';
+                // If there are errors, compile them into a single string message
+                let errorMessage = "Nesprávná formule:\n"; // Start with the title of the errors
 
-                $.each(data.errors, function (index, error) {
-                    errorHtml += '<li>' + error + '</li>';
+                data.errors.forEach(function (error) {
+                    errorMessage += `- ${error}\n`; // Add each error in a new line
                 });
 
-                errorHtml += '</ul></div>';
-
-                $('#message').html(errorHtml);
+                // Display the compiled error message in an alert box
+                alert(errorMessage);
             }
-            $('#saveFormula').remove();
-            newButton = null;
+            $('#content').empty();
         },
         error: function (error) {
             console.error('Error:', error);
@@ -299,20 +330,40 @@ function haveChildNodesFilledTitle(nodes) {
 }
 
 function modifyNodes(node, nodesWithParentId) {
-    if (node.label != "¬" && node.label != "¬¬") {
-        if (nodesWithParentId[0].side == "left") {
-            node.title = '(' + nodesWithParentId[0].title + node.label + nodesWithParentId[1].title + ')';
+    if (node.parentId != 0) {
+        if (node.label != "¬" && node.label != "¬¬") {
+            if (nodesWithParentId[0].side == "left") {
+                node.title = '(' + nodesWithParentId[0].title + node.label + nodesWithParentId[1].title + ')';
+            }
+            else {
+                node.title = '(' + nodesWithParentId[1].title + node.label + nodesWithParentId[0].title + ')';
+            }
         }
         else {
-            node.title = '(' + nodesWithParentId[1].title + node.label + nodesWithParentId[0].title + ')';
+            if (isAlphabet(nodesWithParentId[0].label)) {
+                node.title = node.label + nodesWithParentId[0].title;
+            }
+            else {
+                node.title = node.label + '(' + nodesWithParentId[0].title + ')';
+            }
         }
     }
     else {
-        if (isAlphabet(nodesWithParentId[0].label)) {
-            node.title = node.label + nodesWithParentId[0].title;
+        if (node.label != "¬" && node.label != "¬¬") {
+            if (nodesWithParentId[0].side == "left") {
+                node.title = nodesWithParentId[0].title + node.label + nodesWithParentId[1].title;
+            }
+            else {
+                node.title = nodesWithParentId[1].title + node.label + nodesWithParentId[0].title;
+            }
         }
         else {
-            node.title =  node.label + '(' + nodesWithParentId[0].title + ')';
+            if (isAlphabet(nodesWithParentId[0].label)) {
+                node.title = node.label + nodesWithParentId[0].title;
+            }
+            else {
+                node.title = node.label + '(' + nodesWithParentId[0].title + ')';
+            }
         }
     }
     const existingNode = data.nodes.get(node.id);
@@ -340,11 +391,30 @@ async function handleButtonPridejVetev(color) {
                 resolve(params.nodes[0]);
             });
         });
+        clickedSecondNode = false;
+
         if (nodeId == undefined) {
             alert("Pro přidání větve je třeba kliknout na uzel!")
             return;
         }
-        clickedSecondNode = false;
+        var node = data.nodes.get(nodeId);
+        if (node.label == '▭') {
+            alert("Nelze přidat větev do nevyplněného uzlu!");
+            return;
+        }
+        if (globalInput.parentId == 0) {
+            alert("Z hlavního uzlu nesmí vést větev");
+            return;
+        }
+        if (isAlphabet(node.label)) {
+            alert("uzel literálu nemůže mít větev!");
+            return;
+        }
+        if ((node.label == '¬' && color == 'orange') || (node.label == '¬¬' && color == 'orange')) {
+            alert("Do uzlu negace nemůže vést pravá větev!");
+            return;
+        }
+ 
         if (nodeId == globalInput.id) {
             alert("Uzel nemůže navázat sám na sebe!");
             return;
@@ -354,7 +424,6 @@ async function handleButtonPridejVetev(color) {
 
         for (let i = 0; i < edges.length; i++) {
             if (edges[i].to == nodeId) {
-                console.log(edges[i].color);
                 if (edges[i].color.color == color) {
                     if (color == 'blue')
                         alert("Tento uzel už má levou větev.");
@@ -363,9 +432,7 @@ async function handleButtonPridejVetev(color) {
                 }
             }
         }
-
         addNewEdge(globalInput.id, nodeId, color);
-
     }
 }
 
@@ -394,6 +461,10 @@ function handleButtonOdstranNoduClick() {
     var edges = data.edges.get();
     console.log(edges);
     if (globalInput) {
+        if (globalInput.parentId == 0) {
+            alert("Hlavní uzel nelze odstranit!")
+            return;
+        }
         data.nodes.remove({ id: id });
 
         for (let i = 0; i < edges.length; i++) {
@@ -408,9 +479,6 @@ function handleButtonOdstranNoduClick() {
 function handleButtonOdstranVetevClick() {
     data.edges.remove(globalEdge);
     var nodes = data.nodes.get();
-
-
-
     for (let i = 0; i < nodes.length; i++) {
         if (nodes[i].parentId == globalEdge.from || nodes[i].parentId == globalEdge.to || nodes[i].parentId2 == globalEdge.from || nodes[i].parentId2 == globalEdge.to) {
             const existingNode = data.nodes.get(nodes[i].id);
@@ -418,8 +486,6 @@ function handleButtonOdstranVetevClick() {
             existingNode.parentId2 = -1;
             data.nodes.update(existingNode);
         }
-
-
     }
 }
 
