@@ -3,6 +3,7 @@ const labelIdMap = new Map();
 var data;
 var contradiction = false;
 var formula;
+var typeOfFormula;
 
 function handleButtonDrawDAGButton() {
     CallAjaxToGetPaths();
@@ -11,11 +12,6 @@ function handleButtonDrawDAGButton() {
 function CallAjaxToGetPaths() {
 
     formula = transformInputValue($('#formula').val());
-
-    var requestData = {
-        formula: formula,
-        tautology: true // Include the boolean value
-    };
 
     $.ajax({
         url: '?handler=TruthDAG',
@@ -26,11 +22,11 @@ function CallAjaxToGetPaths() {
         type: 'POST',
         contentType: 'application/json',
         dataType: "json",
-        data: JSON.stringify(requestData),
+        data: JSON.stringify(formula),
         success: function (data) {
-            var parsedOutput = JSON.parse(data);
-            parsedOutput.sort((a, b) => b.Id - a.Id);
-            createGraph(parsedOutput);
+            typeOfFormula = data.typeOfFormula;
+            data.visNodes.sort((a, b) => b.Id - a.Id);
+            createGraph(data.visNodes);
             prepareButtons();
             attachEventHandlers();
         },
@@ -43,6 +39,33 @@ function CallAjaxToGetPaths() {
         }
     });
 }
+
+function checkTree() {
+    var selectedValue = document.getElementById("mySelect").value;
+    var nodes = data.nodes.get();
+    if (!allNodesAreFilled()) {
+        alert("Některé uzly jsou nevyplněné.");
+    }
+    if (selectedValue == "tautology" && nodes[0].truthValue == 1) {
+        alert("Pokud se snažíme dokázat tautologii, tak nemůže mít hlavní uzel pravidovstní hodnotu 1");
+        return;
+    }
+    if (selectedValue == "contradiction" && nodes[0].truthValue == 0) {
+        alert("Pokud se snažíme dokázat kontradikci, tak nemůže mít hlavní uzel pravidovstní hodnotu 0");
+        return;
+    }
+}
+
+function allNodesAreFilled() {
+    var nodes = data.nodes.get();
+    for (let i = 0; i < nodes.length; i++) {
+        if (nodes[i].truthValue == -1) {
+            return false;
+        }
+    }
+    return true;
+}
+
 //function to draw graph
 function createGraph(nodesData) {
     //if it is not first run we will not change from tree
@@ -52,12 +75,12 @@ function createGraph(nodesData) {
     // Iterate through nodesData to create nodes and edges
     for (let i = 0; i < nodesData.length; i++) {
         //if node does not have parentId then it is root
-                if (nodesData[i].ParentId === 0) {
-                    nodes.add({ id: nodesData[i].Id, label: nodesData[i].Operator + " = " + nodesData[i].TruthValue, title: nodesData[i].Label, parentId: nodesData[i].ParentId, truthValue: nodesData[i].TruthValue, contradiction: false, color: { background: '#FFD700' } });
+                if (nodesData[i].parentId === 0) {
+                    nodes.add({ id: nodesData[i].id, label: nodesData[i].operator + " = " + nodesData[i].truthValue, title: nodesData[i].label, parentId: nodesData[i].parentId, truthValue: nodesData[i].truthValue, contradiction: false, color: { background: '#FFD700' } });
                 }
                 else {
-                    nodes.add({ id: nodesData[i].Id, label: nodesData[i].Operator + " = " + nodesData[i].TruthValue, title: nodesData[i].Label, parentId: nodesData[i].ParentId, truthValue: nodesData[i].TruthValue, contradiction: false });
-                    edges.add({ from: nodesData[i].Id, to: nodesData[i].ParentId, arrows: 'to', color: getEdgeColor(nodesData, nodesData[i].ParentId, nodesData[i].Label) });
+                    nodes.add({ id: nodesData[i].id, label: nodesData[i].operator + " = " + nodesData[i].truthValue, title: nodesData[i].label, parentId: nodesData[i].parentId, truthValue: nodesData[i].truthValue, contradiction: false });
+                    edges.add({ from: nodesData[i].id, to: nodesData[i].parentId, arrows: 'to', color: getEdgeColor(nodesData, nodesData[i].parentId, nodesData[i].label) });
                 }
     }
 
@@ -113,6 +136,7 @@ function handleNodeClick(nodeId) {
         }
     }
     else {
+        if (existingNode.parentId != 0) {
         if (existingNode.label.includes('?')) {
             existingNode.label = existingNode.label.replace(' ?', '');
             existingNode.contradiction = false;
@@ -120,6 +144,7 @@ function handleNodeClick(nodeId) {
         else {
             existingNode.label += " ?";
             existingNode.contradiction = true;
+            }
         }
     }
     data.nodes.update(existingNode);
@@ -127,16 +152,16 @@ function handleNodeClick(nodeId) {
 
 function getEdgeColor(nodesData, parentId, label) {
     // Find the parent node based on label
-    var parentNode = nodesData.find(node => node.Id === parentId);
+    var parentNode = nodesData.find(node => node.id === parentId);
     //if parentNode label starts with parentheses we need to add that parentheses to temp label to be able to properly check it
-    if (parentNode && parentNode.Label[0] == '(')
+    if (parentNode && parentNode.label[0] == '(')
         label = '(' + label;
 
-    const parentLabelStart = parentNode ? parentNode.Label.substring(0, label.length) : null;
+    const parentLabelStart = parentNode ? parentNode.label.substring(0, label.length) : null;
     let edgeColor = 'blue';
 
     // Check if the parent operator is ¬ or ¬¬ (if it is then there will not be right side)
-    if (parentNode && (parentNode.Operator === '¬' || parentNode.Operator === '¬¬')) {
+    if (parentNode && (parentNode.operator === '¬' || parentNode.operator === '¬¬')) {
         edgeColor = 'blue';
     } else if (parentLabelStart !== label) {
         edgeColor = 'orange';
@@ -145,6 +170,8 @@ function getEdgeColor(nodesData, parentId, label) {
 }
 
 function getEdgeColorModified(nodesData, parentId, label) {
+    label = label.replace(" ", "");
+    label = label.split('=')[0];
     // Find the parent node based on label
     var parentNode = nodesData.find(node => node.id === parentId);
     //if parentNode label starts with parentheses we need to add that parentheses to temp label to be able to properly check it
@@ -155,7 +182,8 @@ function getEdgeColorModified(nodesData, parentId, label) {
     let edgeColor = 'blue';
 
     // Check if the parent operator is ¬ or ¬¬ (if it is then there will not be right side)
-    if (parentNode && (parentNode.label === '¬' || parentNode.label === '¬¬')) {
+    if (parentNode && (parentNode.label.startsWith('¬') || parentNode.label.startsWith('¬¬'))) {
+
         edgeColor = 'blue';
     } else if (parentLabelStart !== label) {
         edgeColor = 'orange';
@@ -280,13 +308,13 @@ function prepareButtons() {
     selectList.className = 'form-control mr-2'; // Add Bootstrap form-control class for styling
 
     // Create options
-    var options = ['formule je tautologi\u00ED', 'formule je kontradikc\u00ED', 'formule je splniteln\u00E1']; // Using Unicode escape sequence for 'í'
-
+    var optionsText = ['formule je tautologi\u00ED', 'formule je kontradikc\u00ED', 'formule je splniteln\u00E1']; // Using Unicode escape sequence for 'í'
+    var options = ['tautology', 'contradiction', 'satisfiable'];
     // Add options to select
     for (var i = 0; i < options.length; i++) {
         var option = document.createElement('option');
         option.value = options[i];
-        option.text = options[i];
+        option.text = optionsText[i];
         selectList.appendChild(option);
     }
 
@@ -310,6 +338,10 @@ function attachEventHandlers() {
             // Change the button color to default color
             $("#contradictionButton").css("background-color", ""); // or you can set it to the default color you want
         }
+    });
+
+    $("#checkTree").on("click", function () {
+        checkTree();
     });
 
     $('#DAGS').submit(function (event) {

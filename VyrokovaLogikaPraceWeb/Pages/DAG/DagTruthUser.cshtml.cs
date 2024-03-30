@@ -33,9 +33,9 @@ namespace VyrokovaLogikaPraceWeb.Pages
         {
             ListItems = FormulaHelper.InitializeAllFormulas(mEnv);
         }
-        public IActionResult OnPostTruthDAG([FromBody] DrawDagUserRequestModel request)
+        public IActionResult OnPostTruthDAG([FromBody] string request)
         {
-            Formula = request.Formula;
+            Formula = request;
             if (Formula == null) return Page();
             Converter.ConvertSentence(ref Formula);
             //if it not valid save user input to YourFormula and return page
@@ -56,15 +56,39 @@ namespace VyrokovaLogikaPraceWeb.Pages
                 VisNodesHelper helper = new VisNodesHelper(engine.pSyntaxTree);
                 visNodes = helper.CreateVisNodes();
             }
-            var jsonString = JsonSerializer.Serialize(visNodes);
-            return new JsonResult(jsonString);
+            var typeOfFormula = "";
+            TreeProofAdvanced adv = new TreeProofAdvanced(engine.pSyntaxTree, 0);
+            //prepare tree for css library treeflex
+            if (adv.IsTautology)
+            {
+                typeOfFormula = "tautology";
+            }
+            else
+            {
+                adv = new TreeProofAdvanced(engine.pSyntaxTree, 1);
+                if (adv.IsTautology)
+                {
+                    typeOfFormula = "contradiction";
+                }
+                else
+                {
+                    typeOfFormula = "satisfiable";
+                }
+            }
+
+             var responseData = new
+             {
+                typeOfFormula = typeOfFormula,
+                visNodes = visNodes,
+             };
+
+            return new JsonResult(responseData);
         }
     }
 
     public class DrawDagUserRequestModel
     {
-        public string Formula { get; set; }
-        public bool Tautology { get; set; }
+      
     }
 
 }
