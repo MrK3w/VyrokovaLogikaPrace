@@ -63,16 +63,6 @@ namespace VyrokovaLogikaPraceWeb.Pages
             {
                 TreeProofAdvanced adv = new TreeProofAdvanced(engine.pSyntaxTree,0);
                 //prepare tree for css library treeflex
-                if (adv.IsTautology)
-                {
-                    Message = "Zvolená formule je tautologií";
-
-                }
-                else
-                {
-                    Message = "Zvolená formule není tautologií";
-                }
-                DistinctNodes = adv.DistinctNodes;
                 Steps = adv.steps;
                 foreach (var trx in adv.trees)
                 {

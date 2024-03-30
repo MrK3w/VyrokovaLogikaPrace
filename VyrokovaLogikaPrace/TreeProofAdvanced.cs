@@ -36,6 +36,23 @@ namespace VyrokovaLogikaPrace
             }
             trees.Add(tempTree);
             ProcessTree(tree, truthValue);
+            if(steps.Count == 1)
+            {
+                tempTree = new Node(0);
+                tempTree = Node.DeepCopy(GetToRoot(tree));
+                tempTree.TruthValue = truthValue;
+                tempTree.Blue = true;
+                steps.Add("Strom se skládá pouze z literálu, nemůže se jednat o");
+                if (truthValue == 0)
+                {
+                    steps[steps.Count - 1] += " tautologii";
+                }
+                else
+                {
+                    steps[steps.Count - 1] += " kontradikci";
+                }
+                trees.Add(tempTree);
+            }
         }
 
         public void ProcessTree(Node tree, int truthValue = 0)
