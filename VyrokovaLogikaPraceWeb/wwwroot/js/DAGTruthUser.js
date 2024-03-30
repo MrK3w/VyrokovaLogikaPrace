@@ -4,6 +4,8 @@ var data;
 var contradiction = false;
 var formula;
 var typeOfFormula;
+var network;
+var errorsDiv;
 
 function handleButtonDrawDAGButton() {
     CallAjaxToGetPaths();
@@ -41,29 +43,254 @@ function CallAjaxToGetPaths() {
 }
 
 function checkTree() {
+
+    errorsDiv = document.getElementById("errors");
+
+    // Clear previous step info
+    errorsDiv.innerHTML = "";
+
     var selectedValue = document.getElementById("mySelect").value;
     var nodes = data.nodes.get();
+    var edges = data.edges.get();
+    clearColor(nodes);
+    network.setData(data);
     if (!allNodesAreFilled()) {
-        alert("Některé uzly jsou nevyplněné.");
+
+        network.setData(data);
+        addError("Některé uzly jsou nevyplněné.");
+        return;
     }
     if (selectedValue == "tautology" && nodes[0].truthValue == 1) {
-        alert("Pokud se snažíme dokázat tautologii, tak nemůže mít hlavní uzel pravidovstní hodnotu 1");
+        nodes[0].color.background = "red";
+        network.setData(data);
+        addError("Pokud se snažíme dokázat tautologii, tak nemůže mít hlavní uzel pravidovstní hodnotu 1.");
         return;
     }
     if (selectedValue == "contradiction" && nodes[0].truthValue == 0) {
-        alert("Pokud se snažíme dokázat kontradikci, tak nemůže mít hlavní uzel pravidovstní hodnotu 0");
+        nodes[0].color.background = "red";
+        network.setData(data);
+        addError("Pokud se snažíme dokázat kontradikci, tak nemůže mít hlavní uzel pravidovstní hodnotu 0.");
         return;
+    }
+    for (let i = 0; i < nodes.length; i++) {
+        let childrenNodes = nodes.filter(node => node.parentId === nodes[i].id);
+        getSide(childrenNodes, edges);
+        if (childrenNodes.length == 0) continue;
+        checkEdges(nodes[i], childrenNodes);
+        
+    }
+    network.setData(data);
+}
+
+
+function addError(message) {
+    // Create a new div for the Bootstrap alert
+    var newAlert = document.createElement("div");
+    newAlert.classList.add("alert", "alert-danger");
+    newAlert.setAttribute("role", "alert");
+    newAlert.textContent = message;
+
+    // Append the new alert to the errorsDiv
+    errorsDiv.appendChild(newAlert);
+}
+
+function getSide(childrenNodes, edges) {
+    for (let i = 0; i < childrenNodes.length; i++) {
+        for (let j = 0; j < edges.length; j++) {
+            if (childrenNodes[i].id == edges[j].from && childrenNodes[i].parentId == edges[j].to) {
+                if (edges[j].color == "blue") {
+                    childrenNodes[i].side = "left";
+                }
+                else {
+                    childrenNodes[i].side = "right";
+                }
+            }
+        }
+    }
+}
+
+function checkEdges(nodes, childrenNodes) {
+    var operator = nodes.label[0];
+    if (nodes.label[1] == '¬') operator += '¬';
+    var parentTruthValue = nodes.truthValue;
+    var leftChildTruthValue = -1;
+    var rightChildTruThValue = -1;
+    if (childrenNodes.length == 2) {
+        if (childrenNodes[0].side == "left") {
+            leftChildTruthValue = childrenNodes[0].truthValue;
+            rightChildTruThValue = childrenNodes[1].truthValue;
+        }
+        else {
+            leftChildTruthValue = childrenNodes[1].truthValue;
+            rightChildTruThValue = childrenNodes[0].truthValue;
+        }
+    }
+
+    else {
+        leftChildTruthValue = childrenNodes[0].truthValue;
+    }
+    if (operator == "≡") {
+        if (parentTruthValue == 0) {
+            if (leftChildTruthValue != rightChildTruThValue) return;
+            else {
+                var node = data.nodes.get(childrenNodes[0].id);
+                node.color.background = 'red';
+                node = data.nodes.get(childrenNodes[1].id);
+                node.color.background = 'red';
+                addError("Pokud je pravdivostní hodnota hlavního uzlu 0 a operátor ekvivalence tak potomci nesmí mít stejnou hodnotu");
+
+
+            }
+        }
+        else {
+            if (leftChildTruthValue == rightChildTruThValue) return;
+            else {
+                var node = data.nodes.get(childrenNodes[0].id);
+                node.color.background = 'red';
+                node = data.nodes.get(childrenNodes[1].id);
+                node.color.background = 'red';
+                addError("Pokud je pravdivostní hodnota hlavního uzlu 1 a operátor ekvivalence tak potomci nesmí mít jinou hodnotu")
+            }
+        }
+    }
+    else if (operator == "⇒") {
+        if (parentTruthValue == 0) {
+            if (leftChildTruthValue == 1 && rightChildTruThValue == 0) return;
+            else {
+                var node = data.nodes.get(childrenNodes[0].id);
+                node.color.background = 'red';
+                node = data.nodes.get(childrenNodes[1].id);
+                node.color.background = 'red';
+                addError("Pokud je pravdivostní hodnota hlavního uzlu 0 a operátor implikace tak levý potomek musí mít hodnotu 1 a pravý 0");
+
+
+            }
+        }
+        else {
+            if (leftChildTruthValue == 1 && rightChildTruThValue == 0) {
+                var node = data.nodes.get(childrenNodes[0].id);
+                node.color.background = 'red';
+                node = data.nodes.get(childrenNodes[1].id);
+                node.color.background = 'red';
+                addError("Pokud je pravdivostní hodnota hlavního uzlu 1 a operátor implikace tak levý potomek nesmí mít pravdivostní hodnotu 1 a pravý 0");
+            }
+            else {
+                return;
+            }
+        }
+    }
+    else if (operator == "∨") {
+        if (parentTruthValue == 0) {
+            if (leftChildTruthValue == 0 && rightChildTruThValue == 0) return;
+            else {
+                var node = data.nodes.get(childrenNodes[0].id);
+                node.color.background = 'red';
+                node = data.nodes.get(childrenNodes[1].id);
+                node.color.background = 'red';
+                addError("Pokud je pravdivostní hodnota hlavního uzlu 0 a operátor disjunkce tak levý potomek musí mít hodnotu 0 a pravý 0");
+            }
+        }
+        else {
+            if (leftChildTruthValue == 0 && rightChildTruThValue == 0) {
+                var node = data.nodes.get(childrenNodes[0].id);
+                node.color.background = 'red';
+                node = data.nodes.get(childrenNodes[1].id);
+                node.color.background = 'red';
+                addError("Pokud je pravdivostní hodnota hlavního uzlu 1 a operátor disjunkce tak levý potomek nesmí mít hodnotu 0 a pravý 0");
+            }
+            else {
+                return;
+            }
+        }
+    }
+    else if (operator == "∧") {
+        if (parentTruthValue == 0) {
+            if (leftChildTruthValue == 1 && rightChildTruThValue == 1) {
+                var node = data.nodes.get(childrenNodes[0].id);
+                node.color.background = 'red';
+                node = data.nodes.get(childrenNodes[1].id);
+                node.color.background = 'red';
+                addError("Pokud je pravdivostní hodnota hlavního uzlu 0 a operátor konjunkce tak levý potomek nesmí mít hodnotu 0 a pravý 0");
+            }
+            else {
+                return;
+            }
+        }
+        else {
+            if (leftChildTruthValue == 1 && rightChildTruThValue == 1) {
+                return;
+            }
+            else {
+                var node = data.nodes.get(childrenNodes[0].id);
+                node.color.background = 'red';
+                node = data.nodes.get(childrenNodes[1].id);
+                node.color.background = 'red';
+                addError("Pokud je pravdivostní hodnota hlavního uzlu 1 a operátor konjunkce tak levý potomek musí mít hodnotu 1 a pravý 1");
+            }
+        }
+    }
+    else if (operator = "¬") {
+        if (parentTruthValue == 0) {
+            if (leftChildTruthValue == 1) return;
+            else {
+                var node = data.nodes.get(childrenNodes[0].id);
+                node.color.background = 'red';
+                addError("Pokud je pravdivostní hodnota hlavního uzlu 0 a operátor negace tak potomek nesmí mít hodnotu 0");
+            }
+        }
+        else {
+            if (leftChildTruthValue == 0) return;
+            else {
+                var node = data.nodes.get(childrenNodes[0].id);
+                node.color.background = 'red';
+                addError("Pokud je pravdivostní hodnota hlavního uzlu 1 a operátor negace tak potomek nesmí mít hodnotu 1");
+            }
+        }
+    }
+    else if (operator = "¬¬")
+    {
+        if (parentTruthValue == 0) {
+            if (leftChildTruthValue == 0) return;
+            else {
+                var node = data.nodes.get(childrenNodes[0].id);
+                node.color.background = 'red';
+                addError("Pokud je pravdivostní hodnota hlavního uzlu 0 a operátor dvojí negace tak potomek nesmí mít hodnotu 1");
+            }
+        }
+        else {
+            if (leftChildTruthValue == 1) return;
+            else {
+                var node = data.nodes.get(childrenNodes[0].id);
+                node.color.background = 'red';
+                addError("Pokud je pravdivostní hodnota hlavního uzlu 1 a operátor dvojí negace tak potomek nesmí mít hodnotu 0");
+            }
+        }
     }
 }
 
 function allNodesAreFilled() {
     var nodes = data.nodes.get();
+    var filled = true;
     for (let i = 0; i < nodes.length; i++) {
         if (nodes[i].truthValue == -1) {
-            return false;
+            nodes[i].color.background = 'red';
+            filled = false;
         }
     }
-    return true;
+    return filled;
+}
+
+function clearColor() {
+    var nodes = data.nodes.get();
+    for (let i = 0; i < nodes.length; i++) {
+        if (nodes[i].parentId == 0) {
+            nodes[i].color.background = '#FFD700';
+        }
+        else {
+            nodes[i].color.background = '#97c2fc';
+        }
+    }
+    return;
 }
 
 //function to draw graph
@@ -79,7 +306,7 @@ function createGraph(nodesData) {
                     nodes.add({ id: nodesData[i].id, label: nodesData[i].operator + " = " + nodesData[i].truthValue, title: nodesData[i].label, parentId: nodesData[i].parentId, truthValue: nodesData[i].truthValue, contradiction: false, color: { background: '#FFD700' } });
                 }
                 else {
-                    nodes.add({ id: nodesData[i].id, label: nodesData[i].operator + " = " + nodesData[i].truthValue, title: nodesData[i].label, parentId: nodesData[i].parentId, truthValue: nodesData[i].truthValue, contradiction: false });
+                    nodes.add({ id: nodesData[i].id, label: nodesData[i].operator + " = " + nodesData[i].truthValue, title: nodesData[i].label, parentId: nodesData[i].parentId, truthValue: nodesData[i].truthValue, contradiction: false, color: { background: '#97c2fc' } });
                     edges.add({ from: nodesData[i].id, to: nodesData[i].parentId, arrows: 'to', color: getEdgeColor(nodesData, nodesData[i].parentId, nodesData[i].label) });
                 }
     }
@@ -103,7 +330,7 @@ function createGraph(nodesData) {
         },
     };
 
-    const network = new vis.Network(container, data, options);
+    network = new vis.Network(container, data, options);
 
     network.on("afterDrawing", function (ctx) {
         drawOnCanvasLabels(ctx, container); // Call drawOnCanvasLabels and pass ctx
