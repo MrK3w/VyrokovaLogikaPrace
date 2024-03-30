@@ -179,7 +179,7 @@ namespace VyrokovaLogikaPrace
                 {
                     if (tree.TruthValue == 0)
                     {
-                        if(moreOptions.Count != 0)
+                        if(moreOptions.Count != 0 || triedToAssignLiterals.Count != 0)
                         steps.Add("Je zde spor, takže se může jednat o tautologii, musíme se vrátit do bodu, kde jsme zkusili dosadit hodnotu");
                         else
                         {
@@ -188,7 +188,7 @@ namespace VyrokovaLogikaPrace
                     }
                     else
                     {
-                        if (moreOptions.Count != 0)
+                        if (moreOptions.Count != 0 || triedToAssignLiterals.Count != 0)
                             steps.Add("Je zde spor, takže se může jednat o kontradikci, musíme se vrátit do bodu, kde jsme zkusili dosadit hodnotu");
                         else
                         {
