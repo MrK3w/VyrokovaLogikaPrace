@@ -97,13 +97,9 @@ function addNewEdge(nodeId, parentId, color) {
         color: { color: color } // Example color, customize as needed
     };
     const existingNode = data.nodes.get(nodeId);
-    if (existingNode.parentId != 0 || existingNode.parentId != -1) {
-        existingNode.parentId2 = existingNode.parentId;
-    }
-    else {
-        existingNode.parentId2 = existingNode.parentId;
-    }
-    existingNode.parentId = parentId;
+    if (existingNode.parentId == 0 || existingNode.parentId == -1)
+        existingNode.parentId = [parentId];
+    else existingNode.parentId.push(parentId);
     data.nodes.update(existingNode);
     console.log(data.nodes.get());
     data.edges.add(newEdge);
@@ -282,19 +278,8 @@ function removeTitles() {
     }
 }
 
-
-
 function getNodesByParentId(nodes, parentId) {
-    // Filter nodes based on parentId
-    let filteredNodes = nodes.filter(node => node.parentId === parentId);
-
-    // If no nodes are found, try filtering again with a different condition
-    const secondaryFilteredNodes = nodes.filter(node => node.parentId2 === parentId);
-    
-    // Concatenate the secondary filtered nodes with the initial filtered nodes
-    filteredNodes = filteredNodes.concat(secondaryFilteredNodes);
-
-    return filteredNodes;
+   return nodes.filter(node => Array.isArray(node.parentId) && node.parentId.includes(parentId));
 }
 
 function getSide(edges, nodesWithParentId) {
@@ -480,11 +465,22 @@ function handleButtonOdstranVetevClick() {
     data.edges.remove(globalEdge);
     var nodes = data.nodes.get();
     for (let i = 0; i < nodes.length; i++) {
-        if (nodes[i].parentId == globalEdge.from || nodes[i].parentId == globalEdge.to || nodes[i].parentId2 == globalEdge.from || nodes[i].parentId2 == globalEdge.to) {
+        if (nodes[i].parentId != -1 && nodes[i].parentId != 0) {
+
+
+        if (nodes[i].parentId.includes(globalEdge.from)) {
             const existingNode = data.nodes.get(nodes[i].id);
-            existingNode.parentId = -1;
-            existingNode.parentId2 = -1;
+            existingNode.parentId = existingNode.parentId.filter(id => id !== globalEdge.from);
+            if (existingNode.parentId.length == 0) existingNode.parentId = -1;
             data.nodes.update(existingNode);
+        }
+        if (nodes[i].parentId.includes(globalEdge.to)) {
+            const existingNode = data.nodes.get(nodes[i].id);
+            existingNode.parentId = existingNode.parentId.filter(id => id !== globalEdge.to);
+
+            if (existingNode.parentId.length == 0) existingNode.parentId = -1;
+            data.nodes.update(existingNode);
+            }
         }
     }
 }
