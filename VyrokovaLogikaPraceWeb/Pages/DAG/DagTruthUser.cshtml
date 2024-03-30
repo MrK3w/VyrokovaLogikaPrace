@@ -24,18 +24,19 @@
 
                     <div class="btn-toolbar ml-2 flex-fill" role="toolbar" aria-label="Toolbar with button groups">
                         <div class="btn-group flex-fill" role="group" aria-label="First group">
-                            <input type='submit' class="btn btn-primary flex-fill mb-2 mr-1" value='Ověř v DAGU tautologii' id="drawDAGButtonTautotology" />
-                            <input type='submit' class="btn btn-primary flex-fill mb-2 mr-1" value='Ověř v DAGU kontradikci' id="drawDAGButtonContradiction" />
+                            <input type='submit' class="btn btn-primary flex-fill mb-2 mr-1" value='Vykresli DAG' id="drawDAGButton" />
                         </div>
 
                     </div>
                 </div>
             </form>
+            <div id='formule'></div>
             <div id="treeVisualization">
             </div>
-            <div id="buttons"></div>
-            <div id="Steps"></div>
+                <div class="row">
+                    <div class="col-md-8" id='selectListGroup'></div>
+                    <div class="col-md-4" id='buttons'></div>
+            </div>
         </div>
     </div>
-    <div class="col-md-1" id="zmeny"></div>
 </body>

@@ -1,22 +1,20 @@
 ﻿// Map to store unique labels and their corresponding IDs
 const labelIdMap = new Map();
-var finished = true;
-var globalCounter = 0;
-var nodesGlobalData;
-var lengthOfList = 0;
-var steps;
+var data;
+var contradiction = false;
+var formula;
 
-function handleButtonDrawDAGButton(tautology) {
-    CallAjaxToGetPaths(tautology);
+function handleButtonDrawDAGButton() {
+    CallAjaxToGetPaths();
 }
 
-function CallAjaxToGetPaths(tautology) {
+function CallAjaxToGetPaths() {
 
-    var formula = transformInputValue($('#formula').val());
+    formula = transformInputValue($('#formula').val());
 
     var requestData = {
         formula: formula,
-        tautology: tautology // Include the boolean value
+        tautology: true // Include the boolean value
     };
 
     $.ajax({
@@ -31,35 +29,20 @@ function CallAjaxToGetPaths(tautology) {
         data: JSON.stringify(requestData),
         success: function (data) {
             var parsedOutput = JSON.parse(data);
-            parsedOutput.VisNodes.sort((a, b) => b.Id - a.Id);
-            document.getElementById("zmeny").innerHTML = "";
-         
-            globalCounter = 0;
-            nodesGlobalData = parsedOutput.VisNodes;
-            lengthOfList = nodesGlobalData.length - 1;
-            steps = parsedOutput.Steps;
-            createButtons();
+            parsedOutput.sort((a, b) => b.Id - a.Id);
+            createGraph(parsedOutput);
+            prepareButtons();
             attachEventHandlers();
-            drawGraph();
-            updateStepInfo();
         },
         error: function (error) {
-            console.error('Error:', error);
-
             // Log specific error properties
             console.log('Status:', error.status); // HTTP status code
             console.log('Status Text:', error.statusText); // Textual description of the HTTP status
             console.log('Response Text:', error.responseText); // Response body
             console.log('Ready State:', error.readyState); // Ready state of the request
-    // You can log more properties if needed
         }
     });
 }
-
-function drawGraph() {
-     createGraph(nodesGlobalData[globalCounter]);
-}
-
 //function to draw graph
 function createGraph(nodesData) {
     //if it is not first run we will not change from tree
@@ -69,69 +52,18 @@ function createGraph(nodesData) {
     // Iterate through nodesData to create nodes and edges
     for (let i = 0; i < nodesData.length; i++) {
         //if node does not have parentId then it is root
-        if (nodesData[i].TruthValue != -1) {
-            if (nodesData[i].Contradiction == false && nodesData[i].IsChanged == true) {
                 if (nodesData[i].ParentId === 0) {
-                    nodes.add({ id: nodesData[i].Id, label: nodesData[i].Operator + " = " + nodesData[i].TruthValue, title: nodesData[i].Label, parentId: nodesData[i].ParentId, truthValue: nodesData[i].TruthValue, color: { background: '#90EE90' } });
+                    nodes.add({ id: nodesData[i].Id, label: nodesData[i].Operator + " = " + nodesData[i].TruthValue, title: nodesData[i].Label, parentId: nodesData[i].ParentId, truthValue: nodesData[i].TruthValue, contradiction: false, color: { background: '#FFD700' } });
                 }
                 else {
-                    nodes.add({ id: nodesData[i].Id, label: nodesData[i].Operator + " = " + nodesData[i].TruthValue, title: nodesData[i].Label, parentId: nodesData[i].ParentId, truthValue: nodesData[i].TruthValue, color: { background: '#90EE90' } });
+                    nodes.add({ id: nodesData[i].Id, label: nodesData[i].Operator + " = " + nodesData[i].TruthValue, title: nodesData[i].Label, parentId: nodesData[i].ParentId, truthValue: nodesData[i].TruthValue, contradiction: false });
                     edges.add({ from: nodesData[i].Id, to: nodesData[i].ParentId, arrows: 'to', color: getEdgeColor(nodesData, nodesData[i].ParentId, nodesData[i].Label) });
                 }
-            }
-            else if (nodesData[i].Contradiction == true) {
-                if (nodesData[i].ParentId === 0) {
-                    nodes.add({ id: nodesData[i].Id, label: nodesData[i].Operator + " = 0/1", title: nodesData[i].Label, parentId: nodesData[i].ParentId, truthValue: nodesData[i].TruthValue, color: { background: '#DF2C14' } });
-                }
-                else {
-                    nodes.add({ id: nodesData[i].Id, label: nodesData[i].Operator + " = 0/1", title: nodesData[i].Label, parentId: nodesData[i].ParentId, truthValue: nodesData[i].TruthValue, color: { background: '#DF2C14' } });
-                    edges.add({ from: nodesData[i].Id, to: nodesData[i].ParentId, arrows: 'to', color: getEdgeColor(nodesData, nodesData[i].ParentId, nodesData[i].Label) });
-                } 
-            }
-            else {
-                if (nodesData[i].ParentId === 0) {
-                    nodes.add({ id: nodesData[i].Id, label: nodesData[i].Operator + " = " + nodesData[i].TruthValue, title: nodesData[i].Label, parentId: nodesData[i].ParentId, truthValue: nodesData[i].TruthValue, color: { background: '#FFD700' } });
-                }
-                else {
-                    nodes.add({ id: nodesData[i].Id, label: nodesData[i].Operator + " = " + nodesData[i].TruthValue, title: nodesData[i].Label, parentId: nodesData[i].ParentId, truthValue: nodesData[i].TruthValue });
-                    edges.add({ from: nodesData[i].Id, to: nodesData[i].ParentId, arrows: 'to', color: getEdgeColor(nodesData, nodesData[i].ParentId, nodesData[i].Label) });
-                }
-            }
-        }
-        else {
-            if (nodesData[i].Contradiction == false && nodesData[i].IsChanged == true) {
-                if (nodesData[i].ParentId === 0) {
-                    nodes.add({ id: nodesData[i].Id, label: nodesData[i].Operator + " = " + nodesData[i].TruthValue, title: nodesData[i].Label, parentId: nodesData[i].ParentId, truthValue: nodesData[i].TruthValue, color: { background: '#90EE90' } });
-                }
-                else {
-                    nodes.add({ id: nodesData[i].Id, label: nodesData[i].Operator + " = " + nodesData[i].TruthValue, title: nodesData[i].Label, parentId: nodesData[i].ParentId, truthValue: nodesData[i].TruthValue, color: { background: '#90EE90' } });
-                    edges.add({ from: nodesData[i].Id, to: nodesData[i].ParentId, arrows: 'to', color: getEdgeColor(nodesData, nodesData[i].ParentId, nodesData[i].Label) });
-                }
-            }
-            else if (nodesData[i].Contradiction == true) {
-                if (nodesData[i].ParentId === 0) {
-                    nodes.add({ id: nodesData[i].Id, label: nodesData[i].Operator, title: nodesData[i].Label, parentId: nodesData[i].ParentId, truthValue: nodesData[i].TruthValue, color: { background: '#DF2C14' } });
-                }
-                else {
-                    nodes.add({ id: nodesData[i].Id, label: nodesData[i].Operator, title: nodesData[i].Label, parentId: nodesData[i].ParentId, truthValue: nodesData[i].TruthValue, color: { background: '#DF2C14' } });
-                    edges.add({ from: nodesData[i].Id, to: nodesData[i].ParentId, arrows: 'to', color: getEdgeColor(nodesData, nodesData[i].ParentId, nodesData[i].Label) });
-                }
-            }
-            else {
-                if (nodesData[i].ParentId === 0) {
-                    nodes.add({ id: nodesData[i].Id, label: nodesData[i].Operator, title: nodesData[i].Label, parentId: nodesData[i].ParentId, truthValue: nodesData[i].TruthValue, color: { background: '#FFD700' } });
-                }
-                else {
-                    nodes.add({ id: nodesData[i].Id, label: nodesData[i].Operator, title: nodesData[i].Label, parentId: nodesData[i].ParentId, truthValue: nodesData[i].TruthValue });
-                    edges.add({ from: nodesData[i].Id, to: nodesData[i].ParentId, arrows: 'to', color: getEdgeColor(nodesData, nodesData[i].ParentId, nodesData[i].Label) });
-                }
-            }
-        }
     }
 
     // Update the vis.js network
     const container = document.getElementById('treeVisualization');
-    const data = { nodes, edges };
+    data = { nodes, edges };
     var options = {
         interaction: {
             hover: true
@@ -153,7 +85,44 @@ function createGraph(nodesData) {
     network.on("afterDrawing", function (ctx) {
         drawOnCanvasLabels(ctx, container); // Call drawOnCanvasLabels and pass ctx
     });
+    network.on("click", function (params) {
+        if (!(params.nodes[0] === undefined)) {
+            var nodeId = params.nodes[0];
+            if (nodeId !== undefined) {
+                handleNodeClick(nodeId);
+            }
+        }
+    });
     updateNodes(data, network);
+}
+
+function handleNodeClick(nodeId) {
+    const existingNode = data.nodes.get(nodeId);
+    if (!contradiction) {
+        if (existingNode.label.includes('-1')) {
+            existingNode.label = existingNode.label.replace('-1', '0');
+            existingNode.truthValue = '0';
+        }
+        else if (existingNode.label.includes('0')) {
+            existingNode.label = existingNode.label.replace('0', '1');
+            existingNode.truthValue = '1';
+        }
+        else if (existingNode.label.includes('1')) {
+            existingNode.label = existingNode.label.replace('1', '0');
+            existingNode.truthValue = '0';
+        }
+    }
+    else {
+        if (existingNode.label.includes('?')) {
+            existingNode.label = existingNode.label.replace(' ?', '');
+            existingNode.contradiction = false;
+        }
+        else {
+            existingNode.label += " ?";
+            existingNode.contradiction = true;
+        }
+    }
+    data.nodes.update(existingNode);
 }
 
 function getEdgeColor(nodesData, parentId, label) {
@@ -265,7 +234,6 @@ function drawOnCanvasLabels(ctx, container) {
 function modifyNodes(nodesData) {
     const labelToIdMap = {};
     var changeTitles = []; // Change changeTitle to changeTitles to store multiple titles
-    finished = true;
 
     // Iterate through nodesData and update the IDs based on label
     for (const nodeData of nodesData) {
@@ -284,81 +252,65 @@ function modifyNodes(nodesData) {
     return changeTitles; // Return changeTitles array
 }
 
-function updateStepInfo() {
-    var stepInfo = steps[globalCounter]; // Assuming steps is an array of step information
-    var stepsDiv = document.getElementById("Steps");
+function prepareButtons() {
+    document.getElementById('formule').innerHTML = 'Synktaktick\u00FD strom formule <span style="color: red;">' + formula + '</span>.';
 
-    // Clear previous step info
-    stepsDiv.innerHTML = "";
-
-    // Create Bootstrap info alert element
-    var stepAlert = document.createElement("div");
-    stepAlert.classList.add("alert", "alert-info");
-    stepAlert.setAttribute("role", "alert");
-    stepAlert.innerText = stepInfo; // Set the step information as inner text
-
-    // Append the alert element to the Steps div
-    stepsDiv.appendChild(stepAlert);
-}
-
-function handleButtonNextStep() {
-    if (globalCounter < lengthOfList) {
-        globalCounter = globalCounter + 1;
-        drawGraph();
-        updateStepInfo();
-    }
-    else alert("Toto je poslední krok");
-}
-
-function handleButtonPreviousStep() {
-    if (globalCounter > 0) {
-        globalCounter = globalCounter - 1;
-        drawGraph();
-        updateStepInfo();
-    }
-    else alert("Toto je první krok");
-}
-
-function createButtons() {
     var buttonsDiv = document.getElementById('buttons');
+    var selectListDiv = document.getElementById('selectListGroup');
     buttonsDiv.innerHTML = '';
+    selectListDiv.innerHTML = '';
+
     // Create and append the "Označ spor" button
+    var contradictionButton = document.createElement('button');
+    contradictionButton.id = 'contradictionButton';
+    contradictionButton.className = 'btn btn-primary flex-fill mb-2 mr-1';
+    contradictionButton.textContent = 'Ozna\u010d spor';
+    buttonsDiv.appendChild(contradictionButton);
 
-    var previousStepButton = document.createElement('button');
-    previousStepButton.id = 'previousStepButton';
-    previousStepButton.className = 'btn btn-primary flex-fill mb-2 mr-1';
-    previousStepButton.textContent = 'předchozí krok';
-    buttonsDiv.appendChild(previousStepButton);
+    // Create and append the "Ověř strom" button
+    var checkTreeButton = document.createElement('button');
+    checkTreeButton.id = 'checkTree';
+    checkTreeButton.className = 'btn btn-primary flex-fill mb-2 mr-1';
+    checkTreeButton.textContent = 'Ov\u011b\u0159 strom';
+    buttonsDiv.appendChild(checkTreeButton);
+    // Create select element
+    // Create select element
+    var selectList = document.createElement('select');
+    selectList.id = 'mySelect';
+    selectList.className = 'form-control mr-2'; // Add Bootstrap form-control class for styling
 
-    var nextStepButton = document.createElement('button');
-    nextStepButton.id = 'nextStepButton';
-    nextStepButton.className = 'btn btn-primary flex-fill mb-2 mr-1';
-    nextStepButton.textContent = 'další krok';
-    buttonsDiv.appendChild(nextStepButton);
+    // Create options
+    var options = ['formule je tautologi\u00ED', 'formule je kontradikc\u00ED', 'formule je splniteln\u00E1']; // Using Unicode escape sequence for 'í'
+
+    // Add options to select
+    for (var i = 0; i < options.length; i++) {
+        var option = document.createElement('option');
+        option.value = options[i];
+        option.text = options[i];
+        selectList.appendChild(option);
+    }
+
+    // Append select list to buttonsDiv
+    selectListDiv.appendChild(selectList);
 }
 
 function attachEventHandlers() {
     //button for 'Vykresli DAG'
-    document.getElementById('drawDAGButtonTautotology').addEventListener('click', function () {
-        handleButtonDrawDAGButton(true);
+    document.getElementById('drawDAGButton').addEventListener('click', handleButtonDrawDAGButton);
+
+    // Attach a click event handler to the #xButton element
+    $("#contradictionButton").on("click", function () {
+        // Get the current value of the hiddenNumber input element
+        contradiction = !contradiction;
+        // Check if contradiction is true
+        if (contradiction) {
+            // Change the button color to green
+            $("#contradictionButton").css("background-color", "green");
+        } else {
+            // Change the button color to default color
+            $("#contradictionButton").css("background-color", ""); // or you can set it to the default color you want
+        }
     });
-
-    document.getElementById('drawDAGButtonContradiction').addEventListener('click', function () {
-        handleButtonDrawDAGButton(false);
-    });
-
-    var nextStepButton = document.getElementById('nextStepButton');
-
-    // If the element exists, attach the event listener
-    if (nextStepButton) {
-        nextStepButton.addEventListener('click', handleButtonNextStep);
-    }
-
-    var previousStepButton = document.getElementById('previousStepButton');
-
-    if (previousStepButton) {
-        previousStepButton.addEventListener('click', handleButtonPreviousStep)
-    }
 
     $('#DAGS').submit(function (event) {
         // Prevent the default form submission

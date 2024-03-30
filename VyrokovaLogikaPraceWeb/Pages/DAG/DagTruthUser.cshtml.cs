@@ -1,10 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using System;
 using System.Text.Json;
-using System.Text.Json.Serialization;
-using System.Xml.Linq;
 using VyrokovaLogikaPrace;
 using VyrokovaLogikaPraceWeb.Helpers;
 
@@ -24,9 +21,7 @@ namespace VyrokovaLogikaPraceWeb.Pages
         public string YourFormula { get; set; } = "";
         public string Input { get; set; } = "";
 
-        List<string> Steps { get; set; } = new List<string>();
-
-        List<List<VisNode>> visNodes = new List<List<VisNode>>();
+        List<VisNode> visNodes = new List<VisNode>();
 
         public DagTruthUserModel(IWebHostEnvironment env)
         {
@@ -41,7 +36,6 @@ namespace VyrokovaLogikaPraceWeb.Pages
         public IActionResult OnPostTruthDAG([FromBody] DrawDagUserRequestModel request)
         {
             Formula = request.Formula;
-            bool tautology = request.Tautology;
             if (Formula == null) return Page();
             Converter.ConvertSentence(ref Formula);
             //if it not valid save user input to YourFormula and return page
@@ -53,56 +47,16 @@ namespace VyrokovaLogikaPraceWeb.Pages
                 }
                 return Page();
             }
+            //otherwise prepare engine with sentence we got
             Engine engine = new Engine(Formula);
-            List<Node> tree = new List<Node>();
+
+            visNodes = new List<VisNode>();
             if (engine.CreateTree())
             {
-                if (tautology)
-                {
-                    TreeProofAdvanced adv = new TreeProofAdvanced(engine.pSyntaxTree, 0);
-                    tree = adv.trees;
-                    Steps = adv.steps;
-                }
-                else
-                {
-                    TreeProofAdvanced adv = new TreeProofAdvanced(engine.pSyntaxTree, 1);
-                    tree = adv.trees;
-                    Steps = adv.steps;
-                }
+                VisNodesHelper helper = new VisNodesHelper(engine.pSyntaxTree);
+                visNodes = helper.CreateVisNodes();
             }
-            foreach (var treee in tree)
-            {
-                VisNodesHelper helper = new VisNodesHelper(treee, true);
-                visNodes.Add(helper.CreateVisNodes());
-            }
-            List<int> stepsToRemove = new List<int>();
-            int i = 0;
-            foreach (var step in Steps)
-            {
-
-                if (step.StartsWith("Pøidáme do uzlu"))
-                {
-                    stepsToRemove.Add(i);
-                }
-                i++;
-            }
-
-
-
-            // Remove items from VisNodes and Steps based on indexes stored in indexesToRemove
-            foreach (int indexToRemove in stepsToRemove.OrderByDescending(x => x))
-            {
-                visNodes.RemoveAt(indexToRemove);
-                Steps.RemoveAt(indexToRemove);
-            }
-
-
-            var response = new
-            {
-                VisNodes = visNodes,
-                Steps = Steps
-            };
-            var jsonString = JsonSerializer.Serialize(response);
+            var jsonString = JsonSerializer.Serialize(visNodes);
             return new JsonResult(jsonString);
         }
     }
