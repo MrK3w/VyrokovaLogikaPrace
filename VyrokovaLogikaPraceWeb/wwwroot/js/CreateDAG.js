@@ -283,7 +283,18 @@ function removeTitles() {
 }
 
 function getNodesByParentId(nodes, parentId) {
-   return nodes.filter(node => Array.isArray(node.parentId) && node.parentId.includes(parentId));
+    const filteredNodes = [];
+
+    nodes.forEach(node => {
+        if (Array.isArray(node.parentId) && node.parentId.includes(parentId)) {
+            const occurrences = node.parentId.filter(id => id === parentId).length;
+            for (let i = 0; i < occurrences; i++) {
+                filteredNodes.push(node);
+            }
+        }
+    });
+
+    return filteredNodes;
 }
 
 function getSide(edges, nodesWithParentId) {
@@ -478,7 +489,7 @@ function handleButtonOdstranVetevClick() {
         if (nodes[i].parentId != -1 && nodes[i].parentId != 0) {
 
 
-            if (nodes[i].parentId.includes(globalEdge.from)) {
+            if (nodes[i].parentId.includes(globalEdge.from) && nodes[i].id == globalEdge.to) {
                 const existingNode = data.nodes.get(nodes[i].id);
                 existingNode.parentId = existingNode.parentId.filter(id => id !== globalEdge.from);
                 if (existingNode.parentId.length == 0) existingNode.parentId = -1;

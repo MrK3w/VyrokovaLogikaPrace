@@ -112,5 +112,11 @@
   },
   {
     "Formula": "p"
+  },
+  {
+    "Formula": "x⇒y"
+  },
+  {
+    "Formula": "x⇒((¬x∧x)⇒(¬x∧x))"
   }
 ]
