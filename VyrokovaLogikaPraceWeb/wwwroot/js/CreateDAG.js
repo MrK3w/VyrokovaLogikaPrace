@@ -86,7 +86,9 @@ function addNewNode(newNodeId, newNodeLabel, newNodeTitle, color) {
         side: 'undefined'
     };
     // Add the new node to the DataSet
-    data.nodes.add(newNode);
+    data.nodes.add(newNode); 
+    var node = data.nodes.get();
+    console.log("Pridana noda" + node);
 }
 
 function addNewEdge(nodeId, parentId, color) {
@@ -101,6 +103,8 @@ function addNewEdge(nodeId, parentId, color) {
         existingNode.parentId = [parentId];
     else existingNode.parentId.push(parentId);
     data.nodes.update(existingNode);
+    console.log("Pridana hrana");
+    console.log(data.nodes.get());
     console.log(data.nodes.get());
     data.edges.add(newEdge);
 }
@@ -126,7 +130,8 @@ function drawOnCanvasLabels(ctx, container)
 
 
 function handleButtonVytvorFormuliClick() {
-
+    var containerDiv = document.createElement('div');
+    containerDiv.innerHTML = '';
     var nodes = data.nodes.get();
     for (const node of nodes) {
         // Check if the node's label matches the specified label
@@ -262,7 +267,6 @@ function handleButtonUlozFormuli() {
         },
         error: function (error) {
             console.error('Error:', error);
-            // Handle the error
         }
     });
 }
@@ -442,9 +446,10 @@ function handleButtonPridejNodu() {
 
 function handleButtonOdstranNoduClick() {
     var id = globalInput.id;
-    console.log(edges);
     var edges = data.edges.get();
+    var nodes = data.nodes.get();
     console.log(edges);
+    console.log(nodes);
     if (globalInput) {
         if (globalInput.parentId == 0) {
             alert("Hlavní uzel nelze odstranit!")
@@ -459,30 +464,30 @@ function handleButtonOdstranNoduClick() {
         }
     }
     console.log(edges);
+    console.log(nodes);
 }
 
 function handleButtonOdstranVetevClick() {
+    var edges = data.edges.get();
+    var nodes = data.nodes.get();
+    console.log(edges);
+    console.log(nodes);
     data.edges.remove(globalEdge);
     var nodes = data.nodes.get();
     for (let i = 0; i < nodes.length; i++) {
         if (nodes[i].parentId != -1 && nodes[i].parentId != 0) {
 
 
-        if (nodes[i].parentId.includes(globalEdge.from)) {
-            const existingNode = data.nodes.get(nodes[i].id);
-            existingNode.parentId = existingNode.parentId.filter(id => id !== globalEdge.from);
-            if (existingNode.parentId.length == 0) existingNode.parentId = -1;
-            data.nodes.update(existingNode);
-        }
-        if (nodes[i].parentId.includes(globalEdge.to)) {
-            const existingNode = data.nodes.get(nodes[i].id);
-            existingNode.parentId = existingNode.parentId.filter(id => id !== globalEdge.to);
-
-            if (existingNode.parentId.length == 0) existingNode.parentId = -1;
-            data.nodes.update(existingNode);
+            if (nodes[i].parentId.includes(globalEdge.from)) {
+                const existingNode = data.nodes.get(nodes[i].id);
+                existingNode.parentId = existingNode.parentId.filter(id => id !== globalEdge.from);
+                if (existingNode.parentId.length == 0) existingNode.parentId = -1;
+                data.nodes.update(existingNode);
             }
         }
     }
+    console.log(edges);
+    console.log(nodes);
 }
 
 function handleButtonZmenaTextuClick() {
