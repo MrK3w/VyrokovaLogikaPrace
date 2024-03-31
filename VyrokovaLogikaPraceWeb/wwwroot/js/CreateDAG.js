@@ -304,10 +304,8 @@ function getSide(edges, nodesWithParentId) {
                 const existingNode = nodesWithParentId[i];
                 if (edges[j].color.color === 'orange') existingNode.side = 'right';
                 else if (edges[j].color.color === 'blue') existingNode.side = 'left';
-                // Assuming you have some mechanism to update the node in your own data structure
-                // For example, if nodesWithParentId is an array, you can directly update the node:
                 nodesWithParentId[i] = existingNode;
-                // If nodesWithParentId is an object or Map, update it accordingly
+
             }
         }
     }
@@ -373,15 +371,14 @@ function modifyNodes(node, nodesWithParentId) {
 
 }
 
+// Regular expression to match only alphabets (case-insensitive)
 function isAlphabet(input) {
-    // Regular expression to match only alphabets (case-insensitive)
     const regex = /^[a-zA-Z]+$/;
     return regex.test(input);
 }
 
 
 async function handleButtonPridejVetev(color) {
-
     if (globalInput) {
         clickedSecondNode = true;
         // Get all existing node IDs
