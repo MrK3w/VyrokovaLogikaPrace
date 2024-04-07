@@ -118,5 +118,38 @@
   },
   {
     "Formula": "x⇒((¬x∧x)⇒(¬x∧x))"
+  },
+  {
+    "Formula": "(y⇒x)"
+  },
+  {
+    "Formula": "(y≡x)"
+  },
+  {
+    "Formula": "(y≡(x⇒y))"
+  },
+  {
+    "Formula": "(y≡(x≡y))"
+  },
+  {
+    "Formula": "(y∨(x≡y))"
+  },
+  {
+    "Formula": "(y∨x)"
+  },
+  {
+    "Formula": "(x⇒y)"
+  },
+  {
+    "Formula": "(x⇒¬y)"
+  },
+  {
+    "Formula": "(x≡¬y)"
+  },
+  {
+    "Formula": "(¬y≡(x⇒y))"
+  },
+  {
+    "Formula": "¬((l≡z))⇒(y⇒x)"
   }
 ]

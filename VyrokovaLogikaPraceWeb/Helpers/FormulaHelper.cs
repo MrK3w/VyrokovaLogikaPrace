@@ -112,9 +112,32 @@ namespace VyrokovaLogikaPraceWeb.Helpers
 
             // Get the path of JSON
             var filePath = Path.Combine(env.ContentRootPath, "Helpers", "formulas.json");
-
+            int maxAttempts = 3;
+            int attempts = 0;
+            bool success = false;
             // Write all text to JSON
-            File.WriteAllText(filePath, jsonString);
+            while (!success && attempts < maxAttempts)
+            {
+                try
+                {
+                    // Attempt to write to the file
+                    File.WriteAllText(filePath, jsonString);
+                    success = true; // If no exception occurred, mark operation as successful
+                    Console.WriteLine("File write successful.");
+                }
+                catch (IOException ex)
+                {
+                    // If file is in use, wait for a short time and then retry
+                    Console.WriteLine($"Attempt {attempts + 1} failed: {ex.Message}. Retrying...");
+                    attempts++;
+                    Thread.Sleep(1000); // Wait for 1 second before retrying
+                }
+            }
+
+            if (!success)
+            {
+                Console.WriteLine("Failed to write to file after multiple attempts. Operation aborted.");
+            }
         }
 
         // Remove formula from JSON

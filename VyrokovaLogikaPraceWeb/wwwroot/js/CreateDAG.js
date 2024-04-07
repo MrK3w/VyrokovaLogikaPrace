@@ -70,6 +70,7 @@ function addNewNode(newNodeId, newNodeLabel, newNodeTitle, color) {
     const x = Math.random() * 100; // Adjust 1000 to the width of your container
     const y = Math.random() * 100; // Adjust 1000 to the height of your container
     var nodes = data.nodes.get();
+
     var id;
     if (nodes.length == 0) {
         id = 0;
@@ -125,14 +126,15 @@ function drawOnCanvasLabels(ctx, container)
     ctx.fillStyle = "orange";
     ctx.fillRect(195 - centerX, 133 - centerY, 10, 10); // Sample color indicator
     ctx.fillText("Pravá strana", 100 - centerX, 140 - centerY); // Adjust position as needed
-    // Add more color descriptions as needed
 }
 
 
 function handleButtonVytvorFormuliClick() {
-    var containerDiv = document.createElement('div');
-    containerDiv.innerHTML = '';
     var nodes = data.nodes.get();
+    if (nodes.length == 0) {
+        alert("Nelze vytvořit formuli, pokud nejsou přidané žádné uzly!");
+        return;
+    }
     for (const node of nodes) {
         // Check if the node's label matches the specified label
         if (node.label === '▭') {
@@ -185,7 +187,7 @@ function getFormulaFromNodes() {
         }
     }
     var divElement = document.getElementById("content");
-
+    divElement.innerHTML = '';
     // Assuming data.nodes is an array of nodes
     for (var i = 0; i < nodes.length; i++) {
         if (nodes[i].parentId === 0) {
@@ -486,9 +488,9 @@ function handleButtonOdstranVetevClick() {
         if (nodes[i].parentId != -1 && nodes[i].parentId != 0) {
 
 
-            if (nodes[i].parentId.includes(globalEdge.from) && nodes[i].id == globalEdge.to) {
+            if (nodes[i].parentId.includes(globalEdge.to) && nodes[i].id == globalEdge.from) {
                 const existingNode = data.nodes.get(nodes[i].id);
-                existingNode.parentId = existingNode.parentId.filter(id => id !== globalEdge.from);
+                existingNode.parentId = existingNode.parentId.filter(id => id !== globalEdge.to);
                 if (existingNode.parentId.length == 0) existingNode.parentId = -1;
                 data.nodes.update(existingNode);
             }
