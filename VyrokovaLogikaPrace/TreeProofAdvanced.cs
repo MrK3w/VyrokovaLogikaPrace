@@ -352,7 +352,7 @@ namespace VyrokovaLogikaPrace
                         Node tempTree = new Node(0);
                         tempTree = Node.DeepCopy(GetToRoot(tree));
                         trees.Add(tempTree);
-                        steps.Add("Pokud operátor uzlu je implikace a levý uzel je 1 a zároveň pravý uzel je 1 můžeme dosadit do uzlu 1");
+                        steps.Add("Pokud operátor uzlu je implikace a pravdivostní hodnota levého uzlu je 1 a zároveň pravdivostní hodnota pravého uzlu je 1 můžeme dosadit do uzlu 1");
 
                     }
                 }
@@ -367,7 +367,7 @@ namespace VyrokovaLogikaPrace
                         Node tempTree = new Node(0);
                         tempTree = Node.DeepCopy(GetToRoot(tree));
                         trees.Add(tempTree);
-                        steps.Add("Pokud operátor uzlu je implikace a levý uzel je 0 a zároveň pravý uzel je 1 můžeme dosadit do uzlu 1");
+                        steps.Add("Pokud operátor uzlu je implikace a pravdivostní hodnota levého uzlu je 0 a zároveň pravdivostní hodnota pravého uzlu je 1 můžeme dosadit do uzlu 1");
 
                     }
                 }
@@ -382,7 +382,7 @@ namespace VyrokovaLogikaPrace
                         Node tempTree = new Node(0);
                         tempTree = Node.DeepCopy(GetToRoot(tree));
                         trees.Add(tempTree);
-                        steps.Add("Pokud operátor uzlu je implikace a levý uzel je 0 a zároveň pravý uzel je 0 můžeme dosadit do uzlu 1");
+                        steps.Add("Pokud operátor uzlu je implikace a pravdivostní hodnota levého uzlu je 0 a zároveň pravdivostní hodnota pravého uzlu je 0 můžeme dosadit do uzlu 1");
 
                     }
                 }
@@ -397,7 +397,7 @@ namespace VyrokovaLogikaPrace
                         Node tempTree = new Node(0);
                         tempTree = Node.DeepCopy(GetToRoot(tree));
                         trees.Add(tempTree);
-                        steps.Add("Pokud operátor uzlu je implikace a levý uzel je 1 a zároveň pravý uzel je 0 můžeme dosadit do uzlu 0");
+                        steps.Add("Pokud operátor uzlu je implikace a pravdivostní hodnota levého uzlu je 1 a zároveň pravdivostní hodnota pravého uzlu 0 můžeme dosadit do uzlu 0");
 
                     }
                 }
@@ -411,7 +411,7 @@ namespace VyrokovaLogikaPrace
                     Node tempTree = new Node(0);
                     tempTree = Node.DeepCopy(GetToRoot(tree));
                     trees.Add(tempTree);
-                    steps.Add("Pokud operátor uzlu je implikace a levý uzel je 0 a zároveň hodnota pravého uzlu je 1 můžeme do  uzlu dosadit 1");
+                    steps.Add("Pokud operátor uzlu je implikace a pravdivostní hodnota levého uzlu je 0 a zároveň pravdivostní hodnota pravého uzlu je 1 můžeme do  uzlu dosadit 1");
                 }
             }
             if (tree is ConjunctionOperatorNode)
@@ -428,7 +428,7 @@ namespace VyrokovaLogikaPrace
                             Node tempTree = new Node(0);
                             tempTree = Node.DeepCopy(GetToRoot(tree));
                             trees.Add(tempTree);
-                            steps.Add("Pokud operátor uzlu je konjunkce a levý uzel je 1 a zároveň hodnota pravého uzlu je 1 můžeme do  uzlu dosadit 1");
+                            steps.Add("Pokud operátor uzlu je konjunkce a pravdivostní hodnota levého uzlu je 1 a zároveň pravdivostní hodnota pravého uzlu je 1 můžeme do  uzlu dosadit 1");
                         }
                     }
                     else
@@ -441,7 +441,7 @@ namespace VyrokovaLogikaPrace
                             Node tempTree = new Node(0);
                             tempTree = Node.DeepCopy(GetToRoot(tree));
                             trees.Add(tempTree);
-                            steps.Add("Pokud operátor uzlu je konjunkce a levý uzel není 1 a zároveň hodnota pravého uzlu není 1 můžeme do  uzlu dosadit 0");
+                            steps.Add("Pokud operátor uzlu je konjunkce a pravdivostní hodnota levého uzlu není 1 a zároveň pravdivostní hodnota pravého uzlu není 1 můžeme do  uzlu dosadit 0");
                         }
                     }
                 }
@@ -449,7 +449,7 @@ namespace VyrokovaLogikaPrace
                 {
                     if (tree.Left.TruthValue == -1)
                     {
-                        steps.Add("Pokud operátor uzlu je konjunkce a hodnota uzlu je 1 můžeme do levého potomka dosadit 1");
+                        steps.Add("Pokud operátor uzlu je konjunkce a pravdivostní hodnota uzlu je 1 můžeme do levého potomka dosadit 1");
                         tree.Left.TruthValue = 1;
                         RemoveBlue((GetToRoot(tree)));
                         tree.Left.Blue = true;
@@ -462,7 +462,7 @@ namespace VyrokovaLogikaPrace
                         tree.Right.TruthValue = 1;
                         RemoveBlue((GetToRoot(tree)));
                         tree.Right.Blue = true;
-                        steps.Add("Pokud operátor uzlu je konjunkce a hodnota uzlu je 0 můžeme do pravého uzlu dosadit 1");
+                        steps.Add("Pokud operátor uzlu je konjunkce a pravdivostní hodnota uzlu je 0 můžeme do pravého uzlu dosadit 1");
                         Node tempTree = new Node(0);
                         tempTree = Node.DeepCopy(GetToRoot(tree));
                         trees.Add(tempTree);
@@ -506,7 +506,7 @@ namespace VyrokovaLogikaPrace
                 {
                     if((tree.Left.TruthValue == 0 && tree.Right.TruthValue == 1)|| (tree.Left.TruthValue == 1 && tree.Right.TruthValue == 0))
                     {
-                        steps.Add("Pokud operátor uzlu je ekvivalence a uzly potomků se neshodují dosadíme 0");
+                        steps.Add("Pokud operátor uzlu je ekvivalence a pravdivostní hodnoty uzlů potomků se neshodují dosadíme 0");
                         RemoveBlue((GetToRoot(tree)));
                         tree.Blue = true;
                         tree.TruthValue = 0;
@@ -516,7 +516,7 @@ namespace VyrokovaLogikaPrace
                     }
                     if ((tree.Left.TruthValue == 1 && tree.Right.TruthValue == 1) || (tree.Left.TruthValue == 1 && tree.Right.TruthValue == 1))
                     {
-                        steps.Add("Pokud operátor uzlu je ekvivalence a uzly potomků se shodují dosadíme 1");
+                        steps.Add("Pokud operátor uzlu je ekvivalence a pravdivostní hodnoty uzlů potomků se shodují dosadíme 1");
                         RemoveBlue((GetToRoot(tree)));
                         tree.Blue = true;
                         tree.TruthValue = 1;
@@ -530,7 +530,7 @@ namespace VyrokovaLogikaPrace
                         {
                             if (tree.Right.TruthValue == 1)
                             {
-                                steps.Add("Pokud operátor uzlu je ekvivalence a hodnota uzlu je 1 a pravý potomek má hodnotu uzlu 1 můžeme do levého uzlu dosadit 1");
+                                steps.Add("Pokud operátor uzlu je ekvivalence a pravdivostní hodnota uzlu je 1 a pravý potomek má pravdivostní hodnotu uzlu 1 můžeme do levého uzlu dosadit 1");
                                 RemoveBlue((GetToRoot(tree)));
                                 tree.Blue = true;
                                 tree.Left.TruthValue = 1;
@@ -544,7 +544,7 @@ namespace VyrokovaLogikaPrace
                         {
                             if (tree.Left.TruthValue == 1)
                             {
-                                steps.Add("Pokud operátor uzlu je ekvivalence a hodnota uzlu je 1 a levý potomek má hodnotu uzlu 1 můžeme do pravého uzlu dosadit 1");
+                                steps.Add("Pokud operátor uzlu je ekvivalence a pravdivostní hodnota uzlu je 1 a levý potomek má pravdivostní hodnotu uzlu 1 můžeme do pravého uzlu dosadit pravdivostní hodnotu 1");
                                 RemoveBlue((GetToRoot(tree)));
                                 tree.Blue = true;
                                 tree.Right.TruthValue = 1;
@@ -561,7 +561,7 @@ namespace VyrokovaLogikaPrace
                         {
                             if (tree.Right.TruthValue == 1)
                             {
-                                steps.Add("Pokud operátor uzlu je ekvivalence a hodnota uzlu je 0 a pravý potomek má hodnotu uzlu 1 můžeme do levého uzlu dosadit 0");
+                                steps.Add("Pokud operátor uzlu je ekvivalence a pravdivostní hodnota uzlu je 0 a pravý potomek má pravdivostní hodnotu uzlu 1 můžeme do levého uzlu dosadit pravdivostní hodnotu 0");
                                 RemoveBlue((GetToRoot(tree)));
                                 tree.Blue = true;
                                 tree.Left.TruthValue = 0;
@@ -572,7 +572,7 @@ namespace VyrokovaLogikaPrace
                             }
                             else if (tree.Right.TruthValue == 0)
                             {
-                                steps.Add("Pokud operátor uzlu je ekvivalence a hodnota uzlu je 0 a pravý potomek má hodnotu uzlu 0 můžeme do levého uzlu dosadit 1");
+                                steps.Add("Pokud operátor uzlu je ekvivalence a pravdivostní hodnota uzlu je 0 a pravý potomek má pravdivostní hodnotu uzlu 0 můžeme do levého uzlu dosadit pravdivostní hodnotu 1");
                                 RemoveBlue((GetToRoot(tree)));
                                 tree.Blue = true;
                                 tree.Left.TruthValue = 1;
@@ -585,7 +585,7 @@ namespace VyrokovaLogikaPrace
                         {
                             if (tree.Left.TruthValue == 1)
                             {
-                                steps.Add("Pokud operátor uzlu je ekvivalence a hodnota uzlu je 0 a levý potomek má hodnotu uzlu 1 můžeme do pravého uzlu dosadit 0");
+                                steps.Add("Pokud operátor uzlu je ekvivalence a pravdivostní hodnota uzlu je 0 a levý potomek má pravdivostní hodnotu uzlu 1 můžeme do pravého uzlu dosadit pravdivostní hodnotu 0");
                                 RemoveBlue((GetToRoot(tree)));
                                 tree.Blue = true;
                                 tree.Right.TruthValue = 0;
@@ -595,7 +595,7 @@ namespace VyrokovaLogikaPrace
                             }
                             if (tree.Left.TruthValue == 0)
                             {
-                                steps.Add("Pokud operátor uzlu je ekvivalence a hodnota uzlu je 0 a levý potomek má hodnotu uzlu 0 můžeme do pravého uzlu dosadit 1");
+                                steps.Add("Pokud operátor uzlu je ekvivalence a pravdivostní hodnota uzlu je 0 a levý potomek má pravdivostní hodnotu uzlu 0 můžeme do pravého uzlu dosadit pravdivostní hodnotu 1");
                                 RemoveBlue((GetToRoot(tree)));
                                 tree.Blue = true;
                                 tree.Right.TruthValue = 0;
@@ -611,7 +611,7 @@ namespace VyrokovaLogikaPrace
                         {
                             tree.TruthValue = 1;
 
-                            steps.Add("Pokud operátor uzlu je ekvivalence a levý a pravý uzel mají stejnou pravdivostní hodnotu můžeme do uzlu dosadit 1");
+                            steps.Add("Pokud operátor uzlu je ekvivalence a levý a pravý uzel mají stejnou pravdivostní hodnotu můžeme do uzlu dosadit pravdivostní hodnotu 1");
                             RemoveBlue((GetToRoot(tree)));
                             tree.Blue = true;
                             tree.TruthValue = 1;
@@ -622,7 +622,7 @@ namespace VyrokovaLogikaPrace
                         }
                         else if ((tree.Left.TruthValue == 1 && tree.Right.TruthValue == 0) || (tree.Left.TruthValue == 0 && tree.Right.TruthValue == 1))
                         {
-                            steps.Add("Pokud operátor uzlu je ekvivalence a levý a pravý uzel mají jimou pravdivostní hodnotu můžeme do uzlu dosadit 0");
+                            steps.Add("Pokud operátor uzlu je ekvivalence a levý a pravý uzel mají jimou pravdivostní hodnotu můžeme do uzlu dosadit pravdivostní hodnotu 0");
                             RemoveBlue((GetToRoot(tree)));
                             tree.Blue = true;
                             tree.TruthValue = 0;
@@ -639,7 +639,7 @@ namespace VyrokovaLogikaPrace
                 {
                     if (tree.TruthValue == -1)
                     {
-                        steps.Add("Pokud operátor uzlu je disjunkce a zároveň hodnota levého i pravého potomka je 0 můžeme do uzlu dosadit 0");
+                        steps.Add("Pokud operátor uzlu je disjunkce a zároveň pravdivostní hodnota levého i pravého potomka je 0 můžeme do uzlu dosadit pravdivostní hodnotu 0");
                         tree.TruthValue = 0;
                         RemoveBlue((GetToRoot(tree)));
                         tree.Blue = true;
@@ -652,7 +652,7 @@ namespace VyrokovaLogikaPrace
                 {
                     if (tree.TruthValue == -1)
                     {
-                        steps.Add("Pokud operátor uzlu je disjunkce a zároveň hodnota levého nebo pravého potomka je 1 můžeme do uzlu dosadit 1");
+                        steps.Add("Pokud operátor uzlu je disjunkce a zároveň pravdivostní hodnota levého nebo pravého potomka je 1 můžeme do uzlu dosadit pravdivostní hodnotu 1");
                         tree.TruthValue = 1;
                         RemoveBlue((GetToRoot(tree)));
                         tree.Blue = true;

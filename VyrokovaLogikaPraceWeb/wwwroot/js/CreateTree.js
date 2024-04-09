@@ -73,7 +73,7 @@ function isValid(text) {
 function handleButtonZmenaTextuClick() {
     //Get value from input
     var inputValue = $('#TreeInput').val();
-
+    inputValue = transformInputValue(inputValue);
     //check if input is valid
     var validSymbols = ['∧', '∨', '≡', '¬', '⇒', '¬¬', '▭'];
     var regex = new RegExp('^[a-zA-Z]+$|^(' + validSymbols.map(escapeRegExp).join('|') + ')$');

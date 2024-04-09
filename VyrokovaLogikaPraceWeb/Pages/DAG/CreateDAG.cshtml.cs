@@ -24,8 +24,6 @@ namespace VyrokovaLogikaPraceWeb.Pages
         public string YourFormula { get; set; } = "";
         public string Input { get; set; } = "";
 
-        List<VisNode> visNodes = new List<VisNode>();
-
         public CreateDAGModel(IWebHostEnvironment env)
         {
             mEnv = env;
