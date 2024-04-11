@@ -16,8 +16,8 @@ namespace VyrokovaLogikaPrace
 
         public bool Blue { get; set; } = false;
         public int TruthValue { get; set; } = -1;
-
         public int TruthValue2 { get; set; } = -1;
+        public int TreeAllOptions { get; set; } = 0;
         public int id { get; set; } //id of the node
         public bool IsLeaf { get; set; } // Indicates whether this node is a leaf (value) node
         public bool WillBeChanged { get; set; } = false;
@@ -25,6 +25,7 @@ namespace VyrokovaLogikaPrace
         public bool Contradiction { get; set; } = false;
         public List<(int, int)> UsedCombinations { get; set; }
         public bool isFinal {get;set;}
+        public int combinationUsedCounter = 0;
         public Node(string value, int id)
         {
             Value = value;
@@ -102,7 +103,8 @@ namespace VyrokovaLogikaPrace
             newNode.TruthValue = original.TruthValue;
             newNode.isFinal = original.isFinal;
             newNode.IsLeaf = original.IsLeaf;
-
+            newNode.combinationUsedCounter = original.combinationUsedCounter;
+            newNode.TreeAllOptions = original.TreeAllOptions;
             // Add the original node and its copy to the dictionary of visited nodes
             visitedNodes.Add(original, newNode);
 

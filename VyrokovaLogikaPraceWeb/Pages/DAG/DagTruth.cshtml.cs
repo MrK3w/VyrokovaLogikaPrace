@@ -59,13 +59,13 @@ namespace VyrokovaLogikaPraceWeb.Pages
             {
                 if (tautology)
                 {
-                    TreeProofAdvanced adv = new TreeProofAdvanced(engine.pSyntaxTree, 0);
+                    TreeProof adv = new TreeProof(engine.pSyntaxTree, 0);
                     tree = adv.trees;
                     Steps = adv.steps;
                 }
                 else
                 {
-                    TreeProofAdvanced adv = new TreeProofAdvanced(engine.pSyntaxTree, 1);
+                    TreeProof adv = new TreeProof(engine.pSyntaxTree, 1);
                     tree = adv.trees;
                     Steps = adv.steps;
                 }

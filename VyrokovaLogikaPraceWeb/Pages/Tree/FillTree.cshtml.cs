@@ -82,8 +82,8 @@ namespace VyrokovaLogikaPraceWeb.Pages
             string formulaType = "";
             if (Errors.Count == 0)
             {
-                TreeProof treeProof = new TreeProof();
-                var trees = treeProof.ProcessTree(fillTree, 0);
+                TreeProof treeProof = new TreeProof(fillTree,0);
+                var trees = treeProof.trees;
                 ContradictionHelper contradictionHelper = new ContradictionHelper();
                 if (contradictionHelper.FindContradictionInLeafs(trees))
                 {
@@ -91,7 +91,8 @@ namespace VyrokovaLogikaPraceWeb.Pages
                 }
                 else
                 {
-                    trees = treeProof.ProcessTree(fillTree, 1);
+                    treeProof = new TreeProof(fillTree, 1);
+                    trees = treeProof.trees;
                     contradictionHelper = new ContradictionHelper();
                     if (contradictionHelper.FindContradictionInLeafs(trees))
                     {

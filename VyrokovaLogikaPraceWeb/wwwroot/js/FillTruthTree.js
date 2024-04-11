@@ -18,6 +18,7 @@ function doesTreeContainsHash() {
 }
 
 function handleButtonDrawTree() {
+    contradiction = false;
     var formulaValue;
     var formulaDropdown = document.getElementById('formula');
     var selectedFormula = formulaDropdown.options[formulaDropdown.selectedIndex].value;

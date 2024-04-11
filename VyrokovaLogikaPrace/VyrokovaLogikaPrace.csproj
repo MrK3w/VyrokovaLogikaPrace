@@ -60,7 +60,6 @@
     <Compile Include="Helpers\TreeHelper.cs" />
     <Compile Include="TreeConstructer.cs" />
     <Compile Include="TreeProof.cs" />
-    <Compile Include="TreeProofAdvanced.cs" />
     <Compile Include="VerboseErrorListener.cs" />
     <Compile Include="TreeVerifier.cs" />
     <Compile Include="VisNode.cs" />
