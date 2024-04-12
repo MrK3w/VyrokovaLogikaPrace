@@ -5,6 +5,8 @@ var globalCounter = 0;
 var nodesGlobalData;
 var lengthOfList = 0;
 var steps;
+var previousStepButton;
+var nextStepButton;
 
 function handleButtonDrawDAGButton(tautology) {
     CallAjaxToGetPaths(tautology);
@@ -36,7 +38,7 @@ function CallAjaxToGetPaths(tautology) {
          
             globalCounter = 0;
             nodesGlobalData = parsedOutput.VisNodes;
-            lengthOfList = nodesGlobalData.length - 1;
+            lengthOfList = nodesGlobalData.length;
             steps = parsedOutput.Steps;
             createButtons();
             attachEventHandlers();
@@ -45,13 +47,6 @@ function CallAjaxToGetPaths(tautology) {
         },
         error: function (error) {
             console.error('Error:', error);
-
-            // Log specific error properties
-            console.log('Status:', error.status); // HTTP status code
-            console.log('Status Text:', error.statusText); // Textual description of the HTTP status
-            console.log('Response Text:', error.responseText); // Response body
-            console.log('Ready State:', error.readyState); // Ready state of the request
-    // You can log more properties if needed
         }
     });
 }
@@ -302,38 +297,56 @@ function updateStepInfo() {
 }
 
 function handleButtonNextStep() {
-    if (globalCounter < lengthOfList) {
-        globalCounter = globalCounter + 1;
+    if (globalCounter < lengthOfList - 1) {
+        globalCounter++;
         drawGraph();
         updateStepInfo();
+    } else {
+        alert("Toto je poslední krok");
     }
-    else alert("Toto je poslední krok");
+    updateButtonStates();
 }
 
 function handleButtonPreviousStep() {
     if (globalCounter > 0) {
-        globalCounter = globalCounter - 1;
+        globalCounter--;
         drawGraph();
         updateStepInfo();
+    } else {
+        alert("Toto je první krok");
     }
-    else alert("Toto je první krok");
+    updateButtonStates();
+}
+
+function updateButtonStates() {
+    var previousStepButton = document.getElementById('previousStepButton');
+    var nextStepButton = document.getElementById('nextStepButton');
+
+    if (previousStepButton) {
+        previousStepButton.disabled = (globalCounter === 0);
+    }
+
+    if (nextStepButton) {
+        nextStepButton.disabled = (globalCounter === lengthOfList - 1);
+    }
 }
 
 function createButtons() {
     var buttonsDiv = document.getElementById('buttons');
     buttonsDiv.innerHTML = '';
-    // Create and append the "Označ spor" button
 
-    var previousStepButton = document.createElement('button');
+    previousStepButton = document.createElement('button');
     previousStepButton.id = 'previousStepButton';
     previousStepButton.className = 'btn btn-primary flex-fill mb-2 mr-1';
     previousStepButton.textContent = 'předchozí krok';
+    previousStepButton.disabled = (globalCounter === 0);
     buttonsDiv.appendChild(previousStepButton);
 
-    var nextStepButton = document.createElement('button');
+    nextStepButton = document.createElement('button');
     nextStepButton.id = 'nextStepButton';
     nextStepButton.className = 'btn btn-primary flex-fill mb-2 mr-1';
     nextStepButton.textContent = 'další krok';
+    nextStepButton.disabled = (globalCounter === lengthOfList);
     buttonsDiv.appendChild(nextStepButton);
 }
 

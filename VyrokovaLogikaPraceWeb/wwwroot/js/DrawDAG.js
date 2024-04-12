@@ -216,7 +216,7 @@ function modifyNodes(nodesData) {
             //we will create div to show what we changed
             var newAlertDiv = document.createElement("div");
             newAlertDiv.className = "alert alert-primary";
-            newAlertDiv.textContent = "Spojena noda " + changeTitle;
+            newAlertDiv.textContent = "Spojený uzel " + changeTitle;
 
             // Append new alert div to the "zmeny" div
             document.getElementById("zmeny").appendChild(newAlertDiv);

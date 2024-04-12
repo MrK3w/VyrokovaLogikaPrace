@@ -87,8 +87,6 @@ namespace VyrokovaLogikaPraceWeb.Pages
                 i++;
             }
 
-
-
             // Remove items from VisNodes and Steps based on indexes stored in indexesToRemove
             foreach (int indexToRemove in stepsToRemove.OrderByDescending(x => x))
             {
